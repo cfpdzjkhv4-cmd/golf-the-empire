@@ -1,0 +1,182 @@
+{
+  "_units": "Money in pounds. Reputation is stored 0 to 5 internally and shown doubled (out of 10). Time in game minutes. Grid distances in tiles; one tile is yardsPerTile yards.",
+
+  "grid": {
+    "columns": 16,
+    "rows": 32,
+    "yardsPerTile": 17,
+    "teeRow": 30
+  },
+
+  "par": {
+    "par3MaxYards": 250,
+    "par4MaxYards": 440,
+    "minHoleYards": 80,
+    "standardPars9": [4, 4, 3, 5, 4, 3, 4, 5, 4],
+    "standardPars18": [4, 5, 3, 4, 4, 3, 5, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5, 4]
+  },
+
+  "tileCost": {
+    "_note": "Raised from the prototype (5/15/60/30/80/20/150) so features cost real money. Provisional until the Milestone 2 balance pass.",
+    "rough": 5,
+    "fairway": 30,
+    "green": 150,
+    "bunker": 120,
+    "water": 400,
+    "trees": 40,
+    "tee": 500
+  },
+
+  "clock": {
+    "dayStartMinute": 420,
+    "dayEndMinute": 1140,
+    "gameMinutesPerRealSecond": 10,
+    "speeds": [0, 1, 4, 10]
+  },
+
+  "calendar": {
+    "seasonDemandByMonth": [0.70, 0.72, 0.82, 0.92, 1.05, 1.12, 1.12, 1.10, 1.00, 0.92, 0.80, 0.72],
+    "weekendDemand": 1.35,
+    "fridayDemand": 1.1,
+    "winterMonths": [10, 11, 12, 1, 2],
+    "winterStormMultiplier": 1.8,
+    "winterConditionLoss": 1
+  },
+
+  "career": {
+    "startingCash": 200000
+  },
+
+  "plotPrice": {
+    "base18": 150000,
+    "base9": 70000,
+    "wealthExponent": 1.8,
+    "prestigeBase": 0.6,
+    "prestigeFactor": 0.4,
+    "roundTo": 5000
+  },
+
+  "analysis": {
+    "baseScore": 3.8,
+    "bunkerTileBonus": 0.05,
+    "bunkerTileBonusCap": 10,
+    "treeTileBonus": 0.012,
+    "treeTileBonusCap": 30,
+    "diminishingReturns": [1, 0.8, 0.65, 0.5, 0.4, 0.3, 0.3],
+    "islandGreenWaterShare": 0.7,
+    "guardedGreenWaterShare": 0.3,
+    "doubleDoglegDeviation": 1.6,
+    "doglegDeviation": 1.8,
+    "minFairwayRowsForShape": 5,
+    "narrowFairwayWidth": 2.2,
+    "wasteBunkerTiles": 18,
+    "showcaseBunkerTiles": 10,
+    "guardBunkerRadius": 4.2,
+    "guardBunkerGroups": 3,
+    "potBunkerMaxTiles": 2,
+    "potBunkerCount": 5,
+    "driveableMaxYards": 300,
+    "treeLinedShare": 0.6,
+    "points": {
+      "island": 3.2,
+      "watergreen": 1.5,
+      "p3water": 2.2,
+      "carry": 1.6,
+      "double": 2.2,
+      "dogleg": 1.6,
+      "risk": 1.4,
+      "waste": 2.0,
+      "showcase": 1.6,
+      "guard": 1.0,
+      "pots": 1.0,
+      "drive": 1.2,
+      "trees": 0.8,
+      "wip": 0.7,
+      "narrow": -1.0,
+      "bland": -0.8
+    }
+  },
+
+  "fairness": {
+    "_note": "New, agreed with Harry. A rough estimate of how punishing a hole is for an ordinary golfer. Calibrated against the shot sim in Milestone 2.",
+    "severity": {
+      "island": 2.0,
+      "watergreen": 0.8,
+      "p3water": 1.0,
+      "carry": 1.0,
+      "wip": 0.5,
+      "narrow": 1.0,
+      "pots": 0.3,
+      "guard": 0.4,
+      "risk": 0.4,
+      "trees": 0.3,
+      "double": 0.4
+    },
+    "testingFrom": 1.5,
+    "brutalFrom": 3.0,
+    "penaltyPerPointOverBrutal": 0.6,
+    "maxPenalty": 2.0
+  },
+
+  "design": {
+    "averageWeight": 0.85,
+    "pointsPerFeatureKind": 0.2,
+    "maxFeatureKindBonus": 1.5,
+    "allParsBonus": 0.3,
+    "singleParPenalty": -0.4,
+    "bestHoleBonusFrom": 8.5,
+    "bestHoleBonus": 0.3,
+    "signatureFrom": 7.5,
+    "repetition": {
+      "_note": "New, agreed with Harry. Each feature kind is allowed on holes/6 holes (at least 1) at full value. Every repeat after that is worth this much less again.",
+      "holesPerFreeRepeat": 6,
+      "decay": 0.6
+    },
+    "brutalShareLimit": 0.34,
+    "brutalCoursePenalty": 0.5,
+    "words": [
+      { "from": 8.5, "word": "Masterpiece" },
+      { "from": 7.5, "word": "Championship class" },
+      { "from": 6.5, "word": "Excellent" },
+      { "from": 5.5, "word": "Good" },
+      { "from": 4.0, "word": "Ordinary" },
+      { "from": 0, "word": "Basic" }
+    ]
+  },
+
+  "course": {
+    "startCondition": 85,
+    "startReputation": 2.0,
+    "conditionMin": 20,
+    "conditionMax": 100,
+    "rainConditionLoss": 3,
+    "stormConditionLoss": 6
+  },
+
+  "upkeep": {
+    "base": 60,
+    "perHole": 12,
+    "perFairwayTile": 0.15,
+    "perGreenTile": 0.8,
+    "perBunkerTile": 0.2,
+    "perWaterTile": 0.1
+  },
+
+  "greenkeepers": {
+    "levels": ["Skeleton crew", "Full team", "Championship team"],
+    "dailyWage9PerLevel": 90,
+    "dailyWage18PerLevel": 160,
+    "conditionRecovery": [3, 7, 12]
+  },
+
+  "weather": {
+    "rainChance": 0.22,
+    "northRainBonus": 0.10,
+    "northLatitude": 54.5,
+    "windChanceLinks": 0.25,
+    "windChanceInland": 0.08,
+    "cloudChance": 0.40,
+    "stormChanceLinks": 0.045,
+    "demand": { "sun": 1.15, "cloud": 1.0, "wind": 0.85, "rain": 0.55, "storm": 0.15 }
+  }
+}

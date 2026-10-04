@@ -1,0 +1,130 @@
+{
+  "links": {
+    "first": [
+      "Curlew",
+      "Marram",
+      "Saltings",
+      "Sandpiper",
+      "Seagate",
+      "Shingle",
+      "Tern",
+      "Kittiwake",
+      "Bents",
+      "Spindrift",
+      "Oystercatcher",
+      "Whitesands",
+      "Greymare",
+      "Lantern",
+      "Driftwood",
+      "Gullrock",
+      "Sealholme",
+      "Skerry",
+      "Sea Holly",
+      "Wrack",
+      "Lookout",
+      "Harbourside",
+      "Sandhaven",
+      "Coble"
+    ],
+    "second": [
+      "Links",
+      "Dunes",
+      "Sands",
+      "Shore Links",
+      "Bay Links",
+      "Sandhills"
+    ]
+  },
+  "heathland": {
+    "first": [
+      "Heatherdene",
+      "Pinewood",
+      "Larkhill",
+      "Foxwarren",
+      "Gorsefield",
+      "Birchmere",
+      "Heronsgate",
+      "Silverbirch",
+      "Ridgeway",
+      "Bracken",
+      "Nightjar",
+      "Sandpit",
+      "Firwood",
+      "Woodlark",
+      "Juniper",
+      "Scotch Pine",
+      "Stonechat",
+      "Highwood",
+      "Furzedown",
+      "Dartford Warbler"
+    ],
+    "second": [
+      "Heath",
+      "Common",
+      "Ridge",
+      "Heath Club"
+    ]
+  },
+  "parkland": {
+    "first": [
+      "Oakhurst",
+      "Ashcombe",
+      "Willowmere",
+      "Kingsmead",
+      "Hollybank",
+      "Beechwood",
+      "Hartwell",
+      "Chestnut",
+      "Swallowfield",
+      "Rookery",
+      "Abbotswood",
+      "Deerleap",
+      "Millpond",
+      "Coach House",
+      "Hazelwood",
+      "Orchard",
+      "Cedar",
+      "Lime Avenue",
+      "Walled Garden",
+      "Dovecote",
+      "Old Rectory"
+    ],
+    "second": [
+      "Park",
+      "Parkland",
+      "Manor",
+      "Hall",
+      "Estate",
+      "Park Club"
+    ]
+  },
+  "moorland": {
+    "first": [
+      "Grouse",
+      "Whinmoor",
+      "Heatherhope",
+      "High Fell",
+      "Stonecross",
+      "Black Tarn",
+      "Ling",
+      "Moorcock",
+      "Cairn",
+      "Peatburn",
+      "Windyhill",
+      "Curlew Crag",
+      "Merlin",
+      "Drystone",
+      "Bilberry",
+      "Cotton Grass",
+      "Raven Crag",
+      "Shepherd"
+    ],
+    "second": [
+      "Moor",
+      "Fell",
+      "Hill",
+      "Edge",
+      "Moor Club"
+    ]
+  }
+}

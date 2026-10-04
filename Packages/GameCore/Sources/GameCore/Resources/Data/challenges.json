@@ -1,0 +1,95 @@
+[
+  {
+    "id": "brink",
+    "name": "Back from the brink",
+    "difficulty": "Gentle",
+    "days": 45,
+    "startMonth": 4,
+    "startDay": 1,
+    "blurb": "East Neuk Links in Fife went bust and you picked it up for a song. The greens are tired, the clubhouse leaks, and the bank wants results.",
+    "goalText": "Get East Neuk Links to 8 out of 10 reputation with £300,000 in the bank",
+    "start": {
+      "cash": 60000,
+      "courses": [
+        { "plot": "crail", "reputation": 1.8, "condition": 42, "clubhouse": 1 }
+      ]
+    },
+    "goal": { "kind": "reputationAndCash", "plot": "crail", "reputation": 4.0, "cash": 300000 }
+  },
+  {
+    "id": "members",
+    "name": "The waiting list",
+    "difficulty": "Moderate",
+    "days": 60,
+    "startMonth": 3,
+    "startDay": 1,
+    "blurb": "The owners of Tatton Edge in Cheshire want a proper members' club. The kind with a waiting list, a dress code and a portrait of a former captain in the bar.",
+    "goalText": "Fill every membership at Tatton Edge, with a waiting list",
+    "start": {
+      "cash": 120000,
+      "courses": [
+        { "plot": "tatton", "reputation": 3.0, "condition": 75, "clubhouse": 1 }
+      ]
+    },
+    "goal": { "kind": "fullMembership", "plot": "tatton", "waitingList": 20 }
+  },
+  {
+    "id": "belt",
+    "name": "Stockbroker belt",
+    "difficulty": "Moderate",
+    "days": 50,
+    "startMonth": 5,
+    "startDay": 1,
+    "blurb": "Three little southern nine holers, and Meridian Capital owns the two best clubs in the region. They would quite like yours as well.",
+    "goalText": "Own the highest rated course in the south for ten days running",
+    "start": {
+      "cash": 150000,
+      "courses": [
+        { "plot": "norwood", "reputation": 3.0, "condition": 78, "clubhouse": 1 },
+        { "plot": "downs", "reputation": 3.0, "condition": 78, "clubhouse": 1 },
+        { "plot": "harpenden", "reputation": 3.0, "condition": 78, "clubhouse": 1 }
+      ],
+      "rivalCourses": [
+        { "plot": "chobham", "rival": "meridian", "reputation": 3.8 },
+        { "plot": "cotswold", "rival": "meridian", "reputation": 3.6 }
+      ],
+      "rivalCash": { "meridian": 2500000 },
+      "rivalTargetReputation": { "meridian": 3.85 }
+    },
+    "goal": { "kind": "topOfRegion", "southOfLatitude": 52.3, "daysRunning": 10 }
+  },
+  {
+    "id": "tide",
+    "name": "Rising tide",
+    "difficulty": "Hard",
+    "days": 70,
+    "startMonth": 9,
+    "startDay": 1,
+    "blurb": "Pegwell Bay Links in Kent has hosted the big amateur events and dreams of The Championship. The trouble is the sea, which would like it back.",
+    "goalText": "Host The Championship at Pegwell Bay Links",
+    "start": {
+      "cash": 250000,
+      "stormMultiplier": 3,
+      "courses": [
+        {
+          "plot": "pegwell", "longLayout": true, "reputation": 4.2, "condition": 82,
+          "clubhouse": 2, "shop": 1, "range": 1, "staff": 2,
+          "hostedDaysAgo": { "county": 30, "regional": 30 }
+        }
+      ]
+    },
+    "goal": { "kind": "hostEvent", "event": "champ", "plot": "pegwell" }
+  },
+  {
+    "id": "shoestring",
+    "name": "Shoestring",
+    "difficulty": "Very hard",
+    "days": 240,
+    "startMonth": 3,
+    "startDay": 1,
+    "blurb": "Fifty grand and a dream. Go from an empty field to hosting The Championship before the money men beat you to it.",
+    "goalText": "Host The Championship anywhere",
+    "start": { "cash": 50000, "courses": [] },
+    "goal": { "kind": "hostEvent", "event": "champ" }
+  }
+]

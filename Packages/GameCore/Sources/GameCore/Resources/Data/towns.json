@@ -1,0 +1,1213 @@
+[
+  {
+    "town": "Wick",
+    "county": "Caithness",
+    "lat": 58.44,
+    "lon": -3.09,
+    "lands": [
+      "links",
+      "moorland"
+    ],
+    "wealth": 0.55,
+    "demand": 1
+  },
+  {
+    "town": "Golspie",
+    "county": "Sutherland",
+    "lat": 57.97,
+    "lon": -3.98,
+    "lands": [
+      "links",
+      "moorland"
+    ],
+    "wealth": 0.6,
+    "demand": 1
+  },
+  {
+    "town": "Tain",
+    "county": "Ross-shire",
+    "lat": 57.81,
+    "lon": -4.05,
+    "lands": [
+      "links",
+      "parkland"
+    ],
+    "wealth": 0.65,
+    "demand": 1.2
+  },
+  {
+    "town": "Inverness",
+    "county": "Highlands",
+    "lat": 57.48,
+    "lon": -4.22,
+    "lands": [
+      "parkland",
+      "moorland"
+    ],
+    "wealth": 0.75,
+    "demand": 2.4
+  },
+  {
+    "town": "Elgin",
+    "county": "Moray",
+    "lat": 57.65,
+    "lon": -3.32,
+    "lands": [
+      "parkland",
+      "moorland"
+    ],
+    "wealth": 0.75,
+    "demand": 1.6
+  },
+  {
+    "town": "Banff",
+    "county": "Aberdeenshire",
+    "lat": 57.67,
+    "lon": -2.52,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.65,
+    "demand": 1.2
+  },
+  {
+    "town": "Peterhead",
+    "county": "Aberdeenshire",
+    "lat": 57.51,
+    "lon": -1.78,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.7,
+    "demand": 1.6
+  },
+  {
+    "town": "Aberdeen",
+    "county": "Aberdeen",
+    "lat": 57.15,
+    "lon": -2.09,
+    "lands": [
+      "links",
+      "parkland"
+    ],
+    "wealth": 0.95,
+    "demand": 3.6
+  },
+  {
+    "town": "Stonehaven",
+    "county": "Aberdeenshire",
+    "lat": 56.96,
+    "lon": -2.21,
+    "lands": [
+      "links",
+      "parkland"
+    ],
+    "wealth": 0.85,
+    "demand": 1.8
+  },
+  {
+    "town": "Braemar",
+    "county": "Aberdeenshire",
+    "lat": 57.01,
+    "lon": -3.4,
+    "lands": [
+      "moorland"
+    ],
+    "wealth": 0.8,
+    "demand": 1
+  },
+  {
+    "town": "Arbroath",
+    "county": "Angus",
+    "lat": 56.56,
+    "lon": -2.58,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.7,
+    "demand": 1.8
+  },
+  {
+    "town": "Dundee",
+    "county": "Angus",
+    "lat": 56.46,
+    "lon": -2.97,
+    "lands": [
+      "parkland",
+      "links"
+    ],
+    "wealth": 0.8,
+    "demand": 3.4
+  },
+  {
+    "town": "Perth",
+    "county": "Perthshire",
+    "lat": 56.4,
+    "lon": -3.43,
+    "lands": [
+      "parkland",
+      "moorland"
+    ],
+    "wealth": 0.95,
+    "demand": 2.8
+  },
+  {
+    "town": "Elie",
+    "county": "Fife",
+    "lat": 56.19,
+    "lon": -2.82,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1.2,
+    "demand": 1.8
+  },
+  {
+    "town": "Lundin",
+    "county": "Fife",
+    "lat": 56.21,
+    "lon": -2.95,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1,
+    "demand": 1.8
+  },
+  {
+    "town": "Kinross",
+    "county": "Perthshire",
+    "lat": 56.21,
+    "lon": -3.42,
+    "lands": [
+      "parkland",
+      "moorland"
+    ],
+    "wealth": 1,
+    "demand": 2
+  },
+  {
+    "town": "Stirling",
+    "county": "Stirlingshire",
+    "lat": 56.12,
+    "lon": -3.94,
+    "lands": [
+      "parkland",
+      "moorland"
+    ],
+    "wealth": 0.95,
+    "demand": 3
+  },
+  {
+    "town": "Dunbar",
+    "county": "East Lothian",
+    "lat": 56,
+    "lon": -2.52,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1.1,
+    "demand": 2.2
+  },
+  {
+    "town": "Musselburgh",
+    "county": "East Lothian",
+    "lat": 55.94,
+    "lon": -3.05,
+    "lands": [
+      "links",
+      "parkland"
+    ],
+    "wealth": 1.05,
+    "demand": 4
+  },
+  {
+    "town": "Peebles",
+    "county": "Borders",
+    "lat": 55.65,
+    "lon": -3.19,
+    "lands": [
+      "parkland",
+      "moorland"
+    ],
+    "wealth": 1,
+    "demand": 1.6
+  },
+  {
+    "town": "Kelso",
+    "county": "Borders",
+    "lat": 55.6,
+    "lon": -2.43,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 0.95,
+    "demand": 1.4
+  },
+  {
+    "town": "Troon",
+    "county": "Ayrshire",
+    "lat": 55.54,
+    "lon": -4.66,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.95,
+    "demand": 3
+  },
+  {
+    "town": "Largs",
+    "county": "Ayrshire",
+    "lat": 55.79,
+    "lon": -4.87,
+    "lands": [
+      "links",
+      "parkland"
+    ],
+    "wealth": 0.9,
+    "demand": 2.2
+  },
+  {
+    "town": "Glasgow",
+    "county": "Glasgow",
+    "lat": 55.86,
+    "lon": -4.25,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 0.9,
+    "demand": 5.5
+  },
+  {
+    "town": "Oban",
+    "county": "Argyll",
+    "lat": 56.41,
+    "lon": -5.47,
+    "lands": [
+      "links",
+      "moorland"
+    ],
+    "wealth": 0.75,
+    "demand": 1
+  },
+  {
+    "town": "Islay",
+    "county": "Argyll",
+    "lat": 55.63,
+    "lon": -6.19,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.6,
+    "demand": 0.6
+  },
+  {
+    "town": "Stranraer",
+    "county": "Galloway",
+    "lat": 54.9,
+    "lon": -5.02,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.6,
+    "demand": 1
+  },
+  {
+    "town": "Dumfries",
+    "county": "Dumfries and Galloway",
+    "lat": 55.07,
+    "lon": -3.61,
+    "lands": [
+      "parkland",
+      "moorland"
+    ],
+    "wealth": 0.75,
+    "demand": 2
+  },
+  {
+    "town": "Berwick",
+    "county": "Northumberland",
+    "lat": 55.77,
+    "lon": -2,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.8,
+    "demand": 1.4
+  },
+  {
+    "town": "Alnwick",
+    "county": "Northumberland",
+    "lat": 55.41,
+    "lon": -1.71,
+    "lands": [
+      "parkland",
+      "links"
+    ],
+    "wealth": 0.95,
+    "demand": 1.6
+  },
+  {
+    "town": "Newcastle",
+    "county": "Tyne and Wear",
+    "lat": 54.98,
+    "lon": -1.61,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 0.95,
+    "demand": 5.2
+  },
+  {
+    "town": "Durham",
+    "county": "County Durham",
+    "lat": 54.78,
+    "lon": -1.57,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 0.95,
+    "demand": 3.2
+  },
+  {
+    "town": "Seaton Carew",
+    "county": "County Durham",
+    "lat": 54.66,
+    "lon": -1.18,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.75,
+    "demand": 3
+  },
+  {
+    "town": "Whitby",
+    "county": "North Yorkshire",
+    "lat": 54.49,
+    "lon": -0.61,
+    "lands": [
+      "links",
+      "moorland"
+    ],
+    "wealth": 0.85,
+    "demand": 1.6
+  },
+  {
+    "town": "Scarborough",
+    "county": "North Yorkshire",
+    "lat": 54.28,
+    "lon": -0.4,
+    "lands": [
+      "links",
+      "heathland"
+    ],
+    "wealth": 0.85,
+    "demand": 2.4
+  },
+  {
+    "town": "Helmsley",
+    "county": "North Yorkshire",
+    "lat": 54.25,
+    "lon": -1.06,
+    "lands": [
+      "moorland",
+      "heathland"
+    ],
+    "wealth": 1,
+    "demand": 1.4
+  },
+  {
+    "town": "Ripon",
+    "county": "North Yorkshire",
+    "lat": 54.14,
+    "lon": -1.52,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.05,
+    "demand": 2.2
+  },
+  {
+    "town": "Leeds",
+    "county": "West Yorkshire",
+    "lat": 53.8,
+    "lon": -1.55,
+    "lands": [
+      "parkland",
+      "moorland"
+    ],
+    "wealth": 1,
+    "demand": 5.6
+  },
+  {
+    "town": "Sheffield",
+    "county": "South Yorkshire",
+    "lat": 53.38,
+    "lon": -1.47,
+    "lands": [
+      "parkland",
+      "moorland"
+    ],
+    "wealth": 0.9,
+    "demand": 5
+  },
+  {
+    "town": "Hebden Bridge",
+    "county": "West Yorkshire",
+    "lat": 53.74,
+    "lon": -2.01,
+    "lands": [
+      "moorland"
+    ],
+    "wealth": 0.9,
+    "demand": 2.6
+  },
+  {
+    "town": "Beverley",
+    "county": "East Yorkshire",
+    "lat": 53.84,
+    "lon": -0.43,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1,
+    "demand": 2.4
+  },
+  {
+    "town": "Bridlington",
+    "county": "East Yorkshire",
+    "lat": 54.08,
+    "lon": -0.19,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.75,
+    "demand": 2
+  },
+  {
+    "town": "Windermere",
+    "county": "Cumbria",
+    "lat": 54.38,
+    "lon": -2.91,
+    "lands": [
+      "moorland"
+    ],
+    "wealth": 1.1,
+    "demand": 1.6
+  },
+  {
+    "town": "Penrith",
+    "county": "Cumbria",
+    "lat": 54.66,
+    "lon": -2.75,
+    "lands": [
+      "moorland",
+      "parkland"
+    ],
+    "wealth": 0.9,
+    "demand": 1.4
+  },
+  {
+    "town": "Morecambe",
+    "county": "Lancashire",
+    "lat": 54.07,
+    "lon": -2.86,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.75,
+    "demand": 2.4
+  },
+  {
+    "town": "Blackpool",
+    "county": "Lancashire",
+    "lat": 53.82,
+    "lon": -3.05,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.8,
+    "demand": 4
+  },
+  {
+    "town": "Clitheroe",
+    "county": "Lancashire",
+    "lat": 53.87,
+    "lon": -2.39,
+    "lands": [
+      "parkland",
+      "moorland"
+    ],
+    "wealth": 1,
+    "demand": 2.4
+  },
+  {
+    "town": "Manchester",
+    "county": "Greater Manchester",
+    "lat": 53.48,
+    "lon": -2.24,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1,
+    "demand": 6
+  },
+  {
+    "town": "Wilmslow",
+    "county": "Cheshire",
+    "lat": 53.33,
+    "lon": -2.23,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.6,
+    "demand": 4.6
+  },
+  {
+    "town": "Delamere",
+    "county": "Cheshire",
+    "lat": 53.23,
+    "lon": -2.67,
+    "lands": [
+      "heathland",
+      "parkland"
+    ],
+    "wealth": 1.3,
+    "demand": 3.6
+  },
+  {
+    "town": "West Kirby",
+    "county": "Wirral",
+    "lat": 53.37,
+    "lon": -3.18,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1.15,
+    "demand": 4
+  },
+  {
+    "town": "Ainsdale",
+    "county": "Merseyside",
+    "lat": 53.6,
+    "lon": -3.04,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1.05,
+    "demand": 4.4
+  },
+  {
+    "town": "Llandudno",
+    "county": "Conwy",
+    "lat": 53.32,
+    "lon": -3.83,
+    "lands": [
+      "links",
+      "moorland"
+    ],
+    "wealth": 0.8,
+    "demand": 1.8
+  },
+  {
+    "town": "Rhosneigr",
+    "county": "Anglesey",
+    "lat": 53.23,
+    "lon": -4.51,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.7,
+    "demand": 1
+  },
+  {
+    "town": "Pwllheli",
+    "county": "Gwynedd",
+    "lat": 52.89,
+    "lon": -4.42,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.7,
+    "demand": 1
+  },
+  {
+    "town": "Aberystwyth",
+    "county": "Ceredigion",
+    "lat": 52.41,
+    "lon": -4.08,
+    "lands": [
+      "links",
+      "moorland"
+    ],
+    "wealth": 0.7,
+    "demand": 1.4
+  },
+  {
+    "town": "Tenby",
+    "county": "Pembrokeshire",
+    "lat": 51.67,
+    "lon": -4.7,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.95,
+    "demand": 1.6
+  },
+  {
+    "town": "Gower",
+    "county": "Swansea",
+    "lat": 51.57,
+    "lon": -4.09,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.95,
+    "demand": 2.2
+  },
+  {
+    "town": "Cardiff",
+    "county": "Glamorgan",
+    "lat": 51.48,
+    "lon": -3.18,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 0.95,
+    "demand": 5
+  },
+  {
+    "town": "Monmouth",
+    "county": "Monmouthshire",
+    "lat": 51.81,
+    "lon": -2.72,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.1,
+    "demand": 1.8
+  },
+  {
+    "town": "Shrewsbury",
+    "county": "Shropshire",
+    "lat": 52.71,
+    "lon": -2.75,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.05,
+    "demand": 2.6
+  },
+  {
+    "town": "Church Stretton",
+    "county": "Shropshire",
+    "lat": 52.54,
+    "lon": -2.81,
+    "lands": [
+      "moorland"
+    ],
+    "wealth": 1.1,
+    "demand": 1.6
+  },
+  {
+    "town": "Ludlow",
+    "county": "Shropshire",
+    "lat": 52.37,
+    "lon": -2.72,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.1,
+    "demand": 1.6
+  },
+  {
+    "town": "Malvern",
+    "county": "Worcestershire",
+    "lat": 52.11,
+    "lon": -2.33,
+    "lands": [
+      "parkland",
+      "moorland"
+    ],
+    "wealth": 1.25,
+    "demand": 2.4
+  },
+  {
+    "town": "Stratford upon Avon",
+    "county": "Warwickshire",
+    "lat": 52.19,
+    "lon": -1.71,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.35,
+    "demand": 3.2
+  },
+  {
+    "town": "Leamington Spa",
+    "county": "Warwickshire",
+    "lat": 52.29,
+    "lon": -1.53,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.3,
+    "demand": 3.6
+  },
+  {
+    "town": "Lichfield",
+    "county": "Staffordshire",
+    "lat": 52.68,
+    "lon": -1.83,
+    "lands": [
+      "parkland",
+      "heathland"
+    ],
+    "wealth": 1.15,
+    "demand": 3.6
+  },
+  {
+    "town": "Cannock Chase",
+    "county": "Staffordshire",
+    "lat": 52.75,
+    "lon": -2,
+    "lands": [
+      "heathland"
+    ],
+    "wealth": 1,
+    "demand": 3.4
+  },
+  {
+    "town": "Leicester",
+    "county": "Leicestershire",
+    "lat": 52.64,
+    "lon": -1.13,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1,
+    "demand": 4.6
+  },
+  {
+    "town": "Stamford",
+    "county": "Lincolnshire",
+    "lat": 52.65,
+    "lon": -0.48,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.3,
+    "demand": 2.2
+  },
+  {
+    "town": "Skegness",
+    "county": "Lincolnshire",
+    "lat": 53.14,
+    "lon": 0.34,
+    "lands": [
+      "links"
+    ],
+    "wealth": 0.75,
+    "demand": 2
+  },
+  {
+    "town": "Matlock",
+    "county": "Derbyshire",
+    "lat": 53.14,
+    "lon": -1.55,
+    "lands": [
+      "moorland"
+    ],
+    "wealth": 1.05,
+    "demand": 2.4
+  },
+  {
+    "town": "Cromer",
+    "county": "Norfolk",
+    "lat": 52.93,
+    "lon": 1.3,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1.15,
+    "demand": 1.8
+  },
+  {
+    "town": "Thetford",
+    "county": "Norfolk",
+    "lat": 52.41,
+    "lon": 0.75,
+    "lands": [
+      "heathland"
+    ],
+    "wealth": 1,
+    "demand": 1.8
+  },
+  {
+    "town": "Aldeburgh",
+    "county": "Suffolk",
+    "lat": 52.15,
+    "lon": 1.6,
+    "lands": [
+      "links",
+      "heathland"
+    ],
+    "wealth": 1.4,
+    "demand": 1.8
+  },
+  {
+    "town": "Woodbridge",
+    "county": "Suffolk",
+    "lat": 52.09,
+    "lon": 1.32,
+    "lands": [
+      "heathland"
+    ],
+    "wealth": 1.35,
+    "demand": 2
+  },
+  {
+    "town": "Cambridge",
+    "county": "Cambridgeshire",
+    "lat": 52.21,
+    "lon": 0.12,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.6,
+    "demand": 4
+  },
+  {
+    "town": "Frinton",
+    "county": "Essex",
+    "lat": 51.83,
+    "lon": 1.25,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1.3,
+    "demand": 2.6
+  },
+  {
+    "town": "Chelmsford",
+    "county": "Essex",
+    "lat": 51.74,
+    "lon": 0.47,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.45,
+    "demand": 4.6
+  },
+  {
+    "town": "St Albans",
+    "county": "Hertfordshire",
+    "lat": 51.75,
+    "lon": -0.34,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.75,
+    "demand": 5.6
+  },
+  {
+    "town": "Oxford",
+    "county": "Oxfordshire",
+    "lat": 51.75,
+    "lon": -1.26,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.6,
+    "demand": 4.6
+  },
+  {
+    "town": "Henley",
+    "county": "Oxfordshire",
+    "lat": 51.54,
+    "lon": -0.9,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.85,
+    "demand": 3.6
+  },
+  {
+    "town": "Marlow",
+    "county": "Buckinghamshire",
+    "lat": 51.57,
+    "lon": -0.77,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.85,
+    "demand": 4
+  },
+  {
+    "town": "Ascot",
+    "county": "Berkshire",
+    "lat": 51.41,
+    "lon": -0.68,
+    "lands": [
+      "heathland"
+    ],
+    "wealth": 1.95,
+    "demand": 6
+  },
+  {
+    "town": "Reigate",
+    "county": "Surrey",
+    "lat": 51.24,
+    "lon": -0.21,
+    "lands": [
+      "heathland",
+      "parkland"
+    ],
+    "wealth": 1.8,
+    "demand": 5.6
+  },
+  {
+    "town": "Guildford",
+    "county": "Surrey",
+    "lat": 51.24,
+    "lon": -0.57,
+    "lands": [
+      "heathland"
+    ],
+    "wealth": 1.8,
+    "demand": 5.8
+  },
+  {
+    "town": "Haslemere",
+    "county": "Surrey",
+    "lat": 51.09,
+    "lon": -0.71,
+    "lands": [
+      "heathland"
+    ],
+    "wealth": 1.75,
+    "demand": 3.6
+  },
+  {
+    "town": "Sevenoaks",
+    "county": "Kent",
+    "lat": 51.27,
+    "lon": 0.19,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.8,
+    "demand": 5.4
+  },
+  {
+    "town": "Canterbury",
+    "county": "Kent",
+    "lat": 51.28,
+    "lon": 1.08,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.35,
+    "demand": 3.6
+  },
+  {
+    "town": "Whitstable",
+    "county": "Kent",
+    "lat": 51.36,
+    "lon": 1.03,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1.3,
+    "demand": 3.4
+  },
+  {
+    "town": "Littlestone",
+    "county": "Kent",
+    "lat": 50.97,
+    "lon": 0.97,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1.25,
+    "demand": 2.4
+  },
+  {
+    "town": "Brighton",
+    "county": "East Sussex",
+    "lat": 50.82,
+    "lon": -0.14,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.45,
+    "demand": 5.2
+  },
+  {
+    "town": "Midhurst",
+    "county": "West Sussex",
+    "lat": 50.99,
+    "lon": -0.74,
+    "lands": [
+      "heathland"
+    ],
+    "wealth": 1.7,
+    "demand": 2.6
+  },
+  {
+    "town": "Chichester",
+    "county": "West Sussex",
+    "lat": 50.84,
+    "lon": -0.78,
+    "lands": [
+      "parkland",
+      "links"
+    ],
+    "wealth": 1.6,
+    "demand": 3.2
+  },
+  {
+    "town": "Winchester",
+    "county": "Hampshire",
+    "lat": 51.06,
+    "lon": -1.31,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.7,
+    "demand": 3.4
+  },
+  {
+    "town": "New Forest",
+    "county": "Hampshire",
+    "lat": 50.87,
+    "lon": -1.6,
+    "lands": [
+      "heathland"
+    ],
+    "wealth": 1.55,
+    "demand": 3
+  },
+  {
+    "town": "Bournemouth",
+    "county": "Dorset",
+    "lat": 50.72,
+    "lon": -1.88,
+    "lands": [
+      "heathland"
+    ],
+    "wealth": 1.4,
+    "demand": 4
+  },
+  {
+    "town": "Studland",
+    "county": "Dorset",
+    "lat": 50.64,
+    "lon": -1.95,
+    "lands": [
+      "links",
+      "heathland"
+    ],
+    "wealth": 1.5,
+    "demand": 2.4
+  },
+  {
+    "town": "Sherborne",
+    "county": "Dorset",
+    "lat": 50.95,
+    "lon": -2.52,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.4,
+    "demand": 1.8
+  },
+  {
+    "town": "Minehead",
+    "county": "Somerset",
+    "lat": 51.2,
+    "lon": -3.47,
+    "lands": [
+      "links",
+      "moorland"
+    ],
+    "wealth": 0.95,
+    "demand": 1.6
+  },
+  {
+    "town": "Exeter",
+    "county": "Devon",
+    "lat": 50.72,
+    "lon": -3.53,
+    "lands": [
+      "parkland"
+    ],
+    "wealth": 1.15,
+    "demand": 3.4
+  },
+  {
+    "town": "Thurlestone",
+    "county": "Devon",
+    "lat": 50.27,
+    "lon": -3.86,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1.4,
+    "demand": 1.8
+  },
+  {
+    "town": "Westward Ho",
+    "county": "Devon",
+    "lat": 51.04,
+    "lon": -4.24,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1,
+    "demand": 1.6
+  },
+  {
+    "town": "Okehampton",
+    "county": "Devon",
+    "lat": 50.74,
+    "lon": -4,
+    "lands": [
+      "moorland"
+    ],
+    "wealth": 0.95,
+    "demand": 1.4
+  },
+  {
+    "town": "Newquay",
+    "county": "Cornwall",
+    "lat": 50.41,
+    "lon": -5.08,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1,
+    "demand": 2.4
+  },
+  {
+    "town": "St Ives",
+    "county": "Cornwall",
+    "lat": 50.21,
+    "lon": -5.48,
+    "lands": [
+      "links"
+    ],
+    "wealth": 1.15,
+    "demand": 1.8
+  },
+  {
+    "town": "Bodmin",
+    "county": "Cornwall",
+    "lat": 50.47,
+    "lon": -4.72,
+    "lands": [
+      "moorland"
+    ],
+    "wealth": 0.85,
+    "demand": 1.4
+  }
+]

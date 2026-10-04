@@ -1,0 +1,266 @@
+id,category,description,size_pt,frames,variants,format,priority,notes,source
+tex_rough_links,Terrain,"Seamless rough grass texture, links",256x256,1,2,PNG,MVP,Tileable all edges. Also used as map land fill on the course view,Procedural: generated texture script
+tex_rough_deep_links,Terrain,"Seamless deep rough / heather / long grass patch texture, links",256x256,1,1,PNG,Launch,,Procedural: generated texture script
+tex_rough_heathland,Terrain,"Seamless rough grass texture, heathland",256x256,1,2,PNG,MVP,Tileable all edges. Also used as map land fill on the course view,Procedural: generated texture script
+tex_rough_deep_heathland,Terrain,"Seamless deep rough / heather / long grass patch texture, heathland",256x256,1,1,PNG,Launch,,Procedural: generated texture script
+tex_rough_parkland,Terrain,"Seamless rough grass texture, parkland",256x256,1,2,PNG,MVP,Tileable all edges. Also used as map land fill on the course view,Procedural: generated texture script
+tex_rough_deep_parkland,Terrain,"Seamless deep rough / heather / long grass patch texture, parkland",256x256,1,1,PNG,Launch,,Procedural: generated texture script
+tex_rough_moorland,Terrain,"Seamless rough grass texture, moorland",256x256,1,2,PNG,MVP,Tileable all edges. Also used as map land fill on the course view,Procedural: generated texture script
+tex_rough_deep_moorland,Terrain,"Seamless deep rough / heather / long grass patch texture, moorland",256x256,1,1,PNG,Launch,,Procedural: generated texture script
+tex_fairway,Terrain,"Seamless fairway texture, no stripes (stripes drawn in code)",256x256,1,1,PNG,MVP,,Procedural: generated texture script
+tex_green,Terrain,"Seamless putting green texture, fine",256x256,1,1,PNG,MVP,,Procedural: generated texture script
+tex_fringe,Terrain,Seamless fringe / apron texture,256x256,1,1,PNG,MVP,,Procedural: generated texture script
+tex_bunker,Terrain,Seamless raked sand texture,256x256,1,1,PNG,MVP,,Procedural: generated texture script
+tex_water,Terrain,Seamless pond water texture,256x256,1,1,PNG,MVP,Animated shimmer in code or 8 frames,Procedural: generated texture script
+tex_sea,Terrain,"Seamless sea texture, deeper blue",256x256,1,1,PNG,MVP,8 frame loop optional,Procedural: generated texture script
+tex_beach,Terrain,Seamless beach sand texture,256x256,1,1,PNG,MVP,,Procedural: generated texture script
+tex_tee,Terrain,Seamless tee box turf texture,256x256,1,1,PNG,MVP,,Procedural: generated texture script
+tex_path,Terrain,Seamless gravel/tarmac path texture,256x256,1,1,PNG,Launch,,Procedural: generated texture script
+tex_carpark,Terrain,Seamless tarmac with faint wear,256x256,1,1,PNG,MVP,,Procedural: generated texture script
+mask_edge_soft,Terrain,Soft brush edge masks used to blend surface boundaries,128x128,1,4,PNG,MVP,Greyscale alpha. Lets code draw organic edges instead of 47 tile autotiles,Procedural: generated texture script
+ovl_bunker_lip,Terrain,Bunker lip/shadow overlay strip,64x16,1,4,PNG,MVP,,Procedural: generated texture script
+ovl_surf,Terrain,"Surf foam line strip, tileable horizontally",256x32,8,1,PNG,MVP,Breaks on the shoreline,Procedural: generated texture script
+ovl_wear,Terrain,Worn turf / divot / bare patch decals,64x64,1,6,PNG,MVP,Scattered more as condition falls,Procedural: generated texture script
+ovl_mowing,Terrain,Mowing stripe overlay (light and dark),256x64,1,2,PNG,Launch,,Procedural: generated texture script
+veg_gorse,Vegetation,Gorse for links,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_marram,Vegetation,Marram for links,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_sea_buckthorn,Vegetation,Sea Buckthorn for links,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_scots_pine,Vegetation,Scots Pine for heathland,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_birch,Vegetation,Birch for heathland,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_heather,Vegetation,Heather for heathland,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_oak,Vegetation,Oak for parkland,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_beech,Vegetation,Beech for parkland,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_horse_chestnut,Vegetation,Horse Chestnut for parkland,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_scrub,Vegetation,Scrub for moorland,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_rowan,Vegetation,Rowan for moorland,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_bracken,Vegetation,Bracken for moorland,48x64,4,3,PNG,MVP,4 frame wind sway. Separate shadow sprite,"Code drawn vector, rendered to PNG"
+veg_shadow,Vegetation,Soft tree shadow ellipses,64x32,1,3,PNG,MVP,,"Code drawn vector, rendered to PNG"
+veg_flowers,Vegetation,Wildflower and rough tufts scatter decals,16x16,1,8,PNG,Launch,,"Code drawn vector, rendered to PNG"
+golfer_idle,Characters,"Golfer body, idle (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_walk_n,Characters,"Golfer body, walk n (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_walk_s,Characters,"Golfer body, walk s (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_walk_e,Characters,"Golfer body, walk e (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_walk_w,Characters,"Golfer body, walk w (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_address,Characters,"Golfer body, address (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_swing_driver,Characters,"Golfer body, swing driver (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_swing_iron,Characters,"Golfer body, swing iron (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_chip,Characters,"Golfer body, chip (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_putt,Characters,"Golfer body, putt (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_celebrate,Characters,"Golfer body, celebrate (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_despair,Characters,"Golfer body, despair (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_search_ball,Characters,"Golfer body, search ball (rigged parts: head, torso, arms, legs, club; poses keyed in code)",24x32,keyed,4,PNG,MVP,"No hand drawn frames. One vector rig, recoloured per golfer. Animation is code tweening between poses","Code drawn vector parts, animated in code"
+golfer_hats,Characters,"Headwear layers: cap, flat cap, bucket hat, visor, bobble hat",24x32,1,5,PNG,MVP,Layered over body frames,"Code drawn vector parts, animated in code"
+golfer_bag,Characters,Golf bag carried and on a trolley,16x24,1,3,PNG,MVP,,"Code drawn vector parts, animated in code"
+npc_caddie,Characters,"Caddie: walk 4 dir, idle",24x32,24,1,PNG,Launch,,"Code drawn vector parts, animated in code"
+npc_greenkeeper,Characters,"Greenkeeper: walk, rake, push mower",24x32,24,1,PNG,MVP,,"Code drawn vector parts, animated in code"
+npc_member_blazer,Characters,"Member Blazer: walk, idle, disapprove",24x32,24,1,PNG,Launch,,"Code drawn vector parts, animated in code"
+npc_club_pro,Characters,"Club Pro: idle, teach",24x32,24,1,PNG,Launch,,"Code drawn vector parts, animated in code"
+npc_spectator,Characters,"Spectator: idle, clap, cheer",24x32,24,3,PNG,MVP,,"Code drawn vector parts, animated in code"
+npc_steward,Characters,"Steward: idle, hold sign",24x32,24,1,PNG,Launch,,"Code drawn vector parts, animated in code"
+npc_tv_crew,Characters,Tv Crew: camera operator idle,24x32,24,1,PNG,Launch,,"Code drawn vector parts, animated in code"
+vehicle_buggy,Characters,"Golf buggy, 4 directions, with and without driver",40x32,4,1,PNG,Launch,,"Code drawn vector parts, animated in code"
+vehicle_mower,Characters,"Ride on mower, 4 directions",40x32,8,1,PNG,MVP,,"Code drawn vector parts, animated in code"
+vehicle_cars,Characters,Parked cars top down,24x40,1,8,PNG,MVP,Fill the car park as the course gets busy,"Code drawn vector parts, animated in code"
+bld_portacabin,Buildings,Clubhouse level 0: portacabin,192x128,1,2,PNG,MVP,"Variant per region: stone (north/Scotland), brick/timber (south). Night window glow layer","Code drawn vector (SVG), rendered to PNG"
+bld_clubhouse,Buildings,Clubhouse level 1: clubhouse,192x128,1,2,PNG,MVP,"Variant per region: stone (north/Scotland), brick/timber (south). Night window glow layer","Code drawn vector (SVG), rendered to PNG"
+bld_clubhouse_restaurant,Buildings,Clubhouse level 2: clubhouse restaurant,192x128,1,2,PNG,MVP,"Variant per region: stone (north/Scotland), brick/timber (south). Night window glow layer","Code drawn vector (SVG), rendered to PNG"
+bld_clubhouse_grand,Buildings,Clubhouse level 3: clubhouse grand,192x128,1,2,PNG,MVP,"Variant per region: stone (north/Scotland), brick/timber (south). Night window glow layer","Code drawn vector (SVG), rendered to PNG"
+bld_pro_shop,Buildings,Pro shop level 1,96x80,1,1,PNG,MVP,,"Code drawn vector (SVG), rendered to PNG"
+bld_pro_shop_flagship,Buildings,Pro shop level 2,96x80,1,1,PNG,MVP,,"Code drawn vector (SVG), rendered to PNG"
+bld_range,Buildings,"Driving range bays and netting, with distance boards",256x96,1,1,PNG,MVP,,"Code drawn vector (SVG), rendered to PNG"
+bld_shed,Buildings,Greenkeeper shed and machinery yard,96x80,1,3,PNG,MVP,Grows with staff level,"Code drawn vector (SVG), rendered to PNG"
+bld_starter_hut,Buildings,Starter hut by the first tee,48x48,1,1,PNG,Launch,,"Code drawn vector (SVG), rendered to PNG"
+bld_halfway_hut,Buildings,Halfway hut,64x48,1,1,PNG,Later,,"Code drawn vector (SVG), rendered to PNG"
+bld_rock_armour,Buildings,"Rock armour along the shoreline, tileable strip",256x48,1,1,PNG,MVP,,"Code drawn vector (SVG), rendered to PNG"
+bld_sea_wall,Buildings,"Sea wall, tileable strip",256x48,1,1,PNG,MVP,,"Code drawn vector (SVG), rendered to PNG"
+evt_grandstand,Event dressing,Grandstand for tournaments,varies,1,1,PNG,MVP,"Placed on the course the day of an event, scaled by event tier","Code drawn vector (SVG), rendered to PNG"
+evt_hospitality_marquee,Event dressing,Hospitality Marquee for tournaments,varies,1,1,PNG,Launch,"Placed on the course the day of an event, scaled by event tier","Code drawn vector (SVG), rendered to PNG"
+evt_tv_tower,Event dressing,Tv Tower for tournaments,varies,1,1,PNG,Launch,"Placed on the course the day of an event, scaled by event tier","Code drawn vector (SVG), rendered to PNG"
+evt_scoreboard,Event dressing,Scoreboard for tournaments,varies,1,1,PNG,MVP,"Placed on the course the day of an event, scaled by event tier","Code drawn vector (SVG), rendered to PNG"
+evt_tented_village,Event dressing,Tented Village for tournaments,varies,1,1,PNG,Launch,"Placed on the course the day of an event, scaled by event tier","Code drawn vector (SVG), rendered to PNG"
+evt_rope_line,Event dressing,Rope Line for tournaments,varies,1,1,PNG,MVP,"Placed on the course the day of an event, scaled by event tier","Code drawn vector (SVG), rendered to PNG"
+prop_ball,Props,Golf ball,8x8,1,1,PNG,MVP,,"Code drawn vector (SVG), rendered to PNG"
+prop_ball_shadow,Props,Ball shadow,8x4,1,1,PNG,MVP,,"Code drawn vector (SVG), rendered to PNG"
+prop_pin_flag,Props,"Pin and flag, waving, 2 colours",16x48,6,2,PNG,MVP,,"Code drawn vector (SVG), rendered to PNG"
+prop_tee_markers,Props,"Tee markers: white, yellow, red",16x8,1,3,PNG,MVP,,"Code drawn vector (SVG), rendered to PNG"
+prop_hole_cup,Props,Cup,12x8,1,1,PNG,MVP,,"Code drawn vector (SVG), rendered to PNG"
+prop_bench,Props,Bench,24x12,1,2,PNG,Launch,,"Code drawn vector (SVG), rendered to PNG"
+prop_bin,Props,Bin,12x12,1,1,PNG,Launch,,"Code drawn vector (SVG), rendered to PNG"
+prop_ball_washer,Props,Ball washer,12x20,1,1,PNG,Launch,,"Code drawn vector (SVG), rendered to PNG"
+prop_yardage_post,Props,150/100/50 markers,8x16,1,3,PNG,Launch,,"Code drawn vector (SVG), rendered to PNG"
+prop_signpost,Props,Hole signpost with number plate,16x24,1,2,PNG,Launch,,"Code drawn vector (SVG), rendered to PNG"
+prop_rake,Props,Bunker rake,16x8,1,1,PNG,Launch,,"Code drawn vector (SVG), rendered to PNG"
+prop_ob_post,Props,White out of bounds post,6x16,1,1,PNG,Launch,,"Code drawn vector (SVG), rendered to PNG"
+prop_fence,Props,Boundary fence and dry stone wall,64x16,1,2,PNG,Launch,,"Code drawn vector (SVG), rendered to PNG"
+fx_splash,Effects,Water splash,32x32,8,1,PNG,MVP,,Procedural particles (SpriteKit emitters)
+fx_sand,Effects,Sand explosion,32x32,8,1,PNG,MVP,,Procedural particles (SpriteKit emitters)
+fx_divot,Effects,Divot and turf spray,32x32,6,1,PNG,MVP,,Procedural particles (SpriteKit emitters)
+fx_leaves,Effects,"Ball into trees, leaves fall",32x32,8,1,PNG,MVP,,Procedural particles (SpriteKit emitters)
+fx_dust,Effects,Footstep dust on links,32x32,6,1,PNG,Launch,,Procedural particles (SpriteKit emitters)
+fx_rain,Effects,Rain streak sprites,32x32,1,1,PNG,MVP,,Procedural particles (SpriteKit emitters)
+fx_storm_spray,Effects,Sea spray over dunes,32x32,8,1,PNG,MVP,,Procedural particles (SpriteKit emitters)
+fx_wind,Effects,Wind wisps,32x32,6,1,PNG,MVP,,Procedural particles (SpriteKit emitters)
+fx_birds,Effects,"Gulls (links), crows (inland), flying loop",32x32,8,1,PNG,MVP,,Procedural particles (SpriteKit emitters)
+fx_confetti,Effects,Hole in one celebration,32x32,8,1,PNG,Launch,,Procedural particles (SpriteKit emitters)
+fx_coins,Effects,Cash pop,32x32,6,1,PNG,Launch,,Procedural particles (SpriteKit emitters)
+map_gb,Map,"Illustrated map of Great Britain, own artwork, land and sea layers separate",2048x2900,1,1,PNG or SVG,MVP,"Must be original. Room for pan and zoom. Subtle terrain colouring: highlands, moors, coast","Code drawn vector (SVG), rendered to PNG"
+map_gb_detail,Map,Optional higher detail tiles for zoomed in view,1024x1024,1,6,PNG,Later,,"Code drawn vector (SVG), rendered to PNG"
+pin_quiet,Map,"Map pin, state: quiet",32x40,1,1,PNG,MVP,Live and admin pins pulse,"Code drawn vector (SVG), rendered to PNG"
+pin_sealed,Map,"Map pin, state: sealed",32x40,1,1,PNG,MVP,Live and admin pins pulse,"Code drawn vector (SVG), rendered to PNG"
+pin_live,Map,"Map pin, state: live",32x40,4,1,PNG,MVP,Live and admin pins pulse,"Code drawn vector (SVG), rendered to PNG"
+pin_admin,Map,"Map pin, state: admin",32x40,4,1,PNG,MVP,Live and admin pins pulse,"Code drawn vector (SVG), rendered to PNG"
+pin_owned,Map,"Map pin, state: owned",32x40,1,1,PNG,MVP,Live and admin pins pulse,"Code drawn vector (SVG), rendered to PNG"
+pin_owned_open,Map,"Map pin, state: owned open",32x40,1,1,PNG,MVP,Live and admin pins pulse,"Code drawn vector (SVG), rendered to PNG"
+pin_rival_meridian,Map,"Map pin, state: rival meridian",32x40,1,1,PNG,MVP,Live and admin pins pulse,"Code drawn vector (SVG), rendered to PNG"
+pin_rival_hollingworth,Map,"Map pin, state: rival hollingworth",32x40,1,1,PNG,MVP,Live and admin pins pulse,"Code drawn vector (SVG), rendered to PNG"
+pin_rival_granite,Map,"Map pin, state: rival granite",32x40,1,1,PNG,MVP,Live and admin pins pulse,"Code drawn vector (SVG), rendered to PNG"
+pin_selected,Map,"Map pin, state: selected",32x40,1,1,PNG,MVP,Live and admin pins pulse,"Code drawn vector (SVG), rendered to PNG"
+map_city_dot,Map,City marker,8x8,1,1,PNG,MVP,,"Code drawn vector (SVG), rendered to PNG"
+map_compass,Map,Decorative compass rose,64x64,1,1,PNG,Later,,"Code drawn vector (SVG), rendered to PNG"
+app_icon,UI,App icon master,1024x1024,1,1,PNG,MVP,No transparency. Xcode generates sizes. Also a dark and tinted variant for iOS 18+,Code drawn vector (SVG/PDF)
+logo_wordmark,UI,Game logo / wordmark,1024x320,1,1,PNG and SVG,MVP,,Code drawn vector (SVG/PDF)
+launch_screen,UI,Launch screen artwork,1290x2796,1,1,PNG or storyboard,MVP,,Code drawn vector (SVG/PDF)
+title_hero,UI,Start screen hero illustration (course at dawn),1290x900,1,1,PNG,MVP,,Code drawn vector (SVG/PDF)
+icon_cash,UI,Icon: cash,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_calendar,UI,Icon: calendar,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_clock,UI,Icon: clock,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_speed_pause,UI,Icon: speed pause,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_speed_1,UI,Icon: speed 1,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_speed_4,UI,Icon: speed 4,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_speed_10,UI,Icon: speed 10,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_inbox,UI,Icon: inbox,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_star,UI,Icon: star,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_star_half,UI,Icon: star half,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_condition,UI,Icon: condition,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_members,UI,Icon: members,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_committee,UI,Icon: committee,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_reputation,UI,Icon: reputation,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_rounds,UI,Icon: rounds,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_golfer,UI,Icon: golfer,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_fee,UI,Icon: fee,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_upkeep,UI,Icon: upkeep,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_weather_sun,UI,Icon: weather sun,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_weather_cloud,UI,Icon: weather cloud,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_weather_rain,UI,Icon: weather rain,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_weather_wind,UI,Icon: weather wind,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_weather_storm,UI,Icon: weather storm,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_terrain_links,UI,Icon: terrain links,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_terrain_heathland,UI,Icon: terrain heathland,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_terrain_parkland,UI,Icon: terrain parkland,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_terrain_moorland,UI,Icon: terrain moorland,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_tool_fairway,UI,Icon: tool fairway,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_tool_green,UI,Icon: tool green,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_tool_bunker,UI,Icon: tool bunker,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_tool_water,UI,Icon: tool water,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_tool_trees,UI,Icon: tool trees,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_tool_rough,UI,Icon: tool rough,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_tool_tee,UI,Icon: tool tee,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_tool_pin,UI,Icon: tool pin,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_brush_small,UI,Icon: brush small,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_brush_large,UI,Icon: brush large,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_auto_layout,UI,Icon: auto layout,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_clubhouse,UI,Icon: clubhouse,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_pro_shop,UI,Icon: pro shop,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_range,UI,Icon: range,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_greenkeeper,UI,Icon: greenkeeper,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_sea_defence,UI,Icon: sea defence,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_event,UI,Icon: event,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_trophy,UI,Icon: trophy,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_gavel,UI,Icon: gavel,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_sealed_envelope,UI,Icon: sealed envelope,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_quiet_sale,UI,Icon: quiet sale,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_admin,UI,Icon: admin,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_rival,UI,Icon: rival,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_map,UI,Icon: map,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_back,UI,Icon: back,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_close,UI,Icon: close,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_plus,UI,Icon: plus,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_minus,UI,Icon: minus,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_settings,UI,Icon: settings,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_watch_round,UI,Icon: watch round,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_open_course,UI,Icon: open course,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_close_course,UI,Icon: close course,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_warning,UI,Icon: warning,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_tick,UI,Icon: tick,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+icon_cross,UI,Icon: cross,24x24,1,1,SVG or PDF vector,MVP,Single colour template image so it tints with theme,Code drawn vector (SVG/PDF)
+ui_panel,UI,"Panel and sheet backgrounds, 9 slice",64x64,1,3,PNG,MVP,Light and dark mode,Code drawn vector (SVG/PDF)
+ui_buttons,UI,"Button styles: primary, secondary, small, pill, 9 slice",64x32,1,4,PNG,MVP,"Normal, pressed, disabled states",Code drawn vector (SVG/PDF)
+ui_tab_bar,UI,"Course tabs (Build, Run, Club, Events, Reviews) styling",390x44,1,2,PNG,MVP,,Code drawn vector (SVG/PDF)
+ui_booth,UI,Percy commentary box frame,390x96,1,2,PNG,MVP,,Code drawn vector (SVG/PDF)
+ui_masthead_gazette,UI,Golf Gazette masthead,780x120,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+ui_masthead_fairway_review,UI,The Fairway Review masthead,780x120,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+ui_letterhead_committee,UI,Club committee letterhead,780x120,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+ui_letterhead_auction_house,UI,Auction house letterhead,780x120,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+ui_letterhead_greenkeeper,UI,Head greenkeeper note paper,780x120,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+logo_rival_meridian,UI,Rival company logo: meridian,256x256,1,1,PNG and SVG,MVP,,Code drawn vector (SVG/PDF)
+logo_rival_hollingworth,UI,Rival company logo: hollingworth,256x256,1,1,PNG and SVG,MVP,,Code drawn vector (SVG/PDF)
+logo_rival_granite,UI,Rival company logo: granite,256x256,1,1,PNG and SVG,MVP,,Code drawn vector (SVG/PDF)
+badge_bought,UI,Milestone badge: bought,128x128,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+badge_opened,UI,Milestone badge: opened,128x128,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+badge_profit,UI,Milestone badge: profit,128x128,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+badge_stars4,UI,Milestone badge: stars4,128x128,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+badge_three,UI,Milestone badge: three,128x128,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+badge_county,UI,Milestone badge: county,128x128,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+badge_regional,UI,Milestone badge: regional,128x128,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+badge_champ,UI,Milestone badge: champ,128x128,1,1,PNG,Launch,,Code drawn vector (SVG/PDF)
+card_challenge_brink,UI,Challenge card illustration: brink,600x300,1,1,PNG,MVP,,Code drawn vector (SVG/PDF)
+card_challenge_members,UI,Challenge card illustration: members,600x300,1,1,PNG,MVP,,Code drawn vector (SVG/PDF)
+card_challenge_belt,UI,Challenge card illustration: belt,600x300,1,1,PNG,MVP,,Code drawn vector (SVG/PDF)
+card_challenge_tide,UI,Challenge card illustration: tide,600x300,1,1,PNG,MVP,,Code drawn vector (SVG/PDF)
+card_challenge_shoestring,UI,Challenge card illustration: shoestring,600x300,1,1,PNG,MVP,,Code drawn vector (SVG/PDF)
+trophy_championship,UI,"The Championship trophy (original design, not the Claret Jug)",256x320,1,1,PNG,MVP,,Code drawn vector (SVG/PDF)
+portrait_percy,Portraits,"Percy Hollis, commentator. Older, warm, twinkly. Waxed field jacket over a Fair Isle jumper, tweed flat cap, half moon spectacles, a furled umbrella and a hip flask; headset worn over the cap. No sheepskin coat. Must not resemble any real broadcaster",256x256,1,3,PNG,MVP,"Percy: neutral, amused, appalled. Flat illustrated style, not photoreal","Code drawn vector (SVG), rendered to PNG"
+portrait_fenella,Portraits,"Fenella Ashcombe, golf critic",256x256,1,1,PNG,Launch,"Flat illustrated style, not photoreal","Code drawn vector (SVG), rendered to PNG"
+portrait_auctioneer,Portraits,Auctioneer at the rostrum,256x256,1,1,PNG,MVP,"Flat illustrated style, not photoreal","Code drawn vector (SVG), rendered to PNG"
+portrait_greenkeeper_head,Portraits,Head greenkeeper,256x256,1,1,PNG,Launch,"Flat illustrated style, not photoreal","Code drawn vector (SVG), rendered to PNG"
+portrait_committee_chair,Portraits,Committee chair in club blazer,256x256,1,1,PNG,Launch,"Flat illustrated style, not photoreal","Code drawn vector (SVG), rendered to PNG"
+portrait_owner_meridian,Portraits,Meridian Capital front man,256x256,1,1,PNG,Launch,"Flat illustrated style, not photoreal","Code drawn vector (SVG), rendered to PNG"
+portrait_owner_hollingworth,Portraits,Hollingworth Estates laird,256x256,1,1,PNG,Launch,"Flat illustrated style, not photoreal","Code drawn vector (SVG), rendered to PNG"
+portrait_owner_granite,Portraits,Granite Leisure boss,256x256,1,1,PNG,Launch,"Flat illustrated style, not photoreal","Code drawn vector (SVG), rendered to PNG"
+mus_theme,Audio: music,"Main theme, warm British, brass and strings, light humour",90s loop,1,1,"AAC/M4A 48kHz, loop points marked",MVP,,"Composed by Claude as MIDI, rendered with a free licensed SoundFont"
+mus_map,Audio: music,"Map / empire music, gentle and pastoral",2 to 3 min loop,1,1,"AAC/M4A 48kHz, loop points marked",MVP,,"Composed by Claude as MIDI, rendered with a free licensed SoundFont"
+mus_course_links,Audio: music,"Course ambience music, links",2 to 3 min loop,1,1,"AAC/M4A 48kHz, loop points marked",MVP,,"Composed by Claude as MIDI, rendered with a free licensed SoundFont"
+mus_course_inland,Audio: music,"Course ambience music, parkland/heath/moor",2 to 3 min loop,1,1,"AAC/M4A 48kHz, loop points marked",MVP,,"Composed by Claude as MIDI, rendered with a free licensed SoundFont"
+mus_auction,Audio: music,"Live auction tension, builds with going once / twice",60s loop with 3 intensity stems,1,1,"AAC/M4A 48kHz, loop points marked",MVP,,"Composed by Claude as MIDI, rendered with a free licensed SoundFont"
+mus_championship,Audio: music,Championship day fanfare and bed,2 min,1,1,"AAC/M4A 48kHz, loop points marked",Launch,,"Composed by Claude as MIDI, rendered with a free licensed SoundFont"
+mus_win,Audio: music,Challenge complete sting,5s,1,1,"AAC/M4A 48kHz, loop points marked",Launch,,"Composed by Claude as MIDI, rendered with a free licensed SoundFont"
+mus_lose,Audio: music,Out of time sting,5s,1,1,"AAC/M4A 48kHz, loop points marked",Launch,,"Composed by Claude as MIDI, rendered with a free licensed SoundFont"
+amb_birdsong,Audio: ambience,Countryside birdsong,60s seamless loop,1,1,AAC/M4A,MVP,,"Synthesised noise beds by script (optional upgrade: CC0 recordings, free)"
+amb_sea,Audio: ambience,Waves on the shore,60s seamless loop,1,1,AAC/M4A,MVP,,"Synthesised noise beds by script (optional upgrade: CC0 recordings, free)"
+amb_wind,Audio: ambience,Wind across dunes,60s seamless loop,1,1,AAC/M4A,MVP,,"Synthesised noise beds by script (optional upgrade: CC0 recordings, free)"
+amb_rain,Audio: ambience,Rain,60s seamless loop,1,1,AAC/M4A,MVP,,"Synthesised noise beds by script (optional upgrade: CC0 recordings, free)"
+amb_storm,Audio: ambience,Storm with heavy surf,60s seamless loop,1,1,AAC/M4A,MVP,,"Synthesised noise beds by script (optional upgrade: CC0 recordings, free)"
+amb_crowd,Audio: ambience,Distant tournament crowd murmur,60s seamless loop,1,1,AAC/M4A,MVP,,"Synthesised noise beds by script (optional upgrade: CC0 recordings, free)"
+amb_clubhouse,Audio: ambience,Clubhouse bar chatter,60s seamless loop,1,1,AAC/M4A,MVP,,"Synthesised noise beds by script (optional upgrade: CC0 recordings, free)"
+amb_auction_room,Audio: ambience,Auction room murmur,60s seamless loop,1,1,AAC/M4A,MVP,,"Synthesised noise beds by script (optional upgrade: CC0 recordings, free)"
+sfx_drive,Audio: SFX,Driver strike,short,1,4,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_iron,Audio: SFX,Iron strike,short,1,4,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_wedge,Audio: SFX,Wedge / chip,short,1,3,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_putt,Audio: SFX,Putter strike,short,1,3,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_cup,Audio: SFX,Ball drops in cup,short,1,2,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_splash,Audio: SFX,Ball in water,short,1,3,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_sand,Audio: SFX,Ball into bunker,short,1,2,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_trees,Audio: SFX,Ball clattering through trees,short,1,3,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_applause_polite,Audio: SFX,"Polite applause, small group",short,1,3,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_applause_big,Audio: SFX,Big crowd roar,short,1,2,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_gasp,Audio: SFX,Crowd gasp / groan,short,1,2,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_gavel,Audio: SFX,Auctioneer gavel,short,1,2,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_till,Audio: SFX,Cash till,short,1,2,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_mail,Audio: SFX,New mail arrives,short,1,1,"WAV 48kHz source, shipped as CAF/M4A",Launch,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_ui_tap,Audio: SFX,UI tap,short,1,3,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_ui_confirm,Audio: SFX,UI confirm,short,1,1,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_ui_error,Audio: SFX,UI error,short,1,1,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_build_paint,Audio: SFX,Laying turf / digging,short,1,3,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_construction,Audio: SFX,Building upgrade,short,1,2,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_mower,Audio: SFX,Mower pass,short,1,1,"WAV 48kHz source, shipped as CAF/M4A",Launch,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_footsteps,Audio: SFX,Footsteps on grass and gravel,short,1,6,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_storm_hit,Audio: SFX,Storm surge crash,short,1,2,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_buggy,Audio: SFX,Golf buggy hum,short,1,1,"WAV 48kHz source, shipped as CAF/M4A",Launch,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+sfx_flag,Audio: SFX,Flag flapping,short,1,2,"WAV 48kHz source, shipped as CAF/M4A",MVP,,"Synthesised by script (optional upgrade: CC0 recordings, free)"
+vo_percy,Audio: voice,"Percy Hollis voiced lines, every commentary line plus variants",approx 400 lines,1,1,"WAV 48kHz mono, one file per line, id matches script",Cut,Percy is text only. On device speech synthesis sounds robotic and would undercut him,Cut
+vo_auctioneer,Audio: voice,"Auctioneer patter: openings, bids, going once/twice, sold, withdrawn",approx 40 lines,1,1,WAV,Cut,Percy is text only. On device speech synthesis sounds robotic and would undercut him,Cut
+mkt_store_iphone_69,Marketing,App Store screenshots store_iphone_69,1320x2868,1,6,PNG,Launch,Captured from the game with framing art,"Captured from the game, framed in code"
+mkt_store_iphone_65,Marketing,App Store screenshots store_iphone_65,1284x2778,1,6,PNG,Launch,Captured from the game with framing art,"Captured from the game, framed in code"
+mkt_store_ipad_13,Marketing,App Store screenshots store_ipad_13,2064x2752,1,6,PNG,Launch,Captured from the game with framing art,"Captured from the game, framed in code"
+mkt_preview_video,Marketing,"App Store preview video, 15 to 30s, Percy clips",886x1920,1,1,MP4/H.264,Launch,,"Captured from the game, framed in code"
+mkt_arcade_pitch,Marketing,Key art for Apple Arcade pitch deck,3840x2160,1,1,PNG,Launch,,"Captured from the game, framed in code"

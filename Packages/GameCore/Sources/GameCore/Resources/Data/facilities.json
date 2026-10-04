@@ -1,0 +1,40 @@
+[
+  {
+    "id": "club",
+    "name": "Clubhouse",
+    "levels": ["Portacabin", "Clubhouse", "Clubhouse with restaurant", "Grand clubhouse"],
+    "costs": [0, 25000, 60000, 150000],
+    "effect": "Bar takings and reputation",
+    "barMultiplier": [0.6, 1.0, 1.5, 2.2]
+  },
+  {
+    "id": "shop",
+    "name": "Pro shop",
+    "levels": ["None", "Pro shop", "Flagship pro shop"],
+    "costs": [0, 15000, 40000],
+    "effect": "Extra spend every round",
+    "spendBonus": [0, 6, 14]
+  },
+  {
+    "id": "range",
+    "name": "Practice range",
+    "levels": ["None", "Driving range"],
+    "costs": [0, 30000],
+    "effect": "More golfers and better reviews"
+  },
+  {
+    "id": "staff",
+    "name": "Greenkeepers",
+    "levels": ["Skeleton crew", "Full team", "Championship team"],
+    "costs": [0, 0, 0],
+    "effect": "Wages each day; faster condition recovery"
+  },
+  {
+    "id": "sea",
+    "name": "Sea defences",
+    "levels": ["None", "Rock armour", "Sea wall"],
+    "costs": [0, 40000, 120000],
+    "effect": "Halves or stops storm erosion",
+    "linksOnly": true
+  }
+]

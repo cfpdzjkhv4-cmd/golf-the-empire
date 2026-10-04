@@ -1,0 +1,72 @@
+[
+  {
+    "id": "society",
+    "name": "Society day",
+    "blurb": "A local society books the whole course for the day.",
+    "pay": 3000,
+    "payScalesWithCourse": true,
+    "reputation": 0.05,
+    "cooldownDays": 5,
+    "requirements": [
+      { "kind": "finished" },
+      { "kind": "reputation", "value": 2.5 }
+    ]
+  },
+  {
+    "id": "county",
+    "name": "County Amateur",
+    "blurb": "The county's best amateurs. A proper feather in the cap.",
+    "pay": 20000,
+    "reputation": 0.25,
+    "cooldownDays": 20,
+    "requirements": [
+      { "kind": "holes", "value": 18 },
+      { "kind": "reputation", "value": 3.5 },
+      { "kind": "condition", "value": 70 },
+      { "kind": "clubhouse", "value": 1 },
+      { "kind": "finished" }
+    ]
+  },
+  {
+    "id": "regional",
+    "name": "Regional Pro Am",
+    "blurb": "Touring pros and paying amateurs. TV cameras, sort of.",
+    "pay": 75000,
+    "reputation": 0.35,
+    "cooldownDays": 30,
+    "requirements": [
+      { "kind": "holes", "value": 18 },
+      { "kind": "reputation", "value": 4.0 },
+      { "kind": "design", "value": 6.5 },
+      { "kind": "yards", "value": 6000 },
+      { "kind": "clubhouse", "value": 2 },
+      { "kind": "range", "value": 1 },
+      { "kind": "hostedHere", "event": "county" },
+      { "kind": "finished" }
+    ]
+  },
+  {
+    "id": "champ",
+    "name": "The Championship",
+    "blurb": "The big one. The oldest championship in golf, held on links land.",
+    "pay": 750000,
+    "reputation": 1.0,
+    "cooldownDays": 9999,
+    "onRota": true,
+    "requirements": [
+      { "kind": "links" },
+      { "kind": "prestige", "value": 1.4 },
+      { "kind": "holes", "value": 18 },
+      { "kind": "reputation", "value": 4.5 },
+      { "kind": "design", "value": 7.5 },
+      { "kind": "yards", "value": 6500 },
+      { "kind": "clubhouse", "value": 3 },
+      { "kind": "shop", "value": 2 },
+      { "kind": "range", "value": 1 },
+      { "kind": "condition", "value": 85 },
+      { "kind": "members", "value": 200 },
+      { "kind": "hostedHere", "event": "regional" },
+      { "kind": "finished" }
+    ]
+  }
+]

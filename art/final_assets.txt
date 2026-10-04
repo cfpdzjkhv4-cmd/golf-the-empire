@@ -1,0 +1,1 @@
+# Manifest ids whose art is final. The placeholder generator leaves these alone.

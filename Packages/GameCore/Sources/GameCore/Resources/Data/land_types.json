@@ -1,0 +1,38 @@
+[
+  {
+    "id": "links",
+    "name": "Links",
+    "description": "Coastal links. Firm, fast and windswept, with hardly a tree in sight.",
+    "treeKind": "gorse",
+    "waterChancePerHole": 0.15,
+    "canHostChampionship": true,
+    "coastal": true
+  },
+  {
+    "id": "heathland",
+    "name": "Heathland",
+    "description": "Sandy heathland, pine and heather. Drains beautifully.",
+    "treeKind": "pine",
+    "waterChancePerHole": 0.20,
+    "canHostChampionship": false,
+    "coastal": false
+  },
+  {
+    "id": "parkland",
+    "name": "Parkland",
+    "description": "Mature parkland with big old trees and soft turf.",
+    "treeKind": "oak",
+    "waterChancePerHole": 0.40,
+    "canHostChampionship": false,
+    "coastal": false
+  },
+  {
+    "id": "moorland",
+    "name": "Moorland",
+    "description": "Upland moor. Rugged, wild and usually a bit damp.",
+    "treeKind": "scrub",
+    "waterChancePerHole": 0.35,
+    "canHostChampionship": false,
+    "coastal": false
+  }
+]

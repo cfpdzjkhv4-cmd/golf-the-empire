@@ -1,0 +1,134 @@
+{
+  "lines": {
+    "arrive": [
+      "{full} on the first tee. Plays off {hcp}, allegedly.",
+      "Next, {full}, off {hcp}, in a jumper you could see from the clubhouse.",
+      "{full} steps up, a {hcp} handicapper with great faith in a brand new driver.",
+      "And now {full}. Off {hcp}. The practice swing looked lovely, which is always a worry."
+    ],
+    "nexthole": [
+      "On to the {n}. {yd} yards, par {p}.",
+      "The {n} now, a par {p} of {yd} yards.",
+      "To the {n}. Par {p}, {yd} yards, and a stiff breeze, I'm told.",
+      "The {n}. {yd} yards. Par {p}. Deep breaths."
+    ],
+    "fairway": [
+      "Right down the middle. Nothing to see here, which is rather the point.",
+      "Lovely. That's found the short stuff.",
+      "Fairway. The greenkeeper will be thrilled someone is using it.",
+      "Sensible golf. Dull, but sensible.",
+      "On the fairway, and a quiet nod of satisfaction."
+    ],
+    "rough": [
+      "Into the rough. Not a disaster, not a picnic either.",
+      "That's in the long grass. Bring a sandwich.",
+      "A touch wayward. The rough here has swallowed better players.",
+      "Into the thick stuff, where good scores go to think things over."
+    ],
+    "bunker": [
+      "Oh, that's found the sand. Somebody's having a day at the beach.",
+      "Bunker. From up here it looks like a fried egg.",
+      "Into the trap. You can almost hear the sigh.",
+      "Sand. The architect will be quietly delighted."
+    ],
+    "water": [
+      "Oh dear. Splash. One for the fish.",
+      "In the water. Penalty stroke and a long walk to the drop.",
+      "Wet. Very wet. The ducks have scattered.",
+      "Gone in the drink. Character building, I believe they call it."
+    ],
+    "trees": [
+      "Clattered the trees. Somebody check on the pigeons.",
+      "Into the timber. It's come down somewhere, I think.",
+      "Trees. Forty years in this game and I've never seen one move out of the way.",
+      "Woodland. Lovely for a walk, less so for a golf ball."
+    ],
+    "ob": [
+      "Out of bounds. That ball has left the property, possibly the county.",
+      "Over the fence. Stroke and distance, and a long face.",
+      "Oh, that's gone. Somebody's greenhouse may be in trouble."
+    ],
+    "green": [
+      "On the green. Now the real fun begins.",
+      "Putting surface found. Very tidy.",
+      "That's on. Lovely flight on it, too.",
+      "Safely on the dance floor."
+    ],
+    "putt_miss": [
+      "Just slid by. The hole moved, clearly.",
+      "Left it short. Never up, never in, as my old pro used to say, endlessly.",
+      "Burned the edge. So close.",
+      "Tickled past. Tap in to come, hopefully."
+    ],
+    "holed_putt": [
+      "In it goes.",
+      "Dead centre. Lovely stroke.",
+      "And it drops. Polite applause from the bench by the pro shop."
+    ],
+    "holed_long": [
+      "Would you believe it! Holed from there!",
+      "In! From miles away! Somebody buy that golfer a drink.",
+      "Good heavens, that's gone in. Pandemonium, in a very British sort of way."
+    ],
+    "ace": [
+      "A hole in one! Good heavens. The bar bill will be enormous.",
+      "An ace! I may need a little sit down."
+    ],
+    "eagle": [
+      "An eagle. I've seen everything now."
+    ],
+    "birdie": [
+      "Birdie. They'll be dining out on that for weeks.",
+      "A birdie, and a grin to go with it."
+    ],
+    "par": [
+      "Par. A good honest score.",
+      "Par. Nobody will write home about it, nobody's complaining either."
+    ],
+    "bogey": [
+      "Bogey. Could be worse. Often is.",
+      "A bogey. They'll blame the greens."
+    ],
+    "double": [
+      "Double bogey or worse. Best to move swiftly on.",
+      "Well. We'll draw a veil over that one."
+    ],
+    "pickup": [
+      "They've picked up. Probably the wisest decision of the day."
+    ],
+    "wx_sun": [
+      "Glorious morning. Not a cloud. The bar will do a roaring trade later.",
+      "Sunshine. Shirtsleeves weather, and the course is buzzing."
+    ],
+    "wx_cloud": [
+      "Grey skies, nothing worse. Perfectly decent golfing weather.",
+      "Overcast. The kind of day the British were built for."
+    ],
+    "wx_rain": [
+      "Rain. Proper rain. Only the truly committed are out today.",
+      "Wet one. The greenkeepers are looking at the sky and muttering."
+    ],
+    "wx_storm": [
+      "A proper storm. The sea is coming over the dunes and the flags have given up.",
+      "Storm. Nobody sensible is out, and the greenkeeper is watching the shoreline with a face like thunder."
+    ],
+    "wx_wind": [
+      "Blowing a gale. Anything off the tee could end up in the next parish.",
+      "Windy. The flags are standing straight out. Club up and pray."
+    ],
+    "roundend": [
+      "And that's the round. {total}, {rel}. Straight to the nineteenth.",
+      "Card signed. {total} shots, {rel}. They'll be telling the bar about it, at length.",
+      "That's their lot. {total}, {rel}. A day out, whatever the score."
+    ]
+  },
+  "column": [
+    "I once watched a man take eleven in a bunker and then thank the bunker. That's golf, really.",
+    "Somebody asked me what makes a great course. Good drainage and a decent bacon roll. Next question.",
+    "The wind is the finest golf architect who ever lived. Unpaid, unreliable and entirely unrepentant.",
+    "Members' committees are like weather fronts. You can see them coming and there is nothing whatsoever you can do.",
+    "Auctions are just golf with money. Everyone thinks they can go a bit further than they actually can.",
+    "There's no such thing as bad weather, only the wrong waterproofs and an empty car park.",
+    "The sea has been redesigning links courses for a thousand years. It has never once asked for planning permission."
+  ]
+}

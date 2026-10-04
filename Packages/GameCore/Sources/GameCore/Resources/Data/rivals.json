@@ -1,0 +1,56 @@
+[
+  {
+    "id": "meridian",
+    "name": "Meridian Capital",
+    "shortName": "Meridian",
+    "colour": "#6A55A8",
+    "blurb": "A cash rich consortium buying up the home counties. Pays over the odds for prestige.",
+    "startingCash": 1200000,
+    "bidMultiplier": [1.05, 1.40],
+    "targetReputation": 4.3,
+    "maxCourses": 5,
+    "startingPlots": ["harpenden"],
+    "wants": { "any": [
+      { "field": "wealth", "atLeast": 1.2 },
+      { "field": "prestige", "atLeast": 1.45 }
+    ] }
+  },
+  {
+    "id": "hollingworth",
+    "name": "Hollingworth Estates",
+    "shortName": "Hollingworth",
+    "colour": "#9A5B26",
+    "blurb": "Old money. Northern and Scottish clubs, and fiercely protective of their patch.",
+    "startingCash": 700000,
+    "bidMultiplier": [0.95, 1.25],
+    "targetReputation": 4.1,
+    "maxCourses": 4,
+    "startingPlots": ["irvine"],
+    "wants": { "any": [
+      { "field": "latitude", "atLeast": 54 },
+      { "all": [
+        { "field": "isLinks", "atLeast": 1 },
+        { "field": "prestige", "atLeast": 1.4 }
+      ] }
+    ] }
+  },
+  {
+    "id": "granite",
+    "name": "Granite Leisure",
+    "shortName": "Granite",
+    "colour": "#55636B",
+    "blurb": "A budget chain. Cheap nine holers and cheaper burgers.",
+    "startingCash": 400000,
+    "bidMultiplier": [0.90, 1.10],
+    "targetReputation": 3.0,
+    "maxCourses": 5,
+    "startingPlots": ["peak", "sutton"],
+    "wants": { "all": [
+      { "field": "guide", "atMost": 120000 },
+      { "any": [
+        { "field": "holes", "atMost": 9 },
+        { "field": "guide", "atMost": 80000 }
+      ] }
+    ] }
+  }
+]

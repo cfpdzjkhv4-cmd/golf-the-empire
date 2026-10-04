@@ -1,0 +1,2021 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Golf: The Empire, prototype 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Libre+Caslon+Text:ital@1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E4EAE1; --panel:#F6F8F3; --ink:#17283A; --muted:#5A6B61; --line:#C8D2C4;
+  --club:#245C37; --clubink:#FFFFFF; --flag:#F2C230; --booth:#17283A; --boothink:#F1F3EC; --warn:#B3261E;
+  --sea:#B5D2E4; --land:#EEF2E7; --coast:#8EAFC5; --mapink:#4A5A63;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1813; --panel:#17231C; --ink:#E5ECE6; --muted:#91A297; --line:#2A3A30;
+    --club:#5FA873; --clubink:#0F1813; --booth:#0A1220; --warn:#FF8A80;
+    --sea:#12283A; --land:#1E2C24; --coast:#2E4A5E; --mapink:#9FB0A6;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1813; --panel:#17231C; --ink:#E5ECE6; --muted:#91A297; --line:#2A3A30;
+  --club:#5FA873; --clubink:#0F1813; --booth:#0A1220; --warn:#FF8A80;
+  --sea:#12283A; --land:#1E2C24; --coast:#2E4A5E; --mapink:#9FB0A6;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{height:100%;margin:0;background:var(--bg);color:var(--ink);
+  font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:15px;line-height:1.35;
+  -webkit-tap-highlight-color:transparent;overflow:hidden}
+.app{height:100%;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:8px 12px;flex-wrap:wrap;background:var(--panel);border-bottom:1px solid var(--line)}
+header h1{font-size:16px;font-weight:700;margin:0;margin-right:auto;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;min-width:0}
+header h1 span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat{font-size:14px;color:var(--muted);white-space:nowrap}
+.stat b{color:var(--ink);font-weight:600}
+.stat.neg b{color:var(--warn)}
+.view{flex:1;min-height:0;display:flex;flex-direction:column}
+.view[hidden]{display:none}
+button{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:transparent;
+  border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+button.on,button.primary{background:var(--club);color:var(--clubink);border-color:var(--club)}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible{outline:2px solid var(--flag);outline-offset:2px}
+button.small{padding:4px 10px;font-size:13px}
+
+/* map */
+#mapView{position:relative;overflow:hidden;background:var(--sea)}
+#gb{width:100%;height:100%;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
+#gb .landp{fill:var(--land);stroke:var(--coast);stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+#gb .city{fill:var(--mapink)}
+#gb text{font-family:Archivo,"Helvetica Neue",Arial,sans-serif}
+#gb .ctext{fill:var(--mapink)}
+#gb .pin{cursor:pointer}
+#gb .pin .body{fill:#fff;stroke:#245C37;vector-effect:non-scaling-stroke;stroke-width:2}
+#gb .pin .dot{fill:#245C37}
+#gb .pin.owned .body{fill:#F2C230;stroke:#17283A}
+#gb .pin.owned .dot{fill:#17283A}
+#gb .pin.sel .body{stroke-width:3}
+#gb .plabel{font-weight:700;fill:var(--ink);paint-order:stroke;stroke:var(--land);stroke-width:3px;stroke-linejoin:round}
+.mapctl{position:absolute;display:flex;gap:6px;flex-direction:column}
+.mapctl button{background:var(--panel);width:40px;height:40px;padding:0;font-size:20px;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+#zoomCtl{right:12px;top:12px}
+#mineBtn{position:absolute;left:12px;top:12px;background:var(--panel);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.legend{position:absolute;left:12px;top:56px;font-size:12px;color:var(--mapink);line-height:1.6}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.sheet{position:absolute;left:8px;right:8px;bottom:8px;background:var(--panel);border-radius:12px;padding:14px 16px;
+  box-shadow:0 8px 28px rgba(0,0,0,.28);max-width:460px;margin:0 auto;max-height:72%;overflow:auto}
+.sheet[hidden]{display:none}
+.sheet h2{font-size:20px;margin:0;letter-spacing:-.01em}
+.sheet .area{color:var(--muted);margin:2px 0 8px}
+.sheet .price{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:6px 0}
+.sheet .desc{margin:0 0 10px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:14px;margin:0 0 12px}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;font-weight:600}
+.sheet .close{position:absolute;right:10px;top:10px}
+.mine{border-top:1px solid var(--line);padding:9px 0;display:flex;align-items:center;gap:10px}
+.mine:first-of-type{border-top:0}
+.mine div{flex:1;min-width:0}
+.mine small{color:var(--muted);display:block}
+
+/* course */
+.holes{display:flex;gap:5px;overflow-x:auto;padding:8px 10px 2px;scrollbar-width:none;flex:none}
+.holes::-webkit-scrollbar{display:none}
+.holes button{display:flex;flex-direction:column;align-items:center;padding:4px 9px;border-radius:8px;min-width:44px;line-height:1.15}
+.holes button small{font-size:11px;font-weight:400;opacity:.8}
+.holes button.empty{border-style:dashed}
+.cmain{flex:1;min-height:0;display:flex;flex-direction:column}
+#mapwrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:6px 10px 0}
+canvas{display:block;border-radius:6px;touch-action:none;box-shadow:0 0 0 1px var(--line)}
+aside{flex:none;display:flex;flex-direction:column}
+.booth{background:var(--booth);color:var(--boothink);margin:8px 10px 0;border-radius:6px;
+  padding:9px 14px 10px;border-left:4px solid var(--flag);min-height:80px}
+.booth small{display:block;font-size:12px;opacity:.65;margin-bottom:3px}
+.booth p{margin:0;font-family:"Libre Caslon Text",Georgia,serif;font-style:italic;font-size:16px;line-height:1.45}
+.booth .prev{font-size:13px;opacity:.5;margin-top:4px}
+.tabs{display:flex;gap:4px;padding:8px 10px 0}
+.tabs button{flex:1}
+.panel{background:var(--panel);margin:8px 10px 10px;border-radius:6px;padding:10px;box-shadow:0 0 0 1px var(--line);min-height:120px}
+.panel[hidden]{display:none}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tools{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.tools::-webkit-scrollbar{display:none}
+.tools button{display:flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.info{font-size:13px;color:var(--muted);margin:8px 2px}
+.info b{color:var(--ink);font-weight:600}
+.rev{border-top:1px solid var(--line);padding:7px 2px}
+.rev:first-child{border-top:0}
+.rev .stars{color:#C9971A;letter-spacing:1px}
+.rev q{display:block;font-family:"Libre Caslon Text",Georgia,serif;font-style:italic;font-size:14px;margin-top:2px}
+.reviews{max-height:170px;overflow-y:auto}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 60px);transform:translateX(-50%);
+  background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:999px;font-size:14px;
+  opacity:0;pointer-events:none;transition:opacity .2s;z-index:9;max-width:92%;text-align:center}
+#toast.show{opacity:1}
+
+.tabs button{padding:6px 4px;font-size:13px}
+#gb .pin.admin .body{fill:#E8604C;stroke:#7A1E12}
+#gb .pin.admin .dot{fill:#fff}
+#gb .pin.fresh .body{stroke:#C9971A}
+#ticker{position:absolute;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding:9px 14px;font-size:13px;
+  display:flex;gap:8px;align-items:center;cursor:pointer}
+#ticker b{color:var(--club);white-space:nowrap}
+#ticker span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet{bottom:46px}
+.legend{top:56px}
+.fac{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding:8px 2px}
+.fac:first-child{border-top:0}
+.fac div{flex:1;min-width:0;font-size:14px}
+.fac small{display:block;color:var(--muted);font-size:12px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--club)}
+.ev{border-top:1px solid var(--line);padding:9px 2px}
+.ev:first-child{border-top:0}
+.ev h3{font-size:15px;margin:0 0 2px;display:flex;justify-content:space-between;gap:8px}
+.ev ul{list-style:none;margin:4px 0 6px;padding:0;font-size:13px;color:var(--muted)}
+.ev li.ok{color:var(--club)}
+.ev li::before{content:"\2717  ";color:var(--warn)}
+.ev li.ok::before{content:"\2713  ";color:var(--club)}
+.career li{font-size:14px;color:var(--muted)}
+.scroll{max-height:230px;overflow-y:auto}
+@media (min-width:760px){.scroll{max-height:none}}
+@media (min-width:760px){
+  .cmain{flex-direction:row}
+  #mapwrap{padding:6px 0 12px 14px}
+  aside{width:370px;overflow-y:auto}
+  .reviews{max-height:none}
+}
+
+.badge{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--warn);color:#fff;font-size:11px;line-height:18px;text-align:center;margin-left:2px}
+.badge[hidden]{display:none}
+#goal{display:flex;gap:8px;align-items:center;padding:6px 12px;background:var(--booth);color:var(--boothink);font-size:13px;cursor:pointer;border-bottom:2px solid var(--flag)}
+#goal[hidden]{display:none}
+#goal b{white-space:nowrap}
+#goal span{opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#modal{position:fixed;inset:0;background:rgba(8,18,12,.55);display:flex;align-items:center;justify-content:center;z-index:20;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 10px calc(env(safe-area-inset-bottom,0px) + 12px)}
+#modal[hidden]{display:none}
+#modalBox{background:var(--panel);border-radius:14px;width:100%;max-width:520px;max-height:100%;overflow:auto;padding:16px 16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.mhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.mhead h2{margin:0;font-size:20px}
+.mailrow{display:flex;flex-direction:column;align-items:stretch;text-align:left;width:100%;border-radius:10px;padding:9px 12px;margin-top:6px;white-space:normal;font-weight:400}
+.mailrow .mfrom{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.mailrow .mtitle{font-size:15px;margin-top:1px}
+.mailrow.unread{border-color:var(--club);box-shadow:inset 3px 0 0 var(--club)}
+.mailrow.unread .mtitle{font-weight:700}
+.mail>small{color:var(--muted)}
+.mail h2{font-family:"Libre Caslon Text",Georgia,serif;font-style:italic;font-size:22px;line-height:1.25;margin:4px 0 8px;font-weight:400}
+.mail h4{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--club);margin:16px 0 4px}
+.mail p{margin:0 0 9px}
+.mail .kick,.mail .byline{color:var(--muted);font-size:13px}
+.mail .score{font-size:24px;font-weight:700;color:var(--club)}
+.percy{font-family:"Libre Caslon Text",Georgia,serif;font-style:italic}
+.opp{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding:8px 0}
+.opp div{flex:1;min-width:0}
+.opp small{display:block;color:var(--muted)}
+.start{text-align:center;display:flex;flex-direction:column;gap:9px}
+.start .hero{width:100%;height:auto;border-radius:10px}
+.start h1{font-family:"Libre Caslon Text",Georgia,serif;font-style:italic;font-weight:400;font-size:34px;margin:4px 0 0;letter-spacing:-.01em}
+.start .sub{color:var(--muted);margin:0 0 4px}
+button.big{display:flex;flex-direction:column;align-items:center;padding:11px 14px;border-radius:12px;font-size:16px;white-space:normal}
+button.big small{font-weight:400;font-size:13px;opacity:.8;margin-top:2px}
+.scen{border-top:1px solid var(--line);padding:10px 0}
+.scen h3{display:flex;justify-content:space-between;gap:8px;margin:0 0 4px;font-size:16px;align-items:baseline}
+.scen h3 small{color:var(--muted);font-weight:400;font-size:12px;white-space:nowrap}
+.scen p{margin:0 0 6px;font-size:14px}
+.offer{display:flex;align-items:center;gap:12px;margin:6px 0}
+.offer b{font-size:22px;min-width:120px;text-align:center}
+.offer button{width:40px;height:40px;padding:0;font-size:20px}
+.auc h2{margin:2px 0 4px}
+.auc>small{color:var(--muted)}
+.aucbid{background:var(--booth);color:var(--boothink);border-radius:10px;padding:12px;margin:8px 0;text-align:center}
+.aucbid span{display:block;font-size:32px;font-weight:700;letter-spacing:-.02em}
+.aucbid small{opacity:.75}
+.gavel{text-align:center;font-weight:700;color:var(--warn);font-size:18px;min-height:24px;text-transform:uppercase;letter-spacing:.08em}
+.alog{min-height:120px}
+.alog p{margin:4px 0;font-family:"Libre Caslon Text",Georgia,serif;font-style:italic}
+.alog p.old{opacity:.5;font-size:13px}
+.abtns{display:flex;gap:8px;flex-wrap:wrap}
+.abtns .big1{flex:1;padding:12px;font-size:16px}
+#gb .pin.rival .dot{fill:#fff}
+#gb .pin.rival .body{stroke:#fff}
+#gb .pin.live .body{stroke:#C9971A;stroke-width:3}
+.legend{background:color-mix(in srgb,var(--sea) 70%,transparent);border-radius:6px;padding:2px 6px}
+header{gap:8px;padding:7px 10px}
+@media (max-width:759px){
+  .stat{font-size:13px}
+  #mapwrap{flex:0 0 58%;min-height:0}
+  aside{flex:1 1 0;min-height:0;overflow-y:auto}
+  .booth{min-height:0;padding:7px 12px 8px}
+  .booth p{font-size:15px}
+  .booth .prev{display:none}
+  .scroll{max-height:none}
+}
+#speed.held{opacity:.6;border-style:dashed}
+
+.hcard{display:flex;gap:10px;align-items:flex-start;margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.hrate{flex:none;width:46px;height:46px;border-radius:10px;color:#fff;font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center}
+.hbody{min-width:0}
+.hbody small{display:block;color:var(--muted);margin-top:4px;font-size:12px}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.chip{font-size:11px;padding:2px 7px;border-radius:9px;background:color-mix(in srgb,var(--club) 15%,transparent);color:var(--club);font-weight:600}
+.chip.bad{background:color-mix(in srgb,var(--warn) 15%,transparent);color:var(--warn)}
+.chip.sig{background:#B8860B;color:#fff}
+.holes button i.hs{display:block;font-style:normal;font-weight:700;font-size:11px}
+.books h2{margin:0 0 6px}
+.books table{width:100%;border-collapse:collapse;font-size:14px}
+.books td{padding:3px 0}
+.books td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.books tr.sec td{padding-top:10px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--club);font-weight:700}
+.books tr.tot td{border-top:1px solid var(--line);font-weight:700}
+.books tr.net td{border-top:2px solid var(--ink);font-weight:700;font-size:16px;padding-top:6px}
+.up{color:#2E7D4F}.down{color:var(--warn)}
+.books h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--club);margin:14px 0 4px}
+.bc{display:flex;gap:8px;align-items:center;border-top:1px solid var(--line);padding:6px 0}
+.bc div{flex:1;min-width:0}.bc small{display:block;color:var(--muted)}.bc span{font-weight:700}
+.auto{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin:12px 0 8px}
+.books .big{width:100%}
+.sell{border-top:1px solid var(--line);margin-top:12px;padding-top:8px}
+.sell h3{margin:0 0 4px;font-size:15px}
+#gb .pin.private .body{fill:#2B3A55;stroke:#C9971A;stroke-width:2}
+#gb .pin.private .dot{fill:#C9971A}
+#gb .pin.legend .body{stroke:#C9971A;stroke-width:2.5}
+@media (prefers-reduced-motion: reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1><button id="back" class="small" hidden>Map</button><span id="title">Golf: The Empire</span></h1>
+    <span class="stat" id="sCash">Cash <b>£200,000</b></span>
+    <span class="stat"><b id="sDay">Day 1, 07:00</b></span>
+    <button id="speed" class="small">1x</button>
+    <button id="inboxBtn" class="small" aria-label="Inbox">&#9993;<span id="inboxN" class="badge" hidden></span></button>
+  </header>
+  <div id="goal" hidden></div>
+
+  <section class="view" id="mapView">
+    <svg id="gb" xmlns="http://www.w3.org/2000/svg" aria-label="Map of Great Britain with land for sale"></svg>
+    <button id="mineBtn" class="small">My courses</button>
+    <div class="legend"><div><i style="background:#fff;box-shadow:inset 0 0 0 2px #245C37"></i>For sale</div><div><i style="background:#fff;box-shadow:inset 0 0 0 2px #C9971A"></i>Live auction</div><div><i style="background:#E8604C"></i>Administration</div><div><i style="background:#F2C230;box-shadow:inset 0 0 0 2px #17283A"></i>Yours</div><div><i style="background:linear-gradient(90deg,#6A55A8 33%,#9A5B26 33% 66%,#55636B 66%)"></i>Rivals</div><div><i style="background:#2B3A55;box-shadow:inset 0 0 0 2px #C9971A"></i>Legendary</div></div>
+    <div class="mapctl" id="zoomCtl"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">&minus;</button></div>
+    <div class="sheet" id="sheet" hidden></div>
+    <div id="ticker"><b>Golf Gazette</b><span id="tickText">Land for sale across Britain. Tap a pin.</span></div>
+  </section>
+
+  <section class="view" id="courseView" hidden>
+    <div class="holes" id="holes"></div>
+    <div class="cmain">
+      <div id="mapwrap"><canvas id="map" aria-label="Hole layout"></canvas></div>
+      <aside>
+        <div class="booth" aria-live="polite">
+          <small>Percy Hollis, on commentary</small>
+          <p id="line"></p>
+          <p class="prev" id="prev"></p>
+        </div>
+        <div class="tabs">
+          <button data-tab="build" class="on">Build</button>
+          <button data-tab="run">Run</button>
+          <button data-tab="club">Club</button>
+          <button data-tab="events">Events</button>
+          <button data-tab="reviews">Reviews</button>
+        </div>
+        <div class="panel" id="pBuild">
+          <div class="tools" id="tools"></div>
+          <div class="info" id="buildInfo"></div>
+          <div class="row">
+            <button id="auto">Auto layout this hole</button>
+            <button id="autoAll">Auto layout empty holes</button>
+            <button id="brush">Brush: small</button>
+            <button id="clearHole">Clear hole</button>
+          </div>
+        </div>
+        <div class="panel" id="pRun" hidden>
+          <div class="row">
+            <button id="openBtn" class="primary">Open course</button>
+            <button id="watchBtn">Watch a round</button>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <span class="stat">Green fee <b id="fee">£25</b></span>
+            <button id="feeDown" class="small">Lower</button>
+            <button id="feeUp" class="small">Raise</button>
+          </div>
+          <div class="info" id="runInfo"></div>
+        </div>
+        <div class="panel" id="pClub" hidden><div class="scroll" id="clubList"></div></div>
+        <div class="panel" id="pEvents" hidden><div class="scroll" id="evList"></div></div>
+        <div class="panel" id="pReviews" hidden>
+          <div class="info" id="revSummary"></div>
+          <div class="reviews" id="revList"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</div>
+<div id="toast"></div>
+<div id="modal" hidden><div id="modalBox"></div></div>
+<script>
+(function(){
+const COLS=16, ROWS=32, YPC=17, KEY='links-tycoon-v2';
+const T={ROUGH:0,FAIRWAY:1,GREEN:2,BUNKER:3,WATER:4,TREES:5,TEE:6};const SEA=7;
+const COST={0:5,1:15,2:60,3:30,4:80,5:20,6:150};
+const TOOLS=[
+  {id:'fairway',t:1,name:'Fairway'},{id:'green',t:2,name:'Green'},{id:'bunker',t:3,name:'Bunker'},
+  {id:'water',t:4,name:'Water'},{id:'trees',t:5,name:'Trees'},{id:'rough',t:0,name:'Clear to rough'},
+  {id:'tee',t:6,name:'Tee'},{id:'pin',name:'Pin'}
+];
+const SWATCH={fairway:'#7AB754',green:'#A3D46F',bunker:'#E9D8A6',water:'#3B7BB2',trees:'#2D5A27',rough:'#4E8A3A',tee:'#FFFFFF',pin:'#F2C230'};
+const TERRAIN={
+  links:{tt:'gorse',name:'Links',desc:'Coastal links. Firm, fast and windswept, with hardly a tree in sight.',rough:'#93A65C',rough2:'#8A9D54',tree:'#5F6B2C',water:.15},
+  heathland:{tt:'pine',name:'Heathland',desc:'Sandy heathland, pine and heather. Drains beautifully.',rough:'#6C8046',rough2:'#647840',tree:'#22472A',water:.2},
+  parkland:{tt:'oak',name:'Parkland',desc:'Mature parkland with big old trees and soft turf.',rough:'#4E8A3A',rough2:'#4A8436',tree:'#2B5626',water:.4},
+  moorland:{tt:'scrub',name:'Moorland',desc:'Upland moor. Rugged, wild and usually a bit damp.',rough:'#6F7E4A',rough2:'#687744',tree:'#3D5530',water:.35}
+};
+const PLOTS=[
+ ['embo','Embo Links','Dornoch, Highlands',57.90,-3.99,'links',18,.6,1.6,1.5],
+ ['lossie','Moray Firth Shore','Lossiemouth, Moray',57.72,-3.30,'links',9,.65,1.8,1.25],
+ ['cruden','Bay of Cruden Dunes','Aberdeenshire',57.41,-1.86,'links',18,.7,2.2,1.4],
+ ['ochil','Ochil Hills Parkland','Auchterarder, Perthshire',56.29,-3.70,'parkland',18,1.0,2.8,1.2],
+ ['tummel','Tummel Moor','Pitlochry, Perthshire',56.70,-3.73,'moorland',9,.7,1.8,1.0],
+ ['crail','East Neuk Links','Crail, Fife',56.26,-2.63,'links',18,.85,3.0,1.6],
+ ['kintyre','Kintyre Links','Machrihanish, Argyll',55.43,-5.70,'links',18,.55,1.0,1.45],
+ ['irvine','Irvine Bay Links','Ayrshire coast',55.60,-4.69,'links',18,.75,3.5,1.5],
+ ['bamburgh','Castle View Links','Bamburgh, Northumberland',55.61,-1.72,'links',9,.8,1.6,1.3],
+ ['derwent','Derwent Fell','Keswick, Lake District',54.60,-3.13,'moorland',9,.85,2.0,1.05],
+ ['seascale','West Cumbria Links','Seascale, Cumbria',54.40,-3.47,'links',9,.6,1.4,1.2],
+ ['ilkley','Ilkley Moor Edge','West Yorkshire',53.92,-1.82,'moorland',18,.95,4.0,1.05],
+ ['harrogate','Stray Parkland','Harrogate, North Yorkshire',54.00,-1.54,'parkland',18,1.1,4.2,1.0],
+ ['sefton','Sefton Sandhills','Southport, Merseyside',53.62,-3.02,'links',18,.9,5.0,1.55],
+ ['peak','High Peak Moor','Buxton, Derbyshire',53.26,-1.91,'moorland',9,.85,3.2,1.0],
+ ['tatton','Tatton Edge Parkland','Knutsford, Cheshire',53.30,-2.37,'parkland',18,1.35,5.5,1.05],
+ ['harlech','Cardigan Bay Dunes','Harlech, Gwynedd',52.86,-4.10,'links',9,.65,1.2,1.3],
+ ['wash','The Wash Links','Hunstanton, Norfolk',52.95,0.50,'links',18,1.0,2.6,1.35],
+ ['sutton','Royal Town Parkland','Sutton Coldfield',52.57,-1.82,'parkland',18,1.1,6.0,1.0],
+ ['cotswold','Cotswold Ridge','Broadway, Worcestershire',52.04,-1.86,'parkland',9,1.45,3.0,1.05],
+ ['harpenden','Common Lane Parkland','Harpenden, Hertfordshire',51.82,-0.36,'parkland',9,1.55,5.5,1.0],
+ ['norwood','Norwood Ridge','South East London',51.42,-0.08,'parkland',9,1.65,7.0,.95],
+ ['chobham','Chobham Common Heath','Surrey',51.36,-0.60,'heathland',18,1.7,6.5,1.2],
+ ['pegwell','Pegwell Bay Links','Sandwich, Kent',51.28,1.36,'links',18,1.3,4.0,1.6],
+ ['downs','South Downs Parkland','Lewes, East Sussex',50.88,0.0,'parkland',9,1.3,3.5,1.0],
+ ['burrows','Braunton Burrows','North Devon coast',51.11,-4.21,'links',18,1.05,2.4,1.4],
+ ['camel','Camel Estuary Dunes','Rock, Cornwall',50.55,-4.91,'links',9,1.25,2.0,1.3],
+ ['nairn','Firthlands Links','Nairn, Highlands',57.59,-3.87,'links',18,.85,1.6,1.4],
+ ['brora','Brora Sands','Brora, Sutherland',58.01,-3.85,'links',9,.6,1.2,1.2],
+ ['montrose','Basin Links','Montrose, Angus',56.71,-2.47,'links',18,.75,2.0,1.35],
+ ['berwick','Bass Rock Links','North Berwick, East Lothian',56.06,-2.72,'links',9,1.3,3.0,1.45],
+ ['prestwick','Pow Burn Links','Prestwick, Ayrshire',55.50,-4.61,'links',18,.85,3.2,1.4],
+ ['silloth','Solway Dunes','Silloth, Cumbria',54.87,-3.39,'links',9,.65,1.4,1.2],
+ ['saltburn','Huntcliff Links','Saltburn, North Yorkshire',54.58,-.97,'links',9,.8,2.6,1.05],
+ ['formby','Pinewood Sandhills','Formby, Merseyside',53.56,-3.07,'links',18,1.15,4.6,1.45],
+ ['lytham','Ribble Links','Lytham, Lancashire',53.74,-2.96,'links',18,1.1,4.2,1.4],
+ ['hoylake','Dee Estuary Links','Hoylake, Wirral',53.39,-3.18,'links',18,1.15,4.4,1.45],
+ ['aberdovey','Dyfi Dunes','Aberdovey, Gwynedd',52.54,-4.05,'links',9,.8,1.4,1.25],
+ ['porthcawl','Rest Bay Links','Porthcawl, Glamorgan',51.48,-3.70,'links',18,.95,3.4,1.35],
+ ['saunton','Taw Sands','Saunton, Devon',51.12,-4.21,'links',18,1.15,2.2,1.35],
+ ['rye','Rother Marsh Links','Rye, East Sussex',50.94,.76,'links',18,1.5,4.0,1.45],
+ ['deal','Downs Shore Links','Deal, Kent',51.22,1.40,'links',9,1.35,3.6,1.3],
+ ['brancaster','Saltmarsh Links','Brancaster, Norfolk',52.97,.65,'links',9,1.4,2.0,1.3],
+ ['southwold','Blyth Heath Links','Southwold, Suffolk',52.33,1.68,'links',9,1.3,2.2,1.1],
+ ['walton','Tadworth Heath','Tadworth, Surrey',51.29,-.24,'heathland',18,1.8,6.2,1.35],
+ ['woking','Horsell Heath','Woking, Surrey',51.33,-.56,'heathland',18,1.75,6.4,1.3],
+ ['liphook','Wheatsheaf Common','Liphook, Hampshire',51.08,-.80,'heathland',9,1.5,4.0,1.15],
+ ['ashdown','Forest Row Heath','Ashdown Forest, East Sussex',51.08,.04,'heathland',18,1.55,4.4,1.25],
+ ['woodhall','Spa Woods Heath','Woodhall Spa, Lincolnshire',53.15,-.21,'heathland',18,.95,2.2,1.35],
+ ['ganton','Vale Heath','Ganton, North Yorkshire',54.18,-.52,'heathland',18,.9,2.0,1.35],
+ ['camberley','Frimley Heath','Camberley, Surrey',51.34,-.74,'heathland',9,1.6,5.4,1.1],
+ ['celtic','Usk Valley Parkland','Newport, Gwent',51.60,-2.93,'parkland',18,1.0,4.0,1.2],
+ ['meriden','Arden Oaks','Meriden, Warwickshire',52.43,-1.64,'parkland',18,1.25,6.0,1.15],
+ ['stokepoges','Manor Park','Stoke Poges, Buckinghamshire',51.55,-.59,'parkland',18,1.75,6.6,1.2],
+ ['grindon','Grindon Parkland','Billingham, County Durham',54.63,-1.37,'parkland',18,.9,4.2,1.05],
+ ['bath','Combe Down Park','Bath, Somerset',51.36,-2.35,'parkland',9,1.45,4.0,1.05],
+ ['chester','Dee Meadows','Chester, Cheshire',53.19,-2.89,'parkland',9,1.2,4.6,1.0],
+ ['pentland','Pentland Park','Ratho, Edinburgh',55.90,-3.37,'parkland',18,1.15,5.0,1.15],
+ ['lomond','Loch Shore Parkland','Balloch, Dunbartonshire',56.00,-4.58,'parkland',18,1.1,4.2,1.4],
+ ['sherwood','Sherwood Park','Nottingham',53.00,-1.15,'parkland',9,1.0,5.2,1.0],
+ ['hexham','Tyne Valley Moor','Hexham, Northumberland',54.97,-2.10,'moorland',9,.85,2.4,1.0],
+ ['dartmoor','Tor View Moor','Dartmoor, Devon',50.58,-3.92,'moorland',18,1.0,2.2,1.1],
+ ['brecon','Beacons Moor','Brecon, Powys',51.95,-3.39,'moorland',9,.7,1.6,1.0],
+ ['kendal','Kentmere Fell','Kendal, Cumbria',54.33,-2.75,'moorland',9,.85,1.8,1.05],
+ ['aviemore','Cairngorm Moor','Aviemore, Highlands',57.19,-3.83,'moorland',18,.7,1.4,1.1],
+ ['crieff','Strathearn Moor','Crieff, Perthshire',56.37,-3.84,'moorland',9,.9,1.8,1.1],
+ ['oldgrey','Old Grey Links','St Andrews, Fife',56.34,-2.80,'links',18,1.0,3.4,2.0,6000000],
+ ['wentwood','Wentwood','Virginia Water, Surrey',51.40,-.57,'heathland',18,1.9,7.0,1.8,5500000],
+ ['sunningvale','Sunningvale Heath','Sunningdale, Berkshire',51.39,-.63,'heathland',18,1.85,6.5,1.75,4500000],
+ ['glenaiglon','Glen Aiglon','Auchterarder, Perthshire',56.27,-3.76,'moorland',18,1.15,3.0,1.8,4200000],
+ ['lighthouse','Lighthouse Point Links','Girvan, Ayrshire',55.32,-4.84,'links',18,.9,2.4,1.95,4000000],
+ ['muirhaven','Muirhaven','Gullane, East Lothian',56.04,-2.85,'links',18,1.3,3.6,1.9,3800000],
+ ['birkmoor','Birkmoor Links','Southport, Merseyside',53.62,-3.03,'links',18,1.05,5.0,1.85,3500000],
+ ['carnock','Carnock Links','Carnoustie, Angus',56.50,-2.72,'links',18,.85,2.6,1.9,3200000],
+ ['stonar','Stonar Bay Links','Sandwich, Kent',51.28,1.35,'links',18,1.4,3.6,1.95,5800000],
+ ['breahill','Brea Hill Links','Rock, Cornwall',50.56,-4.92,'links',18,1.25,2.0,1.8,3000000],
+ ['swinford','Swinford Forest','Ascot, Berkshire',51.39,-.71,'heathland',18,1.95,6.0,1.8,4800000],
+ ['ansdell','Ansdell Links','Lytham St Annes, Lancashire',53.75,-3.0,'links',18,1.1,4.2,1.85,3600000],
+ ['brompton','Potter Brompton Heath','Ganton, North Yorkshire',54.19,-.50,'heathland',18,.95,2.0,1.8,2600000],
+ ['brooklands','Brooklands Heath','Weybridge, Surrey',51.36,-.47,'heathland',18,1.95,6.4,1.75,4400000],
+ ['fiveports','Five Ports Links','Deal, Kent',51.24,1.40,'links',18,1.35,3.4,1.8,3200000],
+ ['mereheath','Mere Heath','Walton on the Hill, Surrey',51.28,-.25,'heathland',18,1.85,6.0,1.75,4000000],
+ ['redrocks','Red Rocks Links','Hoylake, Wirral',53.38,-3.19,'links',18,1.15,4.4,1.9,4200000],
+ ['kirkstead','Kirkstead Heath','Woodhall Spa, Lincolnshire',53.14,-.22,'heathland',18,.95,2.2,1.8,2800000],
+ ['scolthead','Scolt Head Links','Brancaster, Norfolk',52.98,.66,'links',18,1.4,2.0,1.7,2500000],
+ ['freshfield','Freshfield Pines','Formby, Merseyside',53.57,-3.08,'links',18,1.15,4.6,1.75,3000000],
+ ['holywell','Kirkby Holywell','Nottinghamshire',53.09,-1.25,'heathland',18,1.0,4.4,1.7,2500000],
+ ['dornochfirth','Dornoch Firth Links','Dornoch, Highlands',57.88,-4.02,'links',18,.7,1.4,1.95,3800000],
+ ['marr','Marr Links','Troon, Ayrshire',55.53,-4.67,'links',18,.95,3.0,1.85,3600000],
+ ['cambo','Cambo Links','Kingsbarns, Fife',56.30,-2.65,'links',18,1.05,2.6,1.8,3200000],
+ ['donmouth','Don Mouth Links','Aberdeen',57.18,-2.08,'links',18,.95,3.4,1.8,3000000]
+].map(a=>({id:a[0],name:a[1],area:a[2],lat:a[3],lon:a[4],terrain:a[5],holes:a[6],wealth:a[7],demand:a[8],prestige:a[9],legend:!!a[10],lp:a[10]}));
+const PL={};PLOTS.forEach(p=>{p.price=Math.round((p.holes===18?150000:70000)*Math.pow(p.wealth,1.8)*(.6+p.prestige*.4)/5000)*5000;if(p.legend)p.price=p.lp;PL[p.id]=p});
+const RESERVE=['crail','sefton','pegwell','burrows','ochil','wash','camel'];
+const EXTRA=5;
+const PARS9=[4,4,3,5,4,3,4,5,4], PARS18=[4,5,3,4,4,3,5,4,4,4,3,5,4,4,3,4,5,4];
+
+const L={
+  arrive:["{full} on the first tee. Plays off {hcp}, allegedly.","Next, {full}, off {hcp}, in a jumper you could see from the clubhouse.","{full} steps up, a {hcp} handicapper with great faith in a brand new driver.","And now {full}. Off {hcp}. The practice swing looked lovely, which is always a worry."],
+  nexthole:["On to the {n}. {yd} yards, par {p}.","The {n} now, a par {p} of {yd} yards.","To the {n}. Par {p}, {yd} yards, and a stiff breeze, I'm told.","The {n}. {yd} yards. Par {p}. Deep breaths."],
+  fairway:["Right down the middle. Nothing to see here, which is rather the point.","Lovely. That's found the short stuff.","Fairway. The greenkeeper will be thrilled someone is using it.","Sensible golf. Dull, but sensible.","On the fairway, and a quiet nod of satisfaction."],
+  rough:["Into the rough. Not a disaster, not a picnic either.","That's in the long grass. Bring a sandwich.","A touch wayward. The rough here has swallowed better players.","Into the thick stuff, where good scores go to think things over."],
+  bunker:["Oh, that's found the sand. Somebody's having a day at the beach.","Bunker. From up here it looks like a fried egg.","Into the trap. You can almost hear the sigh.","Sand. The architect will be quietly delighted."],
+  water:["Oh dear. Splash. One for the fish.","In the water. Penalty stroke and a long walk to the drop.","Wet. Very wet. The ducks have scattered.","Gone in the drink. Character building, I believe they call it."],
+  trees:["Clattered the trees. Somebody check on the pigeons.","Into the timber. It's come down somewhere, I think.","Trees. Forty years in this game and I've never seen one move out of the way.","Woodland. Lovely for a walk, less so for a golf ball."],
+  ob:["Out of bounds. That ball has left the property, possibly the county.","Over the fence. Stroke and distance, and a long face.","Oh, that's gone. Somebody's greenhouse may be in trouble."],
+  green:["On the green. Now the real fun begins.","Putting surface found. Very tidy.","That's on. Lovely flight on it, too.","Safely on the dance floor."],
+  putt_miss:["Just slid by. The hole moved, clearly.","Left it short. Never up, never in, as my old pro used to say, endlessly.","Burned the edge. So close.","Tickled past. Tap in to come, hopefully."],
+  holed_putt:["In it goes.","Dead centre. Lovely stroke.","And it drops. Polite applause from the bench by the pro shop."],
+  holed_long:["Would you believe it! Holed from there!","In! From miles away! Somebody buy that golfer a drink.","Good heavens, that's gone in. Pandemonium, in a very British sort of way."],
+  ace:["A hole in one! Good heavens. The bar bill will be enormous.","An ace! I may need a little sit down."],
+  eagle:["An eagle. I've seen everything now."],
+  birdie:["Birdie. They'll be dining out on that for weeks.","A birdie, and a grin to go with it."],
+  par:["Par. A good honest score.","Par. Nobody will write home about it, nobody's complaining either."],
+  bogey:["Bogey. Could be worse. Often is.","A bogey. They'll blame the greens."],
+  double:["Double bogey or worse. Best to move swiftly on.","Well. We'll draw a veil over that one."],
+  pickup:["They've picked up. Probably the wisest decision of the day."],
+  wx_sun:["Glorious morning. Not a cloud. The bar will do a roaring trade later.","Sunshine. Shirtsleeves weather, and the course is buzzing."],
+  wx_cloud:["Grey skies, nothing worse. Perfectly decent golfing weather.","Overcast. The kind of day the British were built for."],
+  wx_rain:["Rain. Proper rain. Only the truly committed are out today.","Wet one. The greenkeepers are looking at the sky and muttering."],
+  wx_storm:["A proper storm. The sea is coming over the dunes and the flags have given up.","Storm. Nobody sensible is out, and the greenkeeper is watching the shoreline with a face like thunder."],
+  wx_wind:["Blowing a gale. Anything off the tee could end up in the next parish.","Windy. The flags are standing straight out. Club up and pray."],
+  roundend:["And that's the round. {total}, {rel}. Straight to the nineteenth.","Card signed. {total} shots, {rel}. They'll be telling the bar about it, at length.","That's their lot. {total}, {rel}. A day out, whatever the score."]
+};
+const FIRST=["Graham","Sue","Rajesh","Fiona","Dougie","Priya","Clive","Margaret","Tom","Aisha","Nigel","Kate","Barry","Hannah","Colin","Bev","Ollie","Mei","Callum","Siobhan"];
+const LAST=["Pemberton","Okafor","Hargreaves","Lewis","McLeod","Shah","Whitlock","Fenwick","Doyle","Brennan","Ashworth","Patel","Garside","Kerr","Lindsay","Nwosu"];
+const ORD=n=>n+(n%100>=11&&n%100<=13?'th':['th','st','nd','rd'][n%10]||'th');
+
+const $=s=>document.querySelector(s);
+const cv=$('#map'), ctx=cv.getContext('2d');
+let cs=16, dpr=1, S, tool=TOOLS[0], brush=1;
+const R={view:'map',cid:null,hole:0,tab:'build',watch:null,painting:false,lastCell:'',lines:[],lastPick:{},sel:null};
+
+function rnd(a){return a[Math.floor(Math.random()*a.length)]}
+function ri(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function pick(key){const a=L[key];let s;do{s=rnd(a)}while(a.length>1&&s===R.lastPick[key]);R.lastPick[key]=s;return s}
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function idx(x,y){return y*COLS+x}
+function inb(x,y){return x>=0&&y>=0&&x<COLS&&y<ROWS}
+function center(c){return {x:c.x+.5,y:c.y+.5}}
+function distY(a,b){return Math.hypot(a.x-b.x,a.y-b.y)*YPC}
+function money(n){return (n<0?'-':'')+'£'+Math.abs(Math.round(n)).toLocaleString('en-GB')}
+function short(n){return n>=1e6?'£'+(n/1e6).toFixed(2).replace(/0$/,'')+'m':'£'+Math.round(n/1000)+'k'}
+function relText(r){return r===0?'level par':r>0?r+' over':(-r)+' under'}
+
+/* ---------- state ---------- */
+function newState(){return {v:5,gen:[],date0:todayISO(),auto:false,dayDone:false,led:null,mode:'career',scen:null,cash:200000,day:1,min:420,speed:1,courses:{},market:{sales:{},mult:{},fresh:{},nextNew:4,nextAdmin:10},news:[{day:1,t:'Land for sale across Britain. Cheap up north, eye watering down south.'}],career:{},rivals:{},rc:{},inbox:[],champNext:1,wk:{profit:0,log:[]},stormy:1}}
+function migrateCourse(C){
+  C.fac=C.fac||{club:0,shop:0,range:0,staff:1};if(C.cond===undefined)C.cond=85;C.wx=C.wx||'cloud';C.evDone=C.evDone||{};if(C.booked===undefined)C.booked=null;
+  C.fac.sea=C.fac.sea||0;C.mem=C.mem||{on:false,n:0,sub:0,mood:70,wait:0,band:3,cause:''};
+  C.today=Object.assign({rounds:0,rev:0,walked:0,memR:0,vis:0,mem:0},C.today||{});
+  if(!C.coast)C.coast=PL[C.plotId].terrain==='links'?coastFor(PL[C.plotId],C.holes.length):[];
+  if(!C.ero)C.ero=C.holes.map(()=>0);if(C.ero0===undefined)C.ero0=C.ero.reduce((a,b)=>a+b,0);
+  return C}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S,(k,v)=>k==='g'?v.join(''):k[0]==='_'?undefined:v))}catch(e){}
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);if(!raw)return null;
+    const s=JSON.parse(raw);if(!s||![2,3,4,5].includes(s.v))return null;registerGen(s.gen||[]);
+    for(const id in s.courses){const C=s.courses[id];if(!PL[C.plotId]){delete s.courses[id];continue}
+      C.holes.forEach(H=>{H.g=H.g.split('').map(Number)});migrateCourse(C)}
+    const n=newState();if(s.v===2){s.news=n.news;s.career={};for(const id in s.courses)s.career.bought=true}
+    if(s.v<4){const mult=(s.market&&s.market.mult)||{};s.market=n.market;s.market.mult=mult;s.mode='career';s._needWorld=true}
+    s.v=5;return Object.assign(n,s);
+  }catch(e){return null}
+}
+
+/* ---------- terrain & holes ---------- */
+function baseGrid(terrain){
+  const g=new Array(COLS*ROWS).fill(0);
+  const blob=(t,cx,cy,r,p)=>{for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){const d=Math.hypot(x-cx,y-cy);if(d<r&&Math.random()<p-d/r*p*.6)g[idx(x,y)]=t}};
+  const edgeX=()=>Math.random()<.5?ri(0,2):ri(13,15);
+  if(terrain==='links'){for(let k=0;k<5;k++)blob(T.TREES,edgeX(),ri(0,31),2,.6);for(let k=0;k<5;k++){const x=edgeX(),y=ri(0,31);g[idx(x,y)]=T.BUNKER}}
+  if(terrain==='heathland'){for(let k=0;k<7;k++)blob(T.TREES,Math.random()*COLS,Math.random()*ROWS,3.2,.8)}
+  if(terrain==='parkland'){for(let i=0;i<g.length;i++)if(Math.random()<.07)g[i]=T.TREES;for(let k=0;k<3;k++)blob(T.TREES,edgeX(),ri(0,31),2.5,.8)}
+  if(terrain==='moorland'){for(let i=0;i<g.length;i++)if(Math.random()<.025)g[i]=T.TREES;blob(T.WATER,edgeX(),ri(4,28),1.8,1)}
+  return g;
+}
+function newCourse(p){
+  const holes=[];for(let i=0;i<p.holes;i++)holes.push({g:baseGrid(p.terrain),tee:null,pin:null});
+  const C=migrateCourse({plotId:p.id,holes,open:false,fee:10,rep:2,reviews:[],rounds:0,best:null,today:{rounds:0,rev:0,walked:0},wx:rollWx(p)});
+  C.coast.forEach(i=>{C.ero[i]=1;for(let x=0;x<COLS;x++)C.holes[i].g[idx(x,0)]=SEA});C.ero0=C.ero.reduce((a,b)=>a+b,0);
+  C.fee=Math.max(5,Math.round(fairFee(C)/5)*5);
+  return C;
+}
+function genHole(par,terrain,old,lost){
+  lost=lost||0;const g=old.slice();
+  const set=(x,y,t)=>{if(inb(x,y)&&g[idx(x,y)]!==SEA)g[idx(x,y)]=t};
+  const len=Math.min(par===3?ri(8,12):par===4?ri(19,24):ri(27,29),28-lost);
+  const teeY=30, gy=teeY-len, side=Math.random()<.5?-1:1, amp=par===3?Math.random()*1.5:Math.random()*3.2;
+  const cxAt=y=>clamp(Math.round(8+side*amp*((teeY-y)/len)),3,12);
+  for(let i=0;i<g.length;i++)if(g[i]!==T.TREES&&g[i]!==T.WATER&&g[i]!==SEA)g[i]=T.ROUGH;
+  for(let y=gy-3;y<=teeY+1;y++){const cx=cxAt(y);for(let x=cx-3;x<=cx+3;x++){if(!inb(x,y))continue;const k=idx(x,y);if(g[k]===T.TREES&&(Math.abs(x-cx)<3||Math.random()<.5))g[k]=T.ROUGH;if(g[k]===T.WATER)g[k]=T.ROUGH}}
+  if(par>3){const w=ri(3,4);for(let y=gy+3;y<=teeY-4;y++){const cx=cxAt(y);for(let x=cx-Math.floor(w/2);x<cx-Math.floor(w/2)+w;x++)set(x,y,T.FAIRWAY)}}
+  else for(let y=gy+3;y<=gy+4;y++)for(let x=cxAt(y)-1;x<=cxAt(y)+1;x++)set(x,y,T.FAIRWAY);
+  const gx=cxAt(gy);
+  for(let y=gy-3;y<=gy+3;y++)for(let x=gx-3;x<=gx+3;x++)if(inb(x,y)&&g[idx(x,y)]!==SEA&&((x-gx)/2.3)**2+((y-gy)/1.9)**2<=1)g[idx(x,y)]=T.GREEN;
+  const nb=ri(1,2)+(terrain==='links'?1:0);
+  for(let k=0;k<nb;k++){const a=Math.random()*Math.PI*2;const bx=Math.round(gx+Math.cos(a)*3.3),by=Math.round(gy+Math.sin(a)*2.7);if(inb(bx,by)&&g[idx(bx,by)]!==T.GREEN){set(bx,by,T.BUNKER);if(Math.random()<.5){const bx2=bx+(Math.random()<.5?1:0),by2=by+(Math.random()<.5?0:1);if(inb(bx2,by2)&&g[idx(bx2,by2)]!==T.GREEN)set(bx2,by2,T.BUNKER)}}}
+  if(par>3&&Math.random()<.35){const fb=1;for(let k=0;k<fb;k++){const y=teeY-ri(13,17),cx=cxAt(y),x=cx+(Math.random()<.5?-3:2);set(x,y,T.BUNKER);if(Math.random()<.6)set(x,y+1,T.BUNKER)}}
+  if(false){
+    if(par===3){const y=gy+4;for(let x=gx-2;x<=gx+2;x++){set(x,y,T.WATER);set(x,y+1,T.WATER)}}
+    else{const yc=ri(gy+6,teeY-8),xs=cxAt(yc)-side*4;for(let y=yc-2;y<=yc+2;y++)for(let x=xs-1;x<=xs+1;x++)if(((x-xs)/1.6)**2+((y-yc)/2.4)**2<=1)set(x,y,T.WATER)}
+  }
+  set(8,teeY,T.TEE);
+  return {g,tee:{x:8,y:teeY},pin:{x:gx,y:gy}};
+}
+function tAt(H,p){const x=Math.floor(p.x),y=Math.floor(p.y);return inb(x,y)?H.g[idx(x,y)]:-1}
+function holeYards(H){return H.tee&&H.pin?distY(center(H.tee),center(H.pin)):0}
+function holePar(H){const y=holeYards(H);return y<=250?3:y<=440?4:5}
+function holeIssue(H){
+  if(!H.tee)return 'needs a tee';
+  if(H.lostGreen&&!H.pin)return 'has lost its green to the sea';
+  if(!H.pin||H.g[idx(H.pin.x,H.pin.y)]!==T.GREEN)return 'needs a pin on a green';
+  if(holeYards(H)<80)return 'is under 80 yards';
+  return null;
+}
+function courseIssue(C){for(let i=0;i<C.holes.length;i++){const e=holeIssue(C.holes[i]);if(e)return 'Hole '+(i+1)+' '+e}return null}
+function holeCounts(H){
+  if(H._c)return H._c;const c={f:0,g:0,b:0,w:0,t:0};
+  for(const v of H.g){if(v===1)c.f++;else if(v===2)c.g++;else if(v===3)c.b++;else if(v===4)c.w++;else if(v===5)c.t++}
+  return H._c=c;
+}
+function cands(H){
+  if(H._cand)return H._cand;const PEN={0:25,1:0,2:-20,3:45,6:10};const out=[];
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){const t=H.g[idx(x,y)];if(t===T.WATER||t===T.TREES||t===SEA)continue;
+    let w=false;for(let j=-1;j<=1&&!w;j++)for(let i=-1;i<=1;i++)if(inb(x+i,y+j)&&(H.g[idx(x+i,y+j)]===T.WATER||H.g[idx(x+i,y+j)]===SEA)){w=true;break}
+    out.push({x:x+.5,y:y+.5,pen:PEN[t],w})}
+  return H._cand=out;
+}
+function dirty(C,H){H._a=null;H._c=null;H._cand=null;H._ground=null;H._trees=null;C._q=null}
+function quality(C){
+  if(C._q)return C._q;let interest=0,beauty=0,weak=0,par=0,yards=0;const pars=new Set();
+  C.holes.forEach(H=>{const c=holeCounts(H);
+    interest+=Math.min(1,c.b/6)*.6+Math.min(1,c.w/8)*.45+Math.min(1,c.t/25)*.25;
+    beauty+=Math.min(1,c.t/30)*.5+Math.min(1,c.w/8)*.4;
+    const p=holePar(H),y=holeYards(H);par+=p;yards+=y;pars.add(p);
+    if(y<100||(p>3&&c.f<5))weak++;});
+  const n=C.holes.length;
+  return C._q={interest:interest/n,beauty:beauty/n,variety:pars.size>=3?.3:pars.size===2?0:-.3,weak,par,yards:Math.round(yards)};
+}
+function fairFee(C){const P=PL[C.plotId];return (20+C.rep*7)*P.wealth*(P.holes===18?1.6:1)*(.8+quality(C).design*.045)}
+const WXD={sun:1.15,cloud:1,rain:.55,wind:.85,storm:.15};
+function wfOf(C){return C.wx==='storm'?1.6:C.wx==='wind'?1.35:1}
+function buzzM(C){return C.buzz&&S.day<=C.buzz.until?C.buzz.m:1}
+function rate(C){const P=PL[C.plotId];return P.demand*3*(.5+C.rep/5)*clamp(1.5-(C.fee/fairFee(C))*.6,.15,1.5)*WXD[C.wx]*(C.fac.range?1.1:1)*(C._comp??(C._comp=comp(C)))*buzzM(C)*(.75+quality(C).design*.06)*seasonM()*weekdayM()}
+function wage(C){return (C.fac.staff-1)*(C.holes.length===18?160:90)}
+function rollWx(P,day){if(P.terrain==='links'&&Math.random()<.045*((S&&S.stormy)||1)*(S&&winter(day)?1.8:1))return 'storm';const r=Math.random(),north=P.lat>54.5?.1:0,windy=P.terrain==='links'?.25:.08;
+  return r<.22+north?'rain':r<.22+north+windy?'wind':r<.62+north+windy?'cloud':'sun'}
+function upkeep(C){let u=60;C.holes.forEach(H=>{const c=holeCounts(H);u+=12+c.f*.15+c.g*.8+c.b*.2+c.w*.1});return Math.round(u+wage(C))}
+
+/* ---------- golf engine ---------- */
+function makeGolfer(C){
+  const skill=clamp(.2+Math.random()*.55+C.rep*.03,.15,.95),first=rnd(FIRST);
+  return {first,full:first+' '+rnd(LAST),skill,hcp:clamp(Math.round((1-skill)*40-2),0,36)};
+}
+function planShot(H,g,pos){
+  const pinP=center(H.pin),lie=tAt(H,pos),dPin=distY(pos,pinP);
+  if(lie===T.GREEN)return {type:'putt',target:pinP,d:dPin};
+  const lf=lie===T.ROUGH?.85:lie===T.TEE?1.05:lie===T.TREES?.5:lie===T.BUNKER?(dPin<45?1:.55):1;
+  const maxC=(165+115*g.skill)*lf;
+  let best=null,bs=Infinity;
+  if(dPin<=maxC*1.02){best=pinP;bs=-25}
+  for(const c of cands(H)){
+    const d=distY(pos,c);if(d>maxC||d<20)continue;
+    const after=distY(c,pinP);if(after>=dPin-5)continue;
+    const sc=after+c.pen+(c.w?25*(1.2-g.skill):0);if(sc<bs){bs=sc;best=c}
+  }
+  if(!best){const a=Math.atan2(pinP.y-pos.y,pinP.x-pos.x);best={x:pos.x+Math.cos(a)*maxC/YPC,y:pos.y+Math.sin(a)*maxC/YPC}}
+  return {type:'full',target:best,d:distY(pos,best)};
+}
+function execute(H,g,pos,plan,wf){wf=wf||1;
+  const pinP=center(H.pin);
+  if(plan.type==='putt'){
+    const d=plan.d;
+    if(Math.random()<Math.exp(-d/(4+5*g.skill)))
+      return {segs:[{from:pos,to:pinP,h:0,t:0,dur:500+d*25}],newPos:pinP,ev:d>8?'holed_long':'holed_putt',pen:0,holed:true};
+    const rem=Math.max(.6,d*(.08+Math.random()*.3*(1.25-g.skill))),a=Math.random()*Math.PI*2;
+    let end={x:pinP.x+Math.cos(a)*rem/YPC,y:pinP.y+Math.sin(a)*rem/YPC};
+    for(let k=0;k<12&&tAt(H,end)!==T.GREEN;k++)end={x:(end.x+pinP.x)/2,y:(end.y+pinP.y)/2};
+    return {segs:[{from:pos,to:end,h:0,t:0,dur:500+d*25}],newPos:end,ev:'putt_miss',pen:0,holed:false};
+  }
+  const lie=tAt(H,pos),le=lie===T.ROUGH?1.3:lie===T.BUNKER?1.6:lie===T.TREES?2:1;
+  let ang=Math.atan2(plan.target.y-pos.y,plan.target.x-pos.x)+gauss()*(.035+.09*(1-g.skill))*le*wf;
+  if(Math.random()<.05*(1-g.skill))ang+=(Math.random()<.5?-1:1)*(.35+Math.random()*.3);
+  const carry=Math.max(5,plan.d*(1+gauss()*(.04+.1*(1-g.skill))*le*wf));
+  const land={x:pos.x+Math.cos(ang)*carry/YPC,y:pos.y+Math.sin(ang)*carry/YPC};
+  const segs=[{from:pos,to:land,h:Math.min(5,carry/40),t:0,dur:700+carry*2.2}];
+  const lt=tAt(H,land);
+  const roll=lt===1?4+Math.random()*10:lt===2?1+Math.random()*4:lt===0?1+Math.random()*2:lt===6?5:0;
+  let end=land;
+  if(roll>0){const steps=Math.ceil(roll/YPC/.25);
+    for(let s=1;s<=steps;s++){const p={x:land.x+Math.cos(ang)*roll/YPC*s/steps,y:land.y+Math.sin(ang)*roll/YPC*s/steps};
+      end=p;const tt=tAt(H,p);if(tt===-1||tt===3||tt===4||tt===5||tt===SEA)break}
+    segs.push({from:land,to:end,h:0,t:0,dur:350});}
+  const tt=tAt(H,end);
+  if(tt===-1)return {segs,newPos:pos,ev:'ob',pen:1,holed:false};
+  if(tt===T.WATER||tt===SEA){
+    let p=end;const a=Math.atan2(pos.y-end.y,pos.x-end.x);
+    for(let k=0;k<80;k++){p={x:p.x+Math.cos(a)*.25,y:p.y+Math.sin(a)*.25};const q=tAt(H,p);if(q!==-1&&q!==T.WATER&&q!==SEA)break}
+    const q=tAt(H,p);if(q===T.WATER||q===SEA||q===-1)p=pos;
+    return {segs,newPos:p,ev:'water',pen:1,holed:false};
+  }
+  if(tt===T.TREES){
+    const fx=Math.floor(end.x),fy=Math.floor(end.y);let bp=null,bd=Infinity;
+    for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){const c={x:fx+i,y:fy+j},q=tAt(H,c);if(q===-1||q===T.WATER||q===T.TREES||q===SEA)continue;
+      const d=distY(center(c),pos);if(d<bd){bd=d;bp=center(c)}}
+    return {segs,newPos:bp||end,ev:'trees',pen:0,holed:false};
+  }
+  if(tt===T.GREEN&&distY(end,pinP)<2.5&&Math.random()<.3)return {segs,newPos:pinP,ev:'holed_long',pen:0,holed:true};
+  return {segs,newPos:end,ev:tt===2?'green':tt===3?'bunker':tt===0?'rough':'fairway',pen:0,holed:false};
+}
+function simHole(H,g,wf){
+  let pos=center(H.tee),s=0,pens=0,holed=false;
+  while(s<10){const r=execute(H,g,pos,planShot(H,g,pos),wf);s+=1+r.pen;pens+=r.pen;pos=r.newPos;if(r.holed){holed=true;break}}
+  const p=holePar(H);return {s:holed?Math.min(s,p+4):p+4,pens};
+}
+function review(C,g,res){
+  const P=PL[C.plotId],q=quality(C),n=C.holes.length,over=(res.total-q.par)/n;
+  const f=[['design',(q.design-5)*.34],['pretty',q.beauty*.6],['variety',q.variety],['setting',(P.prestige-1)*.6],
+    ['score',over<=0?.6:over<.6?.2:over<1.2?0:over<2?-.4:-.8],['pens',-Math.min(1.2,res.pens*.25)]];
+  if(q.weak)f.push(['weak',-.4*q.weak/n*4]);
+  f.push(['cond',(C.cond-70)/30*.5]);
+  f.push(['club',C.fac.club*.1+C.fac.range*.2+C.fac.shop*.05+(C.mem&&C.mem.on&&C.mem.n>100?.15:0)]);
+  if(C.wx==='rain'||C.wx==='storm')f.push(['rain',-.25]);
+  const fair=fairFee(C)*(1+q.interest*.3);
+  if(C.fee>fair)f.push(['price',-(C.fee-fair)/(fair*.25)*.5]);
+  if(C.fee<fair*.6)f.push(['cheap',.3]);
+  let r=2.2+(Math.random()-.5)*.6;for(const x of f)r+=x[1];r=clamp(r,1,5);
+  const neg=f.filter(x=>x[1]<0).sort((a,b)=>a[1]-b[1])[0],pos=f.filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1])[0];
+  let key=r<3&&neg?neg[0]:pos?pos[0]:'meh';if(key==='cond'&&r<3)key='condN';if(key==='design'&&r<3)key='designN';
+  const Q={fun:["Proper test, that. Loved the bunkering.","Made me think on every shot.","Cracking course. Coming back with the lads."],
+    pretty:["Gorgeous spot. Barely noticed my score.","Lovely setting, all those trees."],
+    variety:["Great mix of holes. Never a dull moment."],
+    setting:["What a bit of land. Proper old school golf country.","You can feel the history in the turf."],
+    score:["Played out of my skin. Best course in the county.","Had a blinder. Ten out of ten."],
+    pens:["Lost balls everywhere. Never again.","Penalty after penalty. Who designed this?"],
+    weak:["A couple of holes are barely holes.","Some of it feels unfinished."],
+    condN:["Course is in a right state. Bare patches everywhere.","Greens are bumpy as a farm track."],
+    price:["Far too pricey for what it is.","Daylight robbery at that green fee."],
+    cheap:["Bargain. Can't argue at that price."],
+    cond:["Greens like carpet. Immaculate.","Absolutely immaculate condition."],
+    club:["Lovely clubhouse. Stayed for three pints.","Great facilities. Feels like a proper club."],
+    rain:["Got drenched. Not the course's fault, I suppose."],
+    design:["Brilliant design. Every hole asks a question.","Proper architecture, this. Loved every hole."],designN:["Every hole looks the same.","Dull layout. Nothing to think about all day."],
+    meh:["Pleasant enough. Bit forgettable.","Fine. Nothing special."]};
+  return {name:g.full,stars:Math.round(r),total:res.total,par:q.par,text:(key==='design'&&q.sig!==null&&Math.random()<.35)?sigQuote(C,q.sig):rnd(Q[key]||Q.meh)};
+}
+function finishRound(C,g,res){
+  const rv=review(C,g,res),P=PL[C.plotId];
+  C.reviews.unshift(rv);if(C.reviews.length>25)C.reviews.length=25;
+  const bar=Math.round(((10+rv.stars*3)*[.6,1,1.5,2.2][C.fac.club]+[0,6,14][C.fac.shop])*Math.sqrt(P.wealth));earn('bar',bar);C.today.rev+=bar;
+  C.cond=clamp(C.cond-(C.holes.length===18?.02:.03),20,100);if(C.cond<60)C._ground_stale=true;
+  C.today.st=(C.today.st||0)+rv.stars;C.today.n=(C.today.n||0)+1;C.rounds++;C.today.rounds++;
+  if(C.best===null||res.total<C.best)C.best=res.total;
+  return rv;
+}
+function chargeFee(C){earn('fees',C.fee);C.today.rev+=C.fee}
+function headlessRound(C,member){
+  const g=makeGolfer(C);if(member){g.mem=true;C.today.memR++}else{chargeFee(C);C.today.vis++}let total=0,pens=0;
+  const wf=wfOf(C);C.holes.forEach(H=>{const r=simHole(H,g,wf);total+=r.s;pens+=r.pens});
+  finishRound(C,g,{total,pens});
+}
+
+
+/* ---------- events & career ---------- */
+const EVENTS=[
+ {id:'society',name:'Society day',pay:3000,rep:.05,cool:5,blurb:'A local society books the whole course for the day.',
+  req:(C,P,q)=>[['Course open and finished',!courseIssue(C)],['Reputation 5.0 or better',C.rep>=2.5]]},
+ {id:'county',name:'County Amateur',pay:20000,rep:.25,cool:20,blurb:'The county\'s best amateurs. A proper feather in the cap.',
+  req:(C,P,q)=>[['18 holes',C.holes.length===18],['Reputation 7.0 or better',C.rep>=3.5],['Condition 70% or better',C.cond>=70],['A clubhouse',C.fac.club>=1],['Course finished',!courseIssue(C)]]},
+ {id:'regional',name:'Regional Pro Am',pay:75000,rep:.35,cool:30,blurb:'Touring pros and paying amateurs. TV cameras, sort of.',
+  req:(C,P,q)=>[['18 holes',C.holes.length===18],['Reputation 8.0 or better',C.rep>=4],['Course design 6.5 or better',q.design>=6.5],['At least 6,000 yards',q.yards>=6000],['Clubhouse level 2',C.fac.club>=2],['Practice range',C.fac.range>=1],['Hosted a County Amateur here',C.evDone.county!==undefined],['Course finished',!courseIssue(C)]]},
+ {id:'champ',name:'The Championship',pay:750000,rep:1,cool:9999,blurb:'The big one. The oldest championship in golf, held on links land.',
+  req:(C,P,q)=>[['Links land',P.terrain==='links'],['Championship pedigree land',P.prestige>=1.4],['18 holes',C.holes.length===18],['Reputation 9.0 or better',C.rep>=4.5],['Course design 7.5 or better',q.design>=7.5],['At least 6,500 yards',q.yards>=6500],['Grand clubhouse (level 3)',C.fac.club>=3],['Full pro shop',C.fac.shop>=2],['Practice range',C.fac.range>=1],['Condition 85% or better',C.cond>=85],['Members\' club, 200 or more members',!!(C.mem&&C.mem.on&&C.mem.n>=200)],['Hosted a Regional Pro Am here',C.evDone.regional!==undefined],['Course finished',!courseIssue(C)]]}
+];
+const FAC=[
+ {id:'club',name:'Clubhouse',levels:['Portacabin','Clubhouse','Clubhouse with restaurant','Grand clubhouse'],cost:[0,25000,60000,150000],fx:'Bar takings and reputation'},
+ {id:'shop',name:'Pro shop',levels:['None','Pro shop','Flagship pro shop'],cost:[0,15000,40000],fx:'Extra spend every round'},
+ {id:'range',name:'Practice range',levels:['None','Driving range'],cost:[0,30000],fx:'More golfers and better reviews'}
+];
+const CAREER=[
+ ['bought','Buy your first plot of land'],['opened','Open a course for play'],['profit','Make £2,000 profit in a day'],
+ ['stars4','Reach 8 out of 10 reputation anywhere'],['three','Own three courses'],['county','Host a County Amateur'],
+ ['regional','Host a Regional Pro Am'],['champ','Host The Championship']];
+function news(t){if(S.wk){S.wk.log.push(t);if(S.wk.log.length>10)S.wk.log.shift()}S.news.unshift({day:S.day,t});if(S.news.length>12)S.news.length=12;$('#tickText').textContent=t}
+function achieve(k){if(S.career[k])return;S.career[k]=true;const c=CAREER.find(x=>x[0]===k);if(c){toast('Milestone: '+c[1],3200);if(k!=='bought')news('Milestone reached: '+c[1].toLowerCase()+'.')}}
+function checkCareer(){
+  const cs=Object.values(S.courses);
+  if(cs.length)achieve('bought');if(cs.some(C=>C.open))achieve('opened');
+  if(cs.some(C=>C.rep>=4))achieve('stars4');if(cs.length>=3)achieve('three');
+}
+function eventState(C,E){
+  const P=PL[C.plotId],q=quality(C),req=E.req(C,P,q);
+  if(C.mem&&C.mem.on)req.push(['Committee on side',C.mem.mood>=40]);
+  const ok=req.every(r=>r[1]);
+  const since=C.evDone[E.id]!==undefined?S.day-C.evDone[E.id]:999;
+  return {req,ok,cool:E.id==='champ'?Math.max(0,S.champNext-S.day):since<E.cool?E.cool-since:0};
+}
+function runEvent(C,E){
+  const P=PL[C.plotId],wf=wfOf(C);let pay=E.pay;const first=!S.career[E.id];
+  if(C.mem.on){C.mem.mood=clamp(C.mem.mood-6,0,100);C.mem.cause='the course being closed for tournaments'}
+  let line;
+  if(E.id==='society'){pay=Math.round(E.pay*(C.holes.length===18?1.6:1)*Math.sqrt(P.wealth));line='Society day done. Forty golfers, one argument about handicaps, and '+money(pay)+' in the till.'}
+  else{
+    let best=null;const n=E.id==='champ'?24:16;
+    for(let i=0;i<n;i++){const sk=E.id==='champ'?.9+Math.random()*.09:E.id==='regional'?.8+Math.random()*.15:.7+Math.random()*.2;
+      const g={first:rnd(FIRST),skill:sk};g.full=g.first+' '+rnd(LAST);let tot=0;C.holes.forEach(H=>tot+=simHole(H,g,wf).s);
+      if(!best||tot<best.t)best={g,t:tot}}
+    const rel=relText(best.t-quality(C).par);
+    line=E.name+' won by '+best.g.full+' with '+best.t+', '+rel+'. '+(E.id==='champ'?'What a week. What a course. I may weep.':'A fine champion on a fine course.');
+    news(E.name+' at '+P.name+': '+best.g.full+' wins on '+rel+'.');
+  }
+  earn('events',pay);C.today.rev+=pay;C.rep=clamp(C.rep+E.rep,0,5);C.evDone[E.id]=S.day;
+  if(E.id!=='society')achieve(E.id);
+  if(E.id==='champ'){S.champNext=S.day+45;news('History made. '+P.name+' hosts The Championship. Next slot on the rota in 45 days.');if(first)toast('You hosted The Championship. Now keep it on the rota.',6000)}
+  if(R.view==='course'&&R.cid===C.plotId)sayText(line);
+}
+
+/* ---------- market ---------- */
+function priceOf(id){return Math.round(PL[id].price*(S.market.mult[id]||1)/1000)*1000}
+function adminPrice(id){return Math.round((priceOf(id)*1.1+PL[id].holes*2400)/1000)*1000}
+function marketDay(){
+  const M=S.market;
+  PLOTS.forEach(p=>{if(S.courses[p.id]||S.rc[p.id])return;M.mult[p.id]=clamp((M.mult[p.id]||1)*(1+gauss()*.015),.8,1.35)});
+  for(const id in M.fresh)if(M.fresh[id]<S.day-4)delete M.fresh[id];
+  for(const id of Object.keys(M.sales)){const s=M.sales[id];if(s.type!=='quiet'&&s.closes<S.day)resolveSale(id)}
+  for(const id in M.sales){const s=M.sales[id];if(s.type==='live'&&s.closes===S.day){news('Live auction today: '+PL[id].name+', guide '+money(s.guide)+'. Tap the pin to attend.');toast('Live auction today at '+PL[id].name+'. Tap its pin to attend.',4500)}}
+  const free=()=>PLOTS.filter(p=>!S.courses[p.id]&&!S.rc[p.id]&&!M.sales[p.id]);
+  if(S.day>=M.nextNew){const pool=free();if(pool.length){const p=rnd(pool),sl=newSale(p.id,false);news('New to market. '+saleNews(p.id,sl))}M.nextNew=S.day+ri(4,8)}
+  if(S.day>=M.nextAdmin){const pool=free();if(pool.length){const p=rnd(pool),sl=newSale(p.id,true,6);news(p.name+' golf club goes into administration. '+saleNews(p.id,sl))}M.nextAdmin=S.day+ri(12,20)}
+}
+
+/* ---------- clock ---------- */
+function minuteTick(){
+  for(const id in S.courses){const C=S.courses[id];if(!C.open||(C.booked&&C.booked.day===S.day))continue;
+    if(C.mem.on&&C.mem.n&&S.min-(C._last??-99)>=8&&Math.random()<C.mem.n/memCap(C)*(S.min<660?4:1.3)/60){C._last=S.min;const n=ri(2,4);for(let k=0;k<n;k++)headlessRound(C,true);continue}
+    if(Math.random()<rate(C)/60){
+      if(S.min-(C._last??-99)<8)C.today.walked++;
+      else{C._last=S.min;const n=1+Math.floor(Math.random()*4);for(let k=0;k<n;k++)headlessRound(C)}
+    }}
+}
+function endDay(){
+  let rounds=0,rev=0,up=0;
+  for(const id in S.courses){const C=S.courses[id];
+    if(C.booked&&C.booked.day===S.day){const E=EVENTS.find(e=>e.id===C.booked.id);C.booked=null;runEvent(C,E)}
+    stormDay(C);
+    const mi=memDay(C);S.cash+=mi;C.today.rev+=mi;C.today.mem=mi;
+    const u=C.open||C.rounds||C.mem.on?upkeep(C):0;S.cash-=u;up+=u;rounds+=C.today.rounds;rev+=C.today.rev;S.wk.profit+=C.today.rev-u;
+    C.lastDay={...C.today,up:u};if(C.today.rev-u>=2000)achieve('profit');
+    C.cond=clamp(C.cond+[0,3,7,12][C.fac.staff]-(C.wx==='rain'?3:C.wx==='storm'?6:0),20,100);
+    C.today={rounds:0,rev:0,walked:0,memR:0,vis:0,mem:0};C._last=-99;C._comp=null;C.wx=rollWx(PL[id]);C.holes.forEach(H=>H._ground=null)}
+  if(Object.keys(S.courses).length)toast('Day '+S.day+' done. '+rounds+' rounds, '+money(rev)+' in, '+money(up)+' upkeep.',3500);
+  S.day++;S.min=420;marketDay();rivalsDay();featureDue();if(S.day%7===0)gazette();checkCareer();
+  if(R.view==='course'){const C=course();say('wx_'+C.wx);renderHoles();refreshPanels()}
+  if(R.view==='map')renderOverlay();
+  badge();save();checkScen();
+}
+function update(dt){
+  R.t+=dt/1000;
+  if(R.auc)stepAuction(dt);
+  if(!S.speed||R.hold||menuOpen())return;
+  const before=S.min;S.min=Math.min(1140,S.min+dt/1000*10*S.speed);
+  const mins=Math.floor(S.min)-Math.floor(before);
+  for(let i=0;i<mins;i++)minuteTick();
+  if(S.min>=1140)endDay();
+  const sp=Math.max(1,Math.min(S.speed,4));
+  if(R.watch)stepWatch(dt*sp);
+  if(R.view==='course')stepAmbient(dt*sp/1000);
+}
+
+/* ---------- watching a round ---------- */
+function course(){return S.courses[R.cid]}
+function hole(){return course().holes[R.hole]}
+function fill(s,o){return s.replace(/\{(\w+)\}/g,(m,k)=>o&&o[k]!==undefined?o[k]:m)}
+function say(key,o){sayText(fill(pick(key),o))}
+function sayText(t){R.lines.unshift(t);if(R.lines.length>3)R.lines.length=3;$('#line').textContent=R.lines[0];$('#prev').textContent=R.lines[1]||''}
+const SHIRTS=['#D94F3D','#2F6DB5','#F2C230','#7B4FA8','#E58A2E','#2A9D8F','#EDEDED','#C2417A','#3D405B'];
+function startWatch(){
+  const C=course(),e=courseIssue(C);if(e){toast(e);return}
+  if(C.booked&&C.booked.day===S.day){toast('The course is closed for an event today');return}
+  const g=makeGolfer(C);g.shirt=rnd(SHIRTS);chargeFee(C);
+  const H=C.holes[0],p=center(H.tee);
+  R.watch={C,g,hi:0,pos:p,gp:{x:p.x-.35,y:p.y+.15},hs:0,total:0,pens:0,trail:[p],phase:'wait',wait:1400,segs:[],holeDone:false,queue:[]};
+  R.hole=0;say('arrive',g);renderHoles();resize();hud();
+}
+function stepWatch(dt){
+  const w=R.watch,C=w.C,H=C.holes[w.hi];
+  if(w.phase==='walk'){
+    const dx=w.to.x-w.gp.x,dy=w.to.y-w.gp.y,d=Math.hypot(dx,dy),st=2.6*dt/1000;w.walkT=(w.walkT||0)+dt;
+    if(d<=st||d>14){w.gp={...w.to};w.phase='wait';w.wait=w.holeDone?900:650}else{w.gp.x+=dx/d*st;w.gp.y+=dy/d*st}
+    return;
+  }
+  if(w.phase==='wait'){
+    w.wait-=dt;if(w.wait>0)return;
+    if(w.queue.length){sayText(w.queue.shift());w.wait=1300;return}
+    if(w.holeDone){
+      if(w.hi+1<C.holes.length){
+        w.hi++;const N=C.holes[w.hi],p=center(N.tee);w.pos=p;w.gp={x:p.x-.35,y:p.y+.15};w.trail=[p];w.hs=0;w.holeDone=false;w.res=null;
+        if(R.view==='course'&&R.cid===C.plotId){R.hole=w.hi;renderHoles();resize();hud()}
+        say('nexthole',{n:ORD(w.hi+1),yd:Math.round(holeYards(N)),p:holePar(N)});w.wait=1300;return;
+      }
+      finishRound(C,w.g,{total:w.total,pens:w.pens});
+      say('roundend',{total:w.total,rel:relText(w.total-quality(C).par)});
+      R.watch=null;renderReviews();hud();return;
+    }
+    w.res=execute(H,w.g,w.pos,planShot(H,w.g,w.pos),wfOf(C));w.segs=w.res.segs;w.hs++;w.phase='anim';return;
+  }
+  const s=w.segs[0];s.t+=dt;if(s.t<s.dur)return;w.segs.shift();if(w.segs.length)return;
+  const r=w.res,p=holePar(H);w.hs+=r.pen;w.pens+=r.pen;w.pos=r.newPos;w.trail.push(r.newPos);
+  if(r.holed){
+    say(w.hs===1?'ace':r.ev);const sc=Math.min(w.hs,p+4),rel=sc-p;w.total+=sc;w.holeDone=true;
+    if(w.hs>1)w.queue.push(pick(rel<=-2?'eagle':rel===-1?'birdie':rel===0?'par':rel===1?'bogey':'double'));
+  }else{say(r.ev);if(w.hs>=10){w.total+=p+4;w.holeDone=true;w.queue.push(pick('pickup'))}}
+  w.to={x:w.pos.x-.35,y:w.pos.y+.12};w.phase='walk';w.walkT=0;
+}
+
+/* ---------- ambient golfers ---------- */
+function stepAmbient(ds){
+  const C=course(),H=hole();
+  const want=C.open&&!courseIssue(C)?Math.min(5,Math.round(rate(C)*.9)+(C.booked&&C.booked.day===S.day?3:0)):0;
+  if(R.ambKey!==R.cid+':'+R.hole){R.amb=[];R.ambKey=R.cid+':'+R.hole}
+  if(!H.tee||!H.pin)return;
+  while(R.amb.length<want)R.amb.push(newAmb(H,R.amb.length===0&&!R.ambSeeded?Math.random():Math.random()*.6));
+  R.ambSeeded=true;
+  for(let i=R.amb.length-1;i>=0;i--){const a=R.amb[i];
+    if(a.wait>0){a.wait-=ds;a.swing=a.wait<.5&&a.wait>0&&a.stopShot;continue}
+    const t=a.path[a.i];if(!t){R.amb.splice(i,1);continue}
+    const dx=t.x-a.x,dy=t.y-a.y,d=Math.hypot(dx,dy),st=1.6*ds;a.walking=true;a.ph+=ds*9;
+    if(d<=st){a.x=t.x;a.y=t.y;a.i++;a.walking=false;a.wait=1.2+Math.random()*2.2;a.stopShot=true}else{a.x+=dx/d*st;a.y+=dy/d*st}
+    if(a.i>=a.path.length&&a.wait<=0)R.amb.splice(i,1);
+  }
+  if(R.amb.length>want)R.amb.length=want;
+}
+function newAmb(H,prog){
+  const a=center(H.tee),b=center(H.pin),path=[];
+  for(const f of [.35,.62,.85,.97,1.02]){path.push({x:a.x+(b.x-a.x)*f+(Math.random()-.5)*2.2*(1-f*.8),y:a.y+(b.y-a.y)*f+(Math.random()-.5)*1.2})}
+  const k=Math.floor(prog*path.length),st=k?path[k-1]:{x:a.x-.3,y:a.y+.2};
+  return {x:st.x,y:st.y,path,i:k,wait:Math.random()*2,ph:Math.random()*6,shirt:rnd(SHIRTS),walking:false};
+}
+
+/* ---------- drawing ---------- */
+function hsh(a,b,c){let h=(a*374761393+b*668265263+c*1442695041)|0;h=Math.imul(h^(h>>>13),1274126177);return ((h^(h>>>16))>>>0)/4294967296}
+function hex(c){const n=parseInt(c.slice(1),16);return [n>>16,(n>>8)&255,n&255]}
+function mix(a,b,t){const A=hex(a),B=hex(b);return 'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')+')'}
+function rowsFor(i){return ROWS+(i===0?EXTRA:0)}
+function resize(){
+  if(R.view!=='course')return;
+  const w=$('#mapwrap'),rows=rowsFor(R.hole);dpr=Math.min(2,window.devicePixelRatio||1);
+  const ncs=Math.max(8,Math.floor(Math.min((w.clientWidth-4)/COLS,(w.clientHeight-4)/rows)));
+  cs=ncs;cv.style.width=cs*COLS+'px';cv.style.height=cs*rows+'px';cv.width=cs*COLS*dpr;cv.height=cs*rows*dpr;
+}
+function ground(C,hi){
+  const lost=(C.ero&&C.ero[hi])||0,H=C.holes[hi],key=cs+'|'+dpr+'|'+Math.round(C.cond/4)+'|'+lost;
+  if(H._ground&&H._gkey===key)return H._ground;
+  const P=PL[C.plotId],TR=TERRAIN[P.terrain],rows=rowsFor(hi),W=COLS*cs,HH=rows*cs;
+  const oc=document.createElement('canvas');oc.width=W*dpr;oc.height=HH*dpr;const g=oc.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);
+  g.fillStyle=TR.rough;g.fillRect(0,0,W,HH);
+  for(let k=0;k<16;k++){const x=hsh(k,1,hi)*W,y=hsh(k,2,hi)*HH,r=(2+hsh(k,3,hi)*5)*cs,gr=g.createRadialGradient(x,y,0,x,y,r);
+    gr.addColorStop(0,k%2?'rgba(255,255,240,.08)':'rgba(0,20,0,.09)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2)}
+  for(let i=0;i<COLS*rows*7;i++){const x=hsh(i,7,hi)*W,y=hsh(i,8,hi)*HH;g.fillStyle=hsh(i,9,hi)<.55?'rgba(0,0,0,.11)':'rgba(255,255,220,.09)';g.fillRect(x,y,1.2,1.8)}
+  const wear=(100-C.cond)/100;
+  const fw=mix('#7EBC56','#BDB46B',wear*.8),fw2=mix('#70AC49','#B0A762',wear*.8),gn=mix('#A2D66E','#C4C27C',wear*.7),fr=mix('#8DC75F','#B9B573',wear*.7);
+  const blob=(test,r,dx,dy)=>{const p=new Path2D();for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(test(H.g[idx(x,y)])){const cx=(x+.5)*cs+(dx||0)*cs,cy=(y+.5)*cs+(dy||0)*cs;p.moveTo(cx+r*cs,cy);p.arc(cx,cy,r*cs,0,Math.PI*2)}return p};
+  const fair=blob(t=>t===1||t===6,.86);g.fillStyle=fw;g.fill(fair);
+  g.save();g.clip(fair);g.fillStyle=fw2;for(let y=0;y<ROWS;y+=4)g.fillRect(0,y*cs,W,cs*2);g.restore();
+  g.fillStyle=fr;g.fill(blob(t=>t===2,1.0));
+  const gp=blob(t=>t===2,.84);g.fillStyle=gn;g.fill(gp);
+  g.save();g.clip(gp);g.fillStyle='rgba(255,255,255,.07)';for(let y=0;y<ROWS*2;y+=2)g.fillRect(0,y*cs/2,W,cs/2);g.restore();
+  g.fillStyle='rgba(70,55,20,.45)';g.fill(blob(t=>t===3,.84,-.05,-.09));
+  const bp=blob(t=>t===3,.74);g.fillStyle='#EDDFB3';g.fill(bp);
+  g.save();g.clip(bp);for(let i=0;i<300;i++){g.fillStyle='rgba(150,120,60,.18)';g.fillRect(hsh(i,11,hi)*W,hsh(i,12,hi)*HH,1.3,1.3)}g.restore();
+  g.fillStyle='#2A5E8C';g.fill(blob(t=>t===4,.9));
+  const wp=blob(t=>t===4,.78);g.fillStyle='#3D86C0';g.fill(wp);
+  g.save();g.clip(wp);const wg=g.createLinearGradient(0,0,0,HH);wg.addColorStop(0,'rgba(255,255,255,.14)');wg.addColorStop(1,'rgba(0,30,60,.12)');g.fillStyle=wg;g.fillRect(0,0,W,HH);g.restore();
+  if(lost){const sy=lost*cs,sg=g.createLinearGradient(0,0,0,sy);sg.addColorStop(0,'#24618C');sg.addColorStop(1,'#4A98C2');g.fillStyle=sg;g.fillRect(0,0,W,sy);
+    g.fillStyle='#E4D3A3';g.beginPath();g.moveTo(0,sy-.42*cs);for(let x=0;x<=COLS*3;x++)g.lineTo(x*cs/3,sy-(.42-.1*hsh(x,lost,hi))*cs);
+    for(let x=COLS*3;x>=0;x--)g.lineTo(x*cs/3,sy+(.05+.2*hsh(x,lost+9,hi))*cs);g.closePath();g.fill()}
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(H.g[idx(x,y)]===6){
+    g.fillStyle='#4C7A33';g.fillRect((x+.06)*cs,(y+.32)*cs,.88*cs,.5*cs);g.fillStyle='#98D06A';g.fillRect((x+.06)*cs,(y+.12)*cs,.88*cs,.42*cs)}
+  if(hi===0){const y0=ROWS*cs;
+    g.fillStyle='#D8CDAE';const tx=H.tee?(H.tee.x+.5)*cs:8.5*cs,ty=H.tee?(H.tee.y+.8)*cs:30*cs;
+    g.beginPath();g.moveTo(tx-.25*cs,ty);g.lineTo(tx+.25*cs,ty);g.lineTo(5*cs,y0+1.6*cs);g.lineTo(4.4*cs,y0+1.6*cs);g.closePath();g.fill();
+    g.fillStyle='#7E8582';g.beginPath();g.roundRect?g.roundRect(9*cs,y0+1*cs,6.6*cs,2.6*cs,.3*cs):g.rect(9*cs,y0+1*cs,6.6*cs,2.6*cs);g.fill();
+    g.strokeStyle='rgba(255,255,255,.7)';g.lineWidth=1;for(let i=0;i<=7;i++){const x=(9.2+i*.9)*cs;g.beginPath();g.moveTo(x,y0+1.1*cs);g.lineTo(x,y0+1.9*cs);g.moveTo(x,y0+2.7*cs);g.lineTo(x,y0+3.5*cs);g.stroke()}
+    g.fillStyle='rgba(0,0,0,.12)';g.fillRect(0,y0,W,2)}
+  H._ground=oc;H._gkey=key;return oc;
+}
+function treesOf(H){if(H._trees)return H._trees;const t=[];for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(H.g[idx(x,y)]===5)t.push({x:x+.5,y:y+.6,s:.8+hsh(x,y,3)*.4,k:hsh(x,y,5)});return H._trees=t}
+function shadow(x,y,rx,ry,a){ctx.fillStyle='rgba(0,20,0,'+a+')';ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,7);ctx.fill()}
+function drawTree(tr,type,col,wind){
+  const x=tr.x*cs,y=tr.y*cs,s=tr.s*cs,sway=Math.sin(R.t*1.6+tr.k*9)*wind*s*.05;
+  if(type==='gorse'){shadow(x+.12*s,y+.05*s,.5*s,.22*s,.25);ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(x+sway*.4,y-.18*s,.46*s,.3*s,0,0,7);ctx.fill();
+    ctx.fillStyle='#E8C43A';for(let i=0;i<5;i++){const a=tr.k*20+i*1.3;ctx.fillRect(x+Math.cos(a)*.3*s,y-.2*s+Math.sin(a)*.17*s,Math.max(1.5,.09*s),Math.max(1.5,.09*s))}return}
+  if(type==='pine'){shadow(x+.35*s,y+.05*s,.42*s,.16*s,.28);ctx.fillStyle='#5A3E28';ctx.fillRect(x-.05*s,y-.4*s,.1*s,.4*s);
+    [[.42,-.3,-.95],[.34,-.65,-1.25],[.24,-.98,-1.55]].forEach(([w,b,t],i)=>{ctx.fillStyle=i===1?mix('#22472A','#3F6B42',.3):'#22472A';ctx.beginPath();ctx.moveTo(x-w*s,y+b*s);ctx.lineTo(x+w*s,y+b*s);ctx.lineTo(x+sway*(1+i*.5),y+t*s);ctx.closePath();ctx.fill()});return}
+  if(type==='scrub'){shadow(x+.2*s,y+.04*s,.35*s,.14*s,.22);ctx.fillStyle='#4F5A36';ctx.fillRect(x-.03*s,y-.3*s,.06*s,.3*s);
+    ctx.fillStyle=col;ctx.beginPath();ctx.arc(x-.12*s+sway,y-.45*s,.24*s,0,7);ctx.arc(x+.15*s+sway,y-.52*s,.2*s,0,7);ctx.fill();return}
+  shadow(x+.4*s,y+.08*s,.6*s,.25*s,.28);ctx.fillStyle='#5C4330';ctx.fillRect(x-.06*s,y-.45*s,.12*s,.45*s);
+  ctx.fillStyle=col;ctx.beginPath();ctx.arc(x+sway,y-.82*s,.48*s,0,7);ctx.arc(x-.26*s+sway,y-.62*s,.34*s,0,7);ctx.arc(x+.27*s+sway,y-.64*s,.34*s,0,7);ctx.fill();
+  ctx.fillStyle='rgba(255,255,200,.13)';ctx.beginPath();ctx.arc(x-.14*s+sway,y-.98*s,.24*s,0,7);ctx.fill();
+}
+function drawPerson(px,py,shirt,ph,walking,swing,face){
+  const s=cs*1.05,x=px,y=py,lg=walking?Math.sin(ph)*.07*s:0;
+  shadow(x+.06*s,y,.2*s,.08*s,.3);
+  ctx.strokeStyle='#2E3440';ctx.lineWidth=Math.max(1.4,.08*s);ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(x-.05*s,y-.36*s);ctx.lineTo(x-.05*s+lg,y-.02*s);ctx.moveTo(x+.05*s,y-.36*s);ctx.lineTo(x+.05*s-lg,y-.02*s);ctx.stroke();
+  ctx.fillStyle=shirt;ctx.beginPath();ctx.roundRect?ctx.roundRect(x-.12*s,y-.7*s,.24*s,.37*s,.06*s):ctx.rect(x-.12*s,y-.7*s,.24*s,.37*s);ctx.fill();
+  ctx.fillStyle='#E7C29C';ctx.beginPath();ctx.arc(x,y-.82*s,.1*s,0,7);ctx.fill();
+  ctx.fillStyle='#F4F4EE';ctx.beginPath();ctx.arc(x,y-.86*s,.1*s,Math.PI,0);ctx.fill();ctx.fillRect(x+(face||1)*.02*s,y-.88*s,(face||1)*.12*s,.04*s);
+  if(swing){ctx.strokeStyle='#CCCCCC';ctx.lineWidth=Math.max(1,.04*s);ctx.beginPath();ctx.moveTo(x+.08*s,y-.55*s);ctx.lineTo(x+.34*s,y-1.05*s);ctx.stroke()}
+  else{ctx.fillStyle='#3A4A5A';ctx.fillRect(x-.2*s,y-.62*s,.08*s,.4*s)}
+}
+function drawClubhouse(C){
+  const y0=ROWS*cs,lv=C.fac.club;
+  const box=(x,y,w,h,wall,roof,peak)=>{shadow(x+w*.55,y+.1*cs,w*.6,.35*cs,.25);ctx.fillStyle=wall;ctx.fillRect(x,y-h,w,h);
+    ctx.fillStyle=roof;ctx.beginPath();ctx.moveTo(x-.15*cs,y-h);ctx.lineTo(x+w+.15*cs,y-h);ctx.lineTo(x+w-.25*cs,y-h-peak);ctx.lineTo(x+.25*cs,y-h-peak);ctx.closePath();ctx.fill()};
+  const win=(x,y,n,gap)=>{ctx.fillStyle='#F6E7A6';for(let i=0;i<n;i++)ctx.fillRect(x+i*gap,y,.35*cs,.32*cs)};
+  if(lv===0){box(1.2*cs,y0+3.2*cs,3*cs,1.1*cs,'#C9CDD0','#8F969B',.15*cs);win(1.6*cs,y0+2.6*cs,3,.8*cs)}
+  if(lv===1){box(.8*cs,y0+3.6*cs,4.6*cs,1.3*cs,'#EFE6D2','#5B6770',.9*cs);win(1.2*cs,y0+2.9*cs,4,1*cs);ctx.fillStyle='#6B4A2E';ctx.fillRect(2.9*cs,y0+3.0*cs,.45*cs,.6*cs)}
+  if(lv===2){box(.5*cs,y0+3.8*cs,6*cs,1.7*cs,'#F2EBDB','#4A5560',1*cs);win(.9*cs,y0+2.4*cs,5,1.1*cs);win(.9*cs,y0+3.1*cs,2,1.1*cs);win(4.3*cs,y0+3.1*cs,2,1.1*cs);
+    ctx.fillStyle='#6B4A2E';ctx.fillRect(3.3*cs,y0+3.1*cs,.5*cs,.7*cs)}
+  if(lv===3){box(.3*cs,y0+4*cs,7.2*cs,1.9*cs,'#EFE4CC','#3C4650',1.1*cs);win(.7*cs,y0+2.4*cs,6,1.1*cs);win(.7*cs,y0+3.2*cs,3,1.1*cs);win(4.8*cs,y0+3.2*cs,2,1.1*cs);
+    box(3.2*cs,y0+2.1*cs,1.4*cs,1.4*cs,'#E8DCC0','#3C4650',.9*cs);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(3.9*cs,y0+1.3*cs,.32*cs,0,7);ctx.fill();
+    ctx.strokeStyle='#333';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(3.9*cs,y0+1.3*cs);ctx.lineTo(3.9*cs,y0+1.1*cs);ctx.moveTo(3.9*cs,y0+1.3*cs);ctx.lineTo(4.05*cs,y0+1.35*cs);ctx.stroke()}
+  if(lv>=2){const fx=7*cs,fy=y0+3.8*cs;ctx.strokeStyle='#ddd';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx,fy-2.4*cs);ctx.stroke();
+    const wv=Math.sin(R.t*4)*.12*cs;ctx.fillStyle='#245C37';ctx.beginPath();ctx.moveTo(fx,fy-2.4*cs);ctx.lineTo(fx+.9*cs,fy-2.2*cs+wv);ctx.lineTo(fx,fy-1.9*cs);ctx.fill()}
+  if(C.fac.shop){ctx.fillStyle='#245C37';ctx.fillRect(.6*cs,y0+4.15*cs,1.9*cs,.45*cs);ctx.fillStyle='#fff';ctx.font='600 '+Math.max(7,.32*cs)+'px Archivo,sans-serif';ctx.fillText('PRO SHOP',.72*cs,y0+4.5*cs)}
+  if(C.fac.range){ctx.fillStyle='#5D6B73';ctx.fillRect(9*cs,y0+3.9*cs,6.6*cs,.25*cs);ctx.fillStyle='#E9ECEA';ctx.fillRect(9*cs,y0+4.15*cs,6.6*cs,.6*cs);
+    ctx.strokeStyle='#5D6B73';ctx.lineWidth=1;for(let i=0;i<=8;i++){ctx.beginPath();ctx.moveTo((9+i*.82)*cs,y0+4.15*cs);ctx.lineTo((9+i*.82)*cs,y0+4.75*cs);ctx.stroke()}}
+  const cars=C.open?Math.min(14,2+Math.round(rate(C)*2.2)):1;const cc=['#C0392B','#2C3E50','#ECF0F1','#7F8C8D','#2E86C1','#1E8449','#B7950B','#111'];
+  for(let i=0;i<cars;i++){const col=i%7,row=i<7?0:1,x=(9.3+col*.9)*cs,y=y0+(row?2.75:1.15)*cs;ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(x+.05*cs,y+.1*cs,.62*cs,.72*cs);
+    ctx.fillStyle=cc[(i*5+C.rounds)%cc.length];ctx.fillRect(x,y,.6*cs,.7*cs);ctx.fillStyle='rgba(180,220,255,.7)';ctx.fillRect(x+.08*cs,y+.12*cs,.44*cs,.18*cs)}
+}
+function draw(){
+  if(R.view!=='course')return;
+  const C=course(),H=hole(),P=PL[C.plotId],TR=TERRAIN[P.terrain],rows=rowsFor(R.hole),W=COLS*cs,HH=rows*cs;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.drawImage(ground(C,R.hole),0,0,W,HH);
+  if(R.tab==='build'&&!R.watch){ctx.strokeStyle='rgba(0,0,0,.08)';ctx.lineWidth=1;ctx.beginPath();
+    for(let x=1;x<COLS;x++){ctx.moveTo(x*cs+.5,0);ctx.lineTo(x*cs+.5,ROWS*cs)}for(let y=1;y<=ROWS;y++){ctx.moveTo(0,y*cs+.5);ctx.lineTo(W,y*cs+.5)}ctx.stroke();
+    if(H.tee&&H.pin){const a=center(H.tee),b=center(H.pin);ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(242,194,48,.9)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(a.x*cs,a.y*cs);ctx.lineTo(b.x*cs,b.y*cs);ctx.stroke();ctx.setLineDash([])}}
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(H.g[idx(x,y)]===4){const k=hsh(x,y,2),a=(Math.sin(R.t*1.5+k*12)+1)/2;
+    ctx.fillStyle='rgba(255,255,255,'+(a*.35)+')';ctx.fillRect((x+.15+k*.4)*cs,(y+.35+k*.3)*cs,cs*.35,Math.max(1,cs*.06))}
+  const lostR=(C.ero&&C.ero[R.hole])||0;
+  if(lostR){const sy=lostR*cs-.42*cs;ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=Math.max(1.2,cs*.12);ctx.beginPath();
+    const surge=(Math.sin(R.t*.9)+1)/2*cs*.18;for(let x=0;x<=W;x+=cs/3){const yy=sy-surge+Math.sin(x/cs*1.9+R.t*2.2)*cs*.07;x?ctx.lineTo(x,yy):ctx.moveTo(x,yy)}ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1;ctx.beginPath();for(let i=0;i<lostR*4;i++){const x=(hsh(i,3,R.hole)*W+R.t*cs*.6)%W,y=hsh(i,4,R.hole)*(sy-cs*.4);ctx.moveTo(x,y);ctx.quadraticCurveTo(x+cs*.4,y-cs*.12,x+cs*.8,y)}ctx.stroke()}
+  const windy=C.wx==='wind'||C.wx==='storm',wind=windy?3:1,objs=[];
+  treesOf(H).forEach(t=>objs.push({y:t.y,f:()=>drawTree(t,TR.tt,{oak:'#2F5E2A',scrub:'#55663A',gorse:'#5C6B2C',pine:'#22472A'}[TR.tt],wind)}));
+  if(H.pin){const p=center(H.pin);objs.push({y:p.y,f:()=>{const x=p.x*cs,y=p.y*cs;ctx.fillStyle='#1d2b1d';ctx.beginPath();ctx.ellipse(x,y,cs*.16,cs*.1,0,0,7);ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=Math.max(1,cs*.07);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+cs*.9,y+cs*.35);ctx.stroke();
+    ctx.strokeStyle='#f4f4f0';ctx.lineWidth=Math.max(1.2,cs*.08);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-cs*1.6);ctx.stroke();
+    const wv=Math.sin(R.t*5*(wind>1?1.8:1))*cs*.1*wind;ctx.fillStyle='#F2C230';ctx.beginPath();ctx.moveTo(x,y-cs*1.6);ctx.quadraticCurveTo(x+cs*.4,y-cs*1.5+wv,x+cs*.8*(wind>1?1.15:1),y-cs*1.35+wv);ctx.lineTo(x,y-cs*1.1);ctx.fill()}})}
+  (R.amb||[]).forEach(a=>objs.push({y:a.y,f:()=>drawPerson(a.x*cs,a.y*cs,a.shirt,a.ph,a.walking,a.swing,1)}));
+  const w=R.watch&&R.watch.C===C&&R.watch.hi===R.hole?R.watch:null;
+  if(w)objs.push({y:w.gp.y,f:()=>drawPerson(w.gp.x*cs,w.gp.y*cs,w.g.shirt,(w.walkT||0)/110,w.phase==='walk',w.phase==='wait'&&!w.holeDone&&w.wait<500,1)});
+  objs.sort((a,b)=>a.y-b.y).forEach(o=>o.f());
+  if(R.hole===0)drawClubhouse(C);
+  if(w){
+    if(w.trail.length>1){ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=1.2;ctx.beginPath();w.trail.forEach((p,i)=>i?ctx.lineTo(p.x*cs,p.y*cs):ctx.moveTo(p.x*cs,p.y*cs));ctx.stroke();ctx.setLineDash([])}
+    if(!(w.holeDone&&w.res&&w.res.holed&&w.phase!=='anim')){let p=w.pos,h=0;
+      if(w.phase==='anim'&&w.segs[0]){const s=w.segs[0],k=Math.min(1,s.t/s.dur);p={x:s.from.x+(s.to.x-s.from.x)*k,y:s.from.y+(s.to.y-s.from.y)*k};h=4*s.h*k*(1-k)}
+      const x=p.x*cs,y=p.y*cs,r=Math.max(2,cs*.15);shadow(x+h*cs*.25,y,r,r*.6,.35);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y-h*cs*.7,r*(1+h*.07),0,7);ctx.fill()}
+  }
+  // atmosphere
+  for(let k=0;k<3;k++){const sp=windy?14:4,x=((R.t*sp*cs/16+k*W*.6+hsh(k,4,1)*W)%(W*1.8))-W*.4,y=(hsh(k,6,R.hole)*HH),r=(4+k*2)*cs,
+    gr=ctx.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,'rgba(0,10,30,'+(C.wx==='sun'?.06:.13)+')');gr.addColorStop(1,'rgba(0,10,30,0)');ctx.fillStyle=gr;ctx.fillRect(x-r,y-r,r*2,r*2)}
+  if(C.wx==='rain'||C.wx==='storm'){ctx.fillStyle=C.wx==='storm'?'rgba(20,30,50,.32)':'rgba(30,50,75,.18)';ctx.fillRect(0,0,W,HH);ctx.strokeStyle='rgba(220,235,255,.45)';ctx.lineWidth=1;ctx.beginPath();
+    for(let i=0;i<70;i++){const x=(hsh(i,1,9)*W+R.t*60*cs/16)%W,y=(hsh(i,2,9)*HH+R.t*420*cs/16*(.8+hsh(i,3,9)*.4))%HH;ctx.moveTo(x,y);ctx.lineTo(x-cs*.25,y+cs*.7)}ctx.stroke()}
+  if(windy){ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1;ctx.beginPath();for(let i=0;i<8;i++){const x=(hsh(i,5,2)*W+R.t*200*cs/16)%(W+60)-30,y=hsh(i,6,2)*HH;ctx.moveTo(x,y);ctx.quadraticCurveTo(x+cs,y-cs*.3,x+cs*2,y)}ctx.stroke()}
+  const m=S.min;let tint=null;
+  if(m<540)tint='rgba(255,190,120,'+((540-m)/120*.14).toFixed(3)+')';else if(m>1000)tint='rgba(255,140,60,'+((m-1000)/140*.2).toFixed(3)+')';
+  if(tint){ctx.fillStyle=tint;ctx.fillRect(0,0,W,HH)}
+}
+
+/* ---------- course UI ---------- */
+let toastTimer;
+function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),ms||2400)}
+const WXN={sun:'Sunny',cloud:'Cloudy',rain:'Rain',wind:'Windy',storm:'Storm'};
+function hud(){
+  $('#sCash').innerHTML='Cash <b>'+money(S.cash)+'</b>';$('#sCash').classList.toggle('neg',S.cash<0);
+  const m=Math.floor(S.min);$('#sDay').textContent=dTxt(S.day,1)+', '+String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+  const mp=menuOpen();$('#speed').textContent=!S.speed||mp?'Paused':S.speed+'x';$('#speed').classList.toggle('held',mp&&!!S.speed);
+  goalChip();
+  if(R.view!=='course')return;
+  const C=course(),H=hole(),q=quality(C);
+  $('#fee').textContent='£'+C.fee;
+  $('#openBtn').textContent=C.open?'Close course':'Open course';
+  $('#watchBtn').disabled=!!R.watch;
+  const ld=C.lastDay?' Yesterday: <b>'+C.lastDay.rounds+'</b> rounds, <b>'+money(C.lastDay.rev-C.lastDay.up)+'</b> after costs.':'';
+  const bk=C.booked?(C.booked.day===S.day?' <b>Closed today for the '+EVENTS.find(e=>e.id===C.booked.id).name+'.</b>':' <b>'+EVENTS.find(e=>e.id===C.booked.id).name+' booked for tomorrow.</b>'):'';
+  $('#runInfo').innerHTML=(C.open?'Open. ':'Closed. ')+'Weather: <b>'+WXN[C.wx]+'</b>. Condition <b>'+Math.round(C.cond)+'%</b>.'+bk+' Today: <b>'+C.today.rounds+'</b> rounds, <b>'+money(C.today.rev)+'</b> taken, <b>'+C.today.walked+'</b> groups turned away for lack of tee times.'+(C.mem.on?' Members played <b>'+C.today.memR+'</b> rounds.':'')+(C._comp&&C._comp<.97?' Rival clubs nearby are costing you about <b>'+Math.round((1-C._comp)*100)+'%</b> of your golfers.':'')+(buzzM(C)>1?' <b>Busy after a glowing write up.</b>':'')+ld+
+    ' Reputation <b>'+repTxt(C.rep)+' of 10</b>'+(repCap(C)<5?' (ceiling '+repTxt(repCap(C))+')':'')+'. Course design <b>'+q.design.toFixed(1)+'</b> of 10. Locals think <b>£'+Math.round(fairFee(C)*(1+q.interest*.3))+'</b> is fair. Running costs <b>'+money(upkeep(C))+'</b> a day. Par <b>'+q.par+'</b>, <b>'+q.yards.toLocaleString('en-GB')+'</b> yards.';
+  const e=holeIssue(H);
+  const hi=e?'Hole '+(R.hole+1)+' '+e+'. ':'Hole '+(R.hole+1)+': <b>'+Math.round(holeYards(H))+' yd, par '+holePar(H)+'</b>. ';
+  const ti=tool.id==='pin'?'Tap a green to place the pin, free.':tool.id==='tee'?'Tap to place the tee, £150.':tool.name+': <b>£'+COST[tool.t]+'</b> a tile.';
+  $('#buildInfo').innerHTML=hi+ti+holeCard(C,H);
+}
+function renderHoles(){
+  if(R.view!=='course')return;const C=course(),el=$('#holes');el.innerHTML='';
+  C.holes.forEach((H,i)=>{const b=document.createElement('button');const ok=!holeIssue(H);
+    b.className=(i===R.hole?'on ':'')+(ok?'':'empty');b.innerHTML=(i+1)+'<small>'+(ok?'par '+holePar(H)+' <i class="hs" style="color:'+rateCol(analyzeHole(H).score)+'">'+analyzeHole(H).score.toFixed(1)+'</i>':'empty')+'</small>';
+    b.onclick=()=>{if(R.watch&&R.watch.C===C){toast('Following the round. Head back to the map to stop');return}R.hole=i;renderHoles();resize();hud()};el.appendChild(b)});
+  const cur=el.children[R.hole];if(cur&&cur.scrollIntoView)cur.scrollIntoView({inline:'nearest',block:'nearest'});
+}
+function renderTools(){
+  const el=$('#tools');el.innerHTML='';
+  TOOLS.forEach(t=>{const b=document.createElement('button');b.className=t===tool?'on':'';
+    b.innerHTML='<span class="sw" style="background:'+SWATCH[t.id]+'"></span>'+t.name;b.onclick=()=>{tool=t;renderTools();hud()};el.appendChild(b)});
+}
+function renderReviews(){
+  if(R.view!=='course')return;const C=course(),r=C.reviews;
+  const avg=r.length?(r.reduce((a,b)=>a+b.stars,0)/r.length).toFixed(1):null;
+  $('#revSummary').innerHTML=r.length?'Average <b>'+avg+'</b> from the last '+r.length+'. Rounds played: <b>'+C.rounds+'</b>. Course record: <b>'+C.best+'</b>.':'No reviews yet. Open the course and golfers will tell you what they think.';
+  $('#revList').innerHTML=r.map(v=>'<div class="rev"><span class="stars">'+'★'.repeat(v.stars)+'☆'.repeat(5-v.stars)+'</span> <b>'+v.name+'</b>, '+v.total+' ('+relText(v.total-v.par)+')<q>'+v.text+'</q></div>').join('');
+}
+function renderClub(){
+  const C=course(),el=$('#clubList');let h='';
+  FAC.forEach(F=>{const lv=C.fac[F.id],max=F.levels.length-1,nx=lv<max?F.cost[lv+1]:0;
+    h+='<div class="fac"><div><b>'+F.name+'</b>: '+F.levels[lv]+'<small>'+F.fx+'</small></div>'+(lv<max?'<button class="small" data-up="'+F.id+'"'+(S.cash<nx?' disabled':'')+'>'+F.levels[lv+1]+', '+short(nx)+'</button>':'<small>Top level</small>')+'</div>'});
+  const st=['','Skeleton crew','Full team','Championship team'];
+  h+='<div class="fac"><div><b>Greenkeepers</b>: '+st[C.fac.staff]+'<small>Wages '+money(wage(C))+' a day on top of upkeep. Bigger team, better condition.</small><div class="bar"><i style="width:'+Math.round(C.cond)+'%"></i></div><small>Condition '+Math.round(C.cond)+'%</small></div>'+
+     '<button class="small" data-staff="-1"'+(C.fac.staff<=1?' disabled':'')+'>Fewer</button><button class="small" data-staff="1"'+(C.fac.staff>=3?' disabled':'')+'>More</button></div>';
+  h=repHtml(C)+h;h+=memHtml(C)+coastHtml(C);
+  el.innerHTML=h;bindClubExtras(C,el);
+  el.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{const F=FAC.find(f=>f.id===b.dataset.up),lv=C.fac[F.id],c=F.cost[lv+1];if(S.cash<c)return;
+    spend('fac',c);C.fac[F.id]++;C._q=null;if(F.id==='club'&&C.mem.on)C.mem.mood=clamp(C.mem.mood+8,0,100);save();renderClub();hud();sayText(F.name+' upgraded: '+F.levels[C.fac[F.id]].toLowerCase()+'. '+(F.id==='club'?'The members are already arguing about the curtains.':F.id==='shop'?'Forty quid for a glove. Marvellous.':'Rows of people slicing into the distance. Lovely.'))});
+  el.querySelectorAll('[data-staff]').forEach(b=>b.onclick=()=>{C.fac.staff=clamp(C.fac.staff+ +b.dataset.staff,1,3);save();renderClub();hud()});
+}
+function renderEvents(){
+  const C=course(),el=$('#evList');let h='';
+  EVENTS.forEach(E=>{const st=eventState(C,E);const booked=C.booked&&C.booked.id===E.id;
+    const btn=booked?'<small>Booked</small>':st.cool?'<small>'+(E.id==='champ'?'Next Championship slot on the rota in ':'Available in ')+st.cool+' days</small>':
+      '<button class="small'+(st.ok?' primary':'')+'" data-ev="'+E.id+'"'+(!st.ok||C.booked?' disabled':'')+'>Host tomorrow</button>';
+    h+='<div class="ev"><h3><span>'+E.name+'</span><span>'+short(E.pay)+'</span></h3><small style="color:var(--muted)">'+E.blurb+'</small><ul>'+st.req.map(r=>'<li class="'+(r[1]?'ok':'')+'">'+r[0]+'</li>').join('')+'</ul>'+btn+'</div>'});
+  el.innerHTML=h;
+  el.querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>{if(C.booked)return;C.booked={id:b.dataset.ev,day:S.day+1};save();renderEvents();hud();
+    sayText('Booked. The '+EVENTS.find(e=>e.id===b.dataset.ev).name+' is on tomorrow. The course will be closed to the public for the day.')});
+}
+function refreshPanels(){if(R.tab==='club')renderClub();if(R.tab==='events')renderEvents();if(R.tab==='reviews')renderReviews()}
+function setTab(t){R.tab=t;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  ['build','run','club','events','reviews'].forEach(k=>$('#p'+k[0].toUpperCase()+k.slice(1)).hidden=t!==k);refreshPanels();hud()}
+function blocked(){if(R.watch&&R.watch.C===course()){toast('Building is paused while you watch a round');return true}return false}
+function cellFrom(e){const r=cv.getBoundingClientRect();return {x:Math.floor((e.clientX-r.left)/cs),y:Math.floor((e.clientY-r.top)/cs)}}
+function paint(cell,first){
+  if(R.tab!=='build'||R.view!=='course')return;
+  if(R.watch&&R.watch.C===course()){if(first)blocked();return}
+  const key=cell.x+','+cell.y;if(!first&&key===R.lastCell)return;R.lastCell=key;
+  if(!inb(cell.x,cell.y))return;
+  const C=course(),H=hole();
+  if(H.g[idx(cell.x,cell.y)]===SEA){if(first)toast('That is the sea now');return}
+  if(tool.id==='pin'){if(!first)return;if(H.g[idx(cell.x,cell.y)]!==T.GREEN){toast('Place the pin on a green');return}H.pin={x:cell.x,y:cell.y};H.lostGreen=false;dirty(C,H);renderHoles();hud();return}
+  if(tool.id==='tee'){if(!first)return;if(H.tee&&H.tee.x===cell.x&&H.tee.y===cell.y)return;
+    if(S.cash<COST[6]){toast('Not enough cash');return}
+    if(H.tee)H.g[idx(H.tee.x,H.tee.y)]=T.ROUGH;if(H.pin&&H.pin.x===cell.x&&H.pin.y===cell.y)H.pin=null;
+    H.g[idx(cell.x,cell.y)]=T.TEE;H.tee={x:cell.x,y:cell.y};spend('build',COST[6]);dirty(C,H);renderHoles();hud();return}
+  const r=brush===1?0:1;let changed=false;
+  for(let j=-r;j<=r;j++)for(let i=-r;i<=r;i++){const x=cell.x+i,y=cell.y+j;if(!inb(x,y))continue;
+    const k=idx(x,y);if(H.g[k]===tool.t||H.g[k]===SEA)continue;
+    if(S.cash<COST[tool.t]){toast('Not enough cash');break}
+    if(H.tee&&H.tee.x===x&&H.tee.y===y)H.tee=null;
+    if(H.pin&&H.pin.x===x&&H.pin.y===y&&tool.t!==T.GREEN)H.pin=null;
+    H.g[k]=tool.t;spend('build',COST[tool.t]);changed=true;C._edits=(C._edits||0)+1}
+  if(changed){dirty(C,H);renderHoles();hud()}
+}
+function layoutCost(H,n){let c=0;for(let i=0;i<n.g.length;i++)if(n.g[i]!==H.g[i])c+=n.g[i]===T.TEE?COST[6]:COST[n.g[i]];return c}
+function applyLayout(C,i,n){const H=C.holes[i];H.g=n.g;H.tee=n.tee;H.pin=n.pin;dirty(C,H)}
+function parFor(C,i){return (C.holes.length===18?PARS18:PARS9)[i]}
+function autoHole(){
+  if(blocked())return;const C=course(),H=hole(),n=genHole(parFor(C,R.hole),PL[C.plotId].terrain,H.g,C.ero[R.hole]),c=layoutCost(H,n);
+  if(S.cash<c){toast('That layout costs '+money(c)+'. Not enough cash');return}
+  spend('build',c);applyLayout(C,R.hole,n);hole().lostGreen=false;C._edits=(C._edits||0)+40;renderHoles();hud();save();
+  sayText('Hole '+(R.hole+1)+' laid out for '+money(c)+'. A par '+holePar(hole())+' of '+Math.round(holeYards(hole()))+' yards. Tinker away.');
+}
+function autoAll(){
+  if(blocked())return;const C=course(),P=PL[C.plotId],plans=[];let total=0;
+  C.holes.forEach((H,i)=>{if(H.tee&&H.pin)return;const n=genHole(parFor(C,i),P.terrain,H.g,C.ero[i]);total+=layoutCost(H,n);plans.push([i,n])});
+  if(!plans.length){toast('Every hole is already laid out');return}
+  if(S.cash<total){toast('Laying out '+plans.length+' holes costs '+money(total)+'. Not enough cash');return}
+  spend('build',total);plans.forEach(([i,n])=>{applyLayout(C,i,n);C.holes[i].lostGreen=false});renderHoles();hud();save();
+  sayText(plans.length+' holes roughed out for '+money(total)+'. Par '+quality(C).par+' all told. Not bad for a morning\'s work.');
+}
+function clearHole(){
+  if(blocked())return;const C=course(),H=hole();
+  for(let i=0;i<H.g.length;i++)if(H.g[i]!==T.TREES&&H.g[i]!==SEA)H.g[i]=T.ROUGH;H.tee=null;H.pin=null;dirty(C,H);renderHoles();hud();save();
+}
+cv.addEventListener('pointerdown',e=>{R.painting=true;R.lastCell='';try{cv.setPointerCapture(e.pointerId)}catch(_){}paint(cellFrom(e),true)});
+cv.addEventListener('pointermove',e=>{if(R.painting)paint(cellFrom(e),false)});
+['pointerup','pointercancel'].forEach(ev=>cv.addEventListener(ev,()=>{if(R.painting)save();R.painting=false}));
+
+/* ---------- views ---------- */
+function showMap(){
+  if(R.watch)R.watch=null;
+  R.view='map';$('#mapView').hidden=false;$('#courseView').hidden=true;$('#back').hidden=true;$('#title').textContent='Golf: The Empire';
+  sizeMap();renderOverlay();hud();
+}
+function showCourse(id){
+  R.view='course';R.cid=id;R.hole=0;R.lines=[];R.amb=[];R.ambKey='';R.ambSeeded=false;$('#mapView').hidden=true;$('#courseView').hidden=false;$('#back').hidden=false;
+  $('#title').textContent=PL[id].name;closeSheet();
+  const C=course(),e=courseIssue(C);
+  setTab(e?'build':'run');renderHoles();resize();hud();
+  sayText(e?'Welcome to '+PL[id].name+'. '+C.holes.length+' holes of '+TERRAIN[PL[id].terrain].name.toLowerCase()+' waiting for a designer. Auto layout will get you going.':
+    'Back at '+PL[id].name+'. '+(C.open?'The course is open.':'The course is closed. Open it from the Run tab.'));
+  say('wx_'+C.wx);
+}
+/* ---------- map ---------- */
+const svg=$('#gb'),NS='http://www.w3.org/2000/svg';
+const KX=57.4,KY=100;
+function proj(lat,lon){return {x:(lon+6.4)*KX,y:(58.85-lat)*KY}}
+const GB=[[-5.71,50.06],[-5.2,49.96],[-4.75,50.15],[-4.15,50.33],[-3.64,50.22],[-3.45,50.6],[-2.95,50.7],[-2.45,50.57],[-1.95,50.69],[-1.3,50.8],[-0.8,50.75],[-0.14,50.81],[0.25,50.74],[0.97,50.91],[1.38,51.15],[1.42,51.38],[0.95,51.48],[0.6,51.52],[0.95,51.62],[1.2,51.8],[1.35,51.95],[1.62,52.2],[1.75,52.48],[1.6,52.8],[1.3,52.93],[0.95,52.96],[0.5,52.97],[0.28,52.8],[0.35,53.1],[0.2,53.45],[0.12,53.58],[-0.25,53.72],[-0.08,54.12],[-0.4,54.3],[-0.61,54.49],[-1.15,54.63],[-1.3,54.85],[-1.45,55.05],[-1.6,55.4],[-1.7,55.62],[-2.0,55.77],[-2.4,55.93],[-2.6,56.0],[-3.0,55.95],[-3.35,56.0],[-3.0,56.08],[-2.8,56.2],[-2.6,56.26],[-2.8,56.35],[-2.95,56.45],[-2.7,56.5],[-2.48,56.65],[-2.3,56.9],[-2.08,57.15],[-1.85,57.4],[-1.78,57.5],[-2.0,57.69],[-2.5,57.67],[-3.28,57.72],[-3.8,57.6],[-4.2,57.5],[-4.0,57.75],[-3.95,57.95],[-3.7,58.1],[-3.3,58.3],[-3.05,58.45],[-3.03,58.64],[-3.5,58.6],[-4.3,58.55],[-5.0,58.62],[-5.15,58.3],[-5.35,57.95],[-5.6,57.6],[-5.7,57.3],[-5.82,57.0],[-6.2,56.73],[-5.75,56.55],[-5.47,56.41],[-5.6,56.0],[-5.75,55.65],[-5.8,55.3],[-5.5,55.4],[-5.3,55.85],[-4.9,55.95],[-4.75,55.8],[-4.85,55.6],[-4.63,55.46],[-4.86,55.24],[-5.05,55.0],[-5.15,54.82],[-4.86,54.64],[-4.4,54.75],[-3.9,54.85],[-3.4,54.95],[-3.55,54.64],[-3.64,54.49],[-3.4,54.25],[-3.23,54.1],[-2.86,54.1],[-3.05,53.82],[-3.0,53.65],[-3.05,53.42],[-3.15,53.33],[-3.83,53.33],[-4.3,53.4],[-4.6,53.4],[-4.5,53.15],[-4.75,52.8],[-4.4,52.85],[-4.1,52.86],[-4.08,52.41],[-4.4,52.2],[-4.7,52.1],[-5.3,51.88],[-5.05,51.7],[-4.7,51.67],[-4.3,51.57],[-3.95,51.62],[-3.6,51.45],[-3.17,51.45],[-2.7,51.62],[-2.95,51.4],[-3.0,51.3],[-3.47,51.21],[-4.2,51.2],[-4.53,51.02],[-4.55,50.83],[-4.95,50.55],[-5.08,50.42],[-5.48,50.21]];
+const ISLES=[
+  [[-6.2,58.5],[-6.3,58.2],[-6.65,58.1],[-7.05,57.95],[-6.6,58.3]],
+  [[-6.1,57.6],[-5.7,57.3],[-5.95,57.15],[-6.4,57.25],[-6.7,57.5],[-6.35,57.7]],
+  [[-4.38,54.42],[-4.3,54.3],[-4.62,54.06],[-4.8,54.12],[-4.7,54.32]],
+  [[-1.55,50.66],[-1.1,50.72],[-1.18,50.6],[-1.5,50.62]]
+];
+const CITIES=[['London',51.51,-0.13],['Birmingham',52.48,-1.9],['Manchester',53.48,-2.24],['Leeds',53.8,-1.55],['Newcastle',54.97,-1.61],['Glasgow',55.86,-4.25],['Edinburgh',55.95,-3.19],['Cardiff',51.48,-3.18],['Bristol',51.45,-2.59],['Aberdeen',57.15,-2.09],['Inverness',57.48,-4.22],['Norwich',52.63,1.3]];
+const MAPW=(1.9+7.2)*KX,MAPH=(58.85-49.8)*KY,MAPX0=(-7.2+6.4)*KX;
+let vb={x:0,y:0,w:MAPW,h:MAPH},fitW=MAPW;
+function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e}
+function pathOf(pts){return 'M'+pts.map(([lon,lat])=>{const p=proj(lat,lon);return p.x.toFixed(1)+' '+p.y.toFixed(1)}).join('L')+'Z'}
+function buildMap(){
+  svg.innerHTML='';
+  svg.appendChild(el('rect',{x:-3000,y:-3000,width:7000,height:7000,fill:'var(--sea)'}));
+  const land=el('g',{});land.appendChild(el('path',{d:pathOf(GB),class:'landp'}));ISLES.forEach(i=>land.appendChild(el('path',{d:pathOf(i),class:'landp'})));
+  svg.appendChild(land);svg.appendChild(el('g',{id:'ov'}));
+}
+function sizeMap(){
+  const r=svg.getBoundingClientRect();if(!r.width||!r.height)return;
+  const asp=r.height/r.width;fitW=Math.max(MAPW+20,(MAPH+20)/asp);
+  if(!vb.init){vb.init=true;vb.w=fitW;vb.h=vb.w*asp;vb.x=MAPX0+MAPW/2-vb.w/2;vb.y=MAPH/2-vb.h/2}
+  else{const cx=vb.x+vb.w/2,cy=vb.y+vb.h/2;vb.w=Math.min(vb.w,fitW*1.2);vb.h=vb.w*asp;vb.x=cx-vb.w/2;vb.y=cy-vb.h/2}
+  svg.setAttribute('viewBox',vb.x+' '+vb.y+' '+vb.w+' '+vb.h);
+}
+function applyVB(){
+  const r=svg.getBoundingClientRect();
+  vb.w=clamp(vb.w,70,fitW*1.2);vb.h=vb.w*(r.height/r.width||1.6);
+  svg.setAttribute('viewBox',vb.x+' '+vb.y+' '+vb.w+' '+vb.h);renderOverlay();
+}
+function renderOverlay(){
+  const ov=svg.querySelector('#ov');if(!ov)return;ov.innerHTML='';
+  const r=svg.getBoundingClientRect(),sc=(r.width||400)/vb.w,u=1/sc;
+  CITIES.forEach(([n,lat,lon])=>{const p=proj(lat,lon);ov.appendChild(el('circle',{cx:p.x,cy:p.y,r:2.2*u,class:'city'}));
+    const t=el('text',{x:p.x+4*u,y:p.y+3.5*u,'font-size':10*u,class:'ctext'});t.textContent=n;ov.appendChild(t)});
+  const showLabels=sc>.9,M=S.market;
+  const vis=PLOTS.filter(p=>S.courses[p.id]||M.sales[p.id]||S.rc[p.id]||p.legend);
+  vis.sort((a,b)=>((a.id===R.sel)-(b.id===R.sel))||(b.lat-a.lat));
+  vis.forEach(p=>{const q=proj(p.lat,p.lon),own=!!S.courses[p.id],rv=!own&&S.rc[p.id],sl=!own&&!rv&&M.sales[p.id],adm=sl&&sl.admin,pv=p.legend&&!own&&!rv&&!sl,live=sl&&sl.type==='live',
+    fresh=sl&&M.fresh[p.id]!==undefined,sel=R.sel===p.id,rr=(sel?11:8.5)*u;
+    const g=el('g',{class:'pin'+(own?' owned':'')+(rv?' rival':'')+(pv?' private':'')+(p.legend?' legend':'')+(adm?' admin':'')+(live?' live':'')+(fresh?' fresh':'')+(sel?' sel':''),'data-plot':p.id});
+    const body=el('path',{class:'body',d:'M'+q.x+' '+q.y+'l'+(-.8*rr)+' '+(-1.2*rr)+'a'+rr+' '+rr+' 0 1 1 '+(1.6*rr)+' 0z'});if(rv)body.setAttribute('style','fill:'+RIV[rv.o].col);g.appendChild(body);
+    g.appendChild(el('circle',{class:'dot',cx:q.x,cy:q.y-1.9*rr,r:rr*.38}));
+    g.appendChild(el('rect',{x:q.x-16*u,y:q.y-3.3*rr,width:32*u,height:3.3*rr+4*u,fill:'transparent'}));
+    if(showLabels||sel||own||adm||fresh||live){const t=el('text',{x:q.x,y:q.y+11*u,'font-size':(sel?12:10.5)*u,'text-anchor':'middle',class:'plabel'});
+      t.textContent=pv?p.name:own?(M.sales[p.id]?'Selling':S.courses[p.id].open?'Open':'Yours'):rv?RIV[rv.o].short:(adm?'Admin ':'')+(live?(sl.closes===S.day?'Auction today':'Auction'):sl.type==='sealed'?'Bids '+short(sl.guide):short(salePrice(p.id)));g.appendChild(t)}
+    ov.appendChild(g)});
+}
+/* pan & pinch */
+const ptrs=new Map();let gest=null;
+function svgPt(cx,cy){const r=svg.getBoundingClientRect();return {x:vb.x+(cx-r.left)/r.width*vb.w,y:vb.y+(cy-r.top)/r.height*vb.h}}
+svg.addEventListener('pointerdown',e=>{
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});try{svg.setPointerCapture(e.pointerId)}catch(_){}
+  if(ptrs.size===1){const pin=e.target.closest&&e.target.closest('[data-plot]');gest={t:'pan',sx:e.clientX,sy:e.clientY,vb:{...vb},moved:0,pin:pin?pin.getAttribute('data-plot'):null}}
+  else if(ptrs.size===2){const [a,b]=[...ptrs.values()];gest={t:'pinch',d0:Math.hypot(a.x-b.x,a.y-b.y),vb:{...vb},m:svgPt((a.x+b.x)/2,(a.y+b.y)/2)}}
+});
+svg.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId)||!gest)return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  const r=svg.getBoundingClientRect();
+  if(gest.t==='pan'&&ptrs.size===1){const dx=e.clientX-gest.sx,dy=e.clientY-gest.sy;gest.moved=Math.max(gest.moved,Math.hypot(dx,dy));
+    if(gest.moved>5){vb.x=gest.vb.x-dx/r.width*gest.vb.w;vb.y=gest.vb.y-dy/r.height*gest.vb.h;applyVB()}}
+  else if(gest.t==='pinch'&&ptrs.size===2){const [a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y)||1;
+    const nw=clamp(gest.vb.w*gest.d0/d,70,fitW*1.2),k=nw/gest.vb.w,mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+    vb.w=nw;vb.h=gest.vb.h*k;vb.x=gest.m.x-(mx-r.left)/r.width*nw;vb.y=gest.m.y-(my-r.top)/r.height*vb.h;applyVB()}
+});
+function ptrEnd(e){
+  if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);
+  if(gest&&gest.t==='pan'&&ptrs.size===0&&gest.moved<=5){if(gest.pin)openListing(gest.pin);else if(R.sel)closeSheet()}
+  if(ptrs.size===1){const p=[...ptrs.values()][0];gest={t:'pan',sx:p.x,sy:p.y,vb:{...vb},moved:99,pin:null}}else if(!ptrs.size)gest=null;
+}
+svg.addEventListener('pointerup',ptrEnd);svg.addEventListener('pointercancel',ptrEnd);
+svg.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.deltaY>0?1.15:1/1.15,e.clientX,e.clientY)},{passive:false});
+function zoomAt(f,cx,cy){const r=svg.getBoundingClientRect();if(cx===undefined){cx=r.left+r.width/2;cy=r.top+r.height/2}
+  const m=svgPt(cx,cy),nw=clamp(vb.w*f,70,fitW*1.2),k=nw/vb.w;vb.x=m.x-(m.x-vb.x)*k;vb.y=m.y-(m.y-vb.y)*k;vb.w=nw;applyVB()}
+$('#zin').onclick=()=>zoomAt(1/1.4);$('#zout').onclick=()=>zoomAt(1.4);
+
+/* listings */
+const lab={
+  demand:d=>d<2?'Quiet':d<3.5?'Steady':d<5.5?'Busy':'Very busy',
+  wealth:w=>w<.75?'Modest':w<1.05?'Comfortable':w<1.4?'Well off':'Very wealthy',
+  prestige:p=>p<1.1?'Ordinary':p<1.3?'Good':p<1.5?'High':'Championship pedigree'};
+function closeSheet(){$('#sheet').hidden=true;if(R.sel){R.sel=null;renderOverlay()}}
+function openListing(id){
+  const p=PL[id],C=S.courses[id],rv=!C&&S.rc[id],sl=!C&&!rv&&S.market.sales[id];R.sel=id;renderOverlay();const sh=$('#sheet');sh.hidden=false;
+  const facts='<dl class="facts"><dt>Land</dt><dd>'+TERRAIN[p.terrain].name+', '+p.holes+' holes</dd><dt>Local golfers</dt><dd>'+lab.demand(p.demand)+'</dd><dt>Spending power</dt><dd>'+lab.wealth(p.wealth)+'</dd><dt>Prestige</dt><dd>'+lab.prestige(p.prestige)+'</dd></dl>';
+  const head='<button class="small close" id="shClose">Close</button><h2>'+p.name+'</h2><div class="area">'+p.area+'</div>';
+  if(C){const q=quality(C);
+    sh.innerHTML=head+'<p class="desc">'+(C.open?'Open for play. ':'Closed. ')+WXN[C.wx]+' today. '+C.today.rounds+' rounds and '+money(C.today.rev)+' taken. Reputation '+repTxt(C.rep)+' of 10, condition '+Math.round(C.cond)+'%.'+(C.mem.on?' '+C.mem.n+' members.':'')+(courseIssue(C)?' '+courseIssue(C)+'.':' Par '+q.par+'.')+'</p>'+facts+
+      '<button class="primary" id="shGo">Go to course</button>';
+    $('#shGo').onclick=()=>showCourse(id);sellUI(id);
+  }else if(rv){const O=RIV[rv.o];
+    sh.innerHTML=head+'<p class="desc"><b style="color:'+O.col+'">'+O.name+'</b>. '+O.blurb+'</p><dl class="facts"><dt>Reputation</dt><dd>'+repTxt(rv.rep)+' of 10</dd><dt>Owner\'s courses</dt><dd>'+Object.values(S.rc).filter(x=>x.o===rv.o).length+'</dd></dl>'+facts+
+      '<p class="desc" style="font-size:13px;color:var(--muted)">Not for sale. A rival club pulls golfers away from your courses within about 100 km, more so the better its reputation. Rival clubs do sometimes go bust.</p>';
+  }else if(sl){
+    const rum=sl.rum.map(k=>RIV[k].name),rumT=rum.length?'Word is '+rum.join(' and ')+(rum.length>1?' are':' is')+' interested.':'No rumours of rival interest.';
+    const adm=sl.admin?'<b>In administration.</b> Comes with a finished '+p.holes+' hole course and a clubhouse, a bit tired. ':'';
+    let body='',act='';
+    if(sl.type==='quiet'){const price=salePrice(id),gap=price-S.cash;
+      body='<div class="price">'+money(price)+'</div><p class="desc">'+adm+'Nobody else is chasing this one, so it\'s yours at the asking price. '+TERRAIN[p.terrain].desc+'</p>';
+      act='<button class="primary" id="shBuy"'+(gap>0?' disabled':'')+'>'+(gap>0?'Need '+money(gap)+' more':sl.admin?'Buy the club':'Buy this land')+'</button>';
+    }else if(sl.type==='sealed'){const left=sl.closes-S.day,step=bidStep(sl);R.offer=R.offer&&R.offer.id===id?R.offer:{id,amt:sl.mine||sl.guide};
+      body='<div class="price">Guide '+money(sl.guide)+'</div><p class="desc">'+adm+'Sealed bids. '+(left>0?'Closes at the end of '+dTxt(sl.closes,1)+', in '+left+(left===1?' day':' days')+'. ':'Closes tonight. ')+rumT+'</p>'+facts;
+      act='<div class="offer"><button class="small" id="ofDn">&minus;</button><b>'+money(R.offer.amt)+'</b><button class="small" id="ofUp">+</button></div>'+
+        (sl.mine?'<p class="info">Your offer of <b>'+money(sl.mine)+'</b> is in. You can change it until closing.</p>':'<p class="info">Highest bid over the reserve wins. Have the cash on closing day.</p>')+
+        '<button class="primary" id="ofGo"'+(R.offer.amt>S.cash?' disabled':'')+'>'+(R.offer.amt>S.cash?'You only have '+money(S.cash):sl.mine?'Change offer to '+money(R.offer.amt):'Submit offer of '+money(R.offer.amt))+'</button>'+(sl.mine?' <button id="ofX">Withdraw</button>':'');
+    }else{const today=sl.closes===S.day;
+      body='<div class="price">Guide '+money(sl.guide)+'</div><p class="desc">'+adm+'<b>Live auction '+(today?'today':'on '+dTxt(sl.closes,1))+'.</b> A marquee lot, sold in the room. '+rumT+'</p>'+facts;
+      act=today?'<button class="primary" id="shAttend">Attend the auction</button>':'<p class="info">Come back on '+dTxt(sl.closes,1)+'. If you don\'t turn up, it sells without you.</p>';
+    }
+    sh.innerHTML=head+body+(sl.type==='quiet'?facts:'')+act;
+    if($('#shBuy'))$('#shBuy').onclick=()=>buy(id);
+    if($('#shAttend'))$('#shAttend').onclick=()=>attend(id);
+    if($('#ofDn')){const st=bidStep(sl);
+      $('#ofDn').onclick=()=>{R.offer.amt=Math.max(Math.round(sl.guide*.6/1000)*1000,R.offer.amt-st);openListing(id)};
+      $('#ofUp').onclick=()=>{R.offer.amt+=st;openListing(id)};
+      $('#ofGo').onclick=()=>{if(R.offer.amt>S.cash)return;sl.mine=R.offer.amt;save();toast('Offer of '+money(sl.mine)+' submitted for '+p.name);openListing(id)};
+      if($('#ofX'))$('#ofX').onclick=()=>{sl.mine=null;save();openListing(id)}}
+  }else if(p.legend){sh.innerHTML=head+'<p class="desc"><b>A legendary private club.</b> One of the great venues of British golf, with a finished championship course, a grand clubhouse and a long waiting list. Not for sale. Venues like this come up very rarely, and only ever at live auction.</p>'+facts+'<p class="info">Last valued at around '+money(legendGuide(id))+'.</p>'
+  }else{sh.innerHTML=head+'<p class="desc">Not on the market.</p>'+facts}
+  $('#shClose').onclick=closeSheet;
+}
+function buy(id){
+  const p=PL[id],sl=S.market.sales[id];if(!sl||sl.type!=='quiet'||S.courses[id])return;const price=salePrice(id);if(S.cash<price)return;
+  spend('land',price);delete S.market.sales[id];acquire(id,sl.admin);
+  news(sl.admin?p.name+' rescued from administration by a new owner.':p.name+' sold. Rumours of a new golf course.');
+  save();toast('Sold. '+p.name+' is yours.');showCourse(id);
+}
+function acquire(id,admin){
+  const p=PL[id],C=newCourse(p);S.courses[id]=C;C.since=S.day;
+  if(p.legend)setupLegend(C);else if(admin){C.holes.forEach((H,i)=>{const n=genHole(parFor(C,i),p.terrain,H.g,C.ero[i]);H.g=n.g;H.tee=n.tee;H.pin=n.pin});C.fac.club=1;C.rep=2.4;C.cond=55;C._q=null}
+  checkCareer();return C;
+}
+function openMine(){
+  const ids=Object.keys(S.courses),sh=$('#sheet');R.sel=null;renderOverlay();sh.hidden=false;
+  sh.innerHTML='<button class="small close" id="shClose">Close</button><h2>My courses</h2>'+
+    (ids.length?ids.map(id=>{const C=S.courses[id],p=PL[id];return '<div class="mine"><div><b>'+p.name+'</b><small>'+(courseIssue(C)?'Under construction':C.open?'Open, '+C.today.rounds+' rounds today, rep '+repTxt(C.rep)+', '+WXN[C.wx].toLowerCase():'Closed')+'</small></div><button class="small" data-go="'+id+'">Go</button></div>'}).join(''):
+     '<p class="desc">Nothing yet. Tap a pin to see land for sale. Northern plots are cheap, the south costs a fortune, and the best links land is up on the coast.</p>')+
+    '<h2 style="font-size:16px;margin-top:14px">Rivals</h2>'+Object.keys(RIV).map(k=>{const n=Object.values(S.rc).filter(x=>x.o===k).length;return '<div class="mine"><div><b style="color:'+RIV[k].col+'">'+RIV[k].name+'</b><small>'+n+(n===1?' course':' courses')+'. '+RIV[k].blurb+'</small></div></div>'}).join('')+
+    '<h2 style="font-size:16px;margin-top:14px">Career</h2><ul class="career" style="list-style:none;padding:0;margin:6px 0 0">'+CAREER.map(c=>'<li>'+(S.career[c[0]]?'<b style="color:var(--club)">&#10003;</b> ':'&#9675; ')+c[1]+'</li>').join('')+'</ul>';
+  sh.innerHTML+='<div class="row" style="margin-top:12px"><button id="shMenu">Main menu</button></div>';
+  $('#shMenu').onclick=()=>{save();closeSheet();startScreen()};
+  $('#shClose').onclick=closeSheet;sh.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>showCourse(b.dataset.go));
+}
+function openNews(){
+  const sh=$('#sheet');R.sel=null;renderOverlay();sh.hidden=false;
+  sh.innerHTML='<button class="small close" id="shClose">Close</button><h2>Golf Gazette</h2>'+S.news.map(n=>'<div class="mine"><div>'+n.t+'<small>'+dTxt(n.day,1)+'</small></div></div>').join('');
+  $('#shClose').onclick=closeSheet;
+}
+
+/* ---------- v4: rivals ---------- */
+const RIV={
+ meridian:{name:'Meridian Capital',short:'Meridian',col:'#6A55A8',blurb:'A cash rich consortium buying up the home counties. Pays over the odds for prestige.',cash:1200000,bid:[1.05,1.4],target:4.3,max:5,
+   want:(P,g)=>P.wealth>=1.2||P.prestige>=1.45},
+ hollingworth:{name:'Hollingworth Estates',short:'Hollingworth',col:'#9A5B26',blurb:'Old money. Northern and Scottish clubs, and fiercely protective of their patch.',cash:700000,bid:[.95,1.25],target:4.1,max:4,
+   want:(P,g)=>P.lat>=54||(P.terrain==='links'&&P.prestige>=1.4)},
+ granite:{name:'Granite Leisure',short:'Granite',col:'#55636B',blurb:'A budget chain. Cheap nine holers and cheaper burgers.',cash:400000,bid:[.9,1.1],target:3.0,max:5,
+   want:(P,g)=>g<=120000&&(P.holes===9||g<=80000)}
+};
+const RIVAL_START={meridian:['harpenden'],hollingworth:['irvine'],granite:['peak','sutton']};
+function rivalCount(k){return Object.values(S.rc).filter(x=>x.o===k).length}
+function initWorld(){
+  S.rivals=S.rivals||{};for(const k in RIV)if(!S.rivals[k])S.rivals[k]={cash:RIV[k].cash};
+  S.rc=S.rc||{};
+  for(const k in RIVAL_START)RIVAL_START[k].forEach(id=>{if(!S.courses[id]&&!S.rc[id])S.rc[id]={o:k,rep:RIV[k].target-.4+Math.random()*.3,day:0}});
+  shuffle(PLOTS.filter(p=>!p.legend&&!RESERVE.includes(p.id)&&!S.rc[p.id]&&!S.courses[p.id]&&!S.market.sales[p.id])).sort((a,b)=>(b.gen?1:0)-(a.gen?1:0)).slice(0,14).forEach(p=>newSale(p.id,false,ri(4,18)));ensureStarter();
+  const sl=Object.values(S.market.sales);if(!sl.some(x=>x.type==='live'&&x.closes<=6)){const c=Object.keys(S.market.sales).filter(id=>S.market.sales[id].type==='sealed');
+    if(c.length){const x=S.market.sales[rnd(c)];x.type='live';x.closes=S.day+ri(3,5)}}
+  for(const id in S.market.fresh)delete S.market.fresh[id];
+}
+function comp(C){const P=PL[C.plotId],a=proj(P.lat,P.lon);let f=1;
+  for(const id in S.rc){const Q=PL[id],b=proj(Q.lat,Q.lon),d=Math.hypot(a.x-b.x,a.y-b.y);if(d<90)f*=1-.2*(S.rc[id].rep/5)*(1-d/90)}return f}
+function rivalsDay(){
+  for(const id of Object.keys(S.rc)){const r=S.rc[id],O=RIV[r.o],P=PL[id];
+    r.rep=clamp(r.rep+(Math.max(((S.rtgt&&S.rtgt[r.o])||O.target),P.legend?4.6:0)-r.rep)*.04+gauss()*.04,1,5);
+    S.rivals[r.o].cash+=(P.holes===18?2600:1200)*P.wealth*(r.rep/4);
+    if((r.o==='granite'&&r.rep<3.3&&Math.random()<1/90)||Math.random()<1/450){
+      delete S.rc[id];const sl=newSale(id,true,6);news(O.name+' puts '+P.name+' into administration. '+saleNews(id,sl))}
+  }
+  for(const id of Object.keys(S.market.sales)){const sl=S.market.sales[id];if(sl.type!=='quiet')continue;const g=salePrice(id);
+    if(g<=150000&&Math.random()<.025&&rivalCount('granite')<RIV.granite.max&&S.rivals.granite.cash>=g){
+      delete S.market.sales[id];S.rivals.granite.cash-=g;S.rc[id]={o:'granite',rep:2.5,day:S.day};
+      news('Granite Leisure snaps up '+PL[id].name+' for '+money(g)+'. Expect a burger van by the weekend.')}}
+  if(S.day>=S.champNext){const c=Object.keys(S.rc).filter(id=>{const P=PL[id];return P.terrain==='links'&&P.prestige>=1.4&&P.holes===18&&S.rc[id].rep>=4.3});
+    if(c.length&&Math.random()<1/20){const id=rnd(c);S.champNext=S.day+45;S.rc[id].rep=clamp(S.rc[id].rep+.2,0,5);
+      news('The Championship goes to '+PL[id].name+', owned by '+RIV[S.rc[id].o].name+'. Next slot on the rota in 45 days.')}}
+}
+
+/* ---------- auctions ---------- */
+function saleType(id,guide,admin){const P=PL[id];
+  if(P.holes===18&&((P.prestige>=1.4&&guide>=120000)||(admin&&guide>=150000)))return 'live';
+  if(!admin&&guide<90000&&P.prestige<1.3)return 'quiet';
+  return Math.random()<.35?'live':'sealed'}
+function newSale(id,admin,closeIn){
+  const M=S.market,guide=admin?adminPrice(id):priceOf(id),type=saleType(id,guide,admin),int=[],rum=[];
+  if(type!=='quiet')for(const k in RIV){const O=RIV[k],w=rivalCount(k)<O.max&&O.want(PL[id],guide,admin)&&Math.random()<.3;if(w)int.push(k);if(w!==(Math.random()<.15))rum.push(k)}
+  M.sales[id]={type,guide,admin:!!admin,closes:type==='quiet'?null:S.day+(closeIn||ri(5,9)),mine:null,int,rum};M.fresh[id]=S.day;
+  return M.sales[id];
+}
+function salePrice(id){const sl=S.market.sales[id];if(!sl)return 0;return sl.type==='quiet'?Math.round((sl.admin?adminPrice(id):priceOf(id))*(sl.disc||1)/1000)*1000:sl.guide}
+function saleNews(id,sl){const P=PL[id],r=sl.rum.map(k=>RIV[k].short);
+  return (sl.type==='live'?'Live auction on '+dTxt(sl.closes,1)+': ':sl.type==='sealed'?'Sealed bids invited: ':'For sale: ')+P.name+', '+P.area+'. '+(sl.type==='quiet'?'Asking ':'Guide ')+money(salePrice(id))+'.'+(r.length?' '+r.join(' and ')+' said to be interested.':'')}
+function bidStep(sl){return Math.max(1000,Math.round(sl.guide*.05/1000)*1000)}
+function rivalBid(k,sl){const O=RIV[k],b=Math.round(sl.guide*(O.bid[0]+Math.random()*(O.bid[1]-O.bid[0]))/1000)*1000;return Math.min(b,Math.floor(S.rivals[k].cash*(sl.legend?4:1)/1000)*1000)}
+function who(k){return k==='you'?'You':k==='private'?'A private buyer':RIV[k].name}
+function resolveSale(id,liveBids){
+  const M=S.market,sl=M.sales[id];if(!sl)return null;const P=PL[id];let bids=[],note='';
+  if(liveBids)bids=liveBids;
+  else{sl.int.forEach(k=>{if(rivalCount(k)>=RIV[k].max)return;const b=rivalBid(k,sl);if(b>=sl.guide*.85)bids.push({k,b})});
+    if(sl.mine){if(S.cash>=sl.mine)bids.push({k:'you',b:sl.mine});else note='<p>Your offer of '+money(sl.mine)+' was ruled out. You didn\'t have the cash on closing day.</p>'}}
+  bids.sort((a,b)=>b.b-a.b||(a.k==='you'?-1:b.k==='you'?1:0));
+  const reserve=Math.round(sl.guide*.9/1000)*1000,top=bids[0];delete M.sales[id];
+  const table=liveBids?'':(bids.length?'<h4>Sealed bids</h4><p>'+bids.map(x=>who(x.k)+': '+money(x.b)).join('<br>')+'</p><p>Reserve: '+money(reserve)+'.</p>':'<p>No bids came in.</p>');
+  if((!top||top.b<reserve)&&sl.legend){news(P.name+' withdrawn. The reserve was not met.');if(R.view==='map')renderOverlay();return null}
+  if(!top||top.b<reserve){
+    M.sales[id]={type:'quiet',guide:sl.guide,admin:sl.admin,closes:null,mine:null,int:[],rum:[],disc:.88};
+    news(P.name+' fails to sell at auction. Now available at '+money(salePrice(id))+' to anyone who wants it.');
+    if(sl.mine||liveBids)mail('Auction house','Result: '+P.name,'<p>'+P.name+' did not sell. The reserve was not met.</p>'+note+table+'<p>It\'s now available to buy outright at '+money(salePrice(id))+'.</p><p><button class="small" data-view="'+id+'">View on map</button></p>');
+    return null}
+  if(top.k==='you'){spend('land',top.b);acquire(id,sl.admin);news(P.name+' sold to you for '+money(top.b)+'.');
+    const over=top.b-(bids[1]?bids[1].b:reserve);
+    mail('Auction house','You won '+P.name,'<p>Congratulations. '+P.name+' is yours for '+money(top.b)+'.</p>'+(liveBids?'':'<p>'+(over>sl.guide*.15?'You left '+money(over)+' on the table over the next best offer. Ouch.':'You got it without overpaying much. Nicely judged.')+'</p>')+table+'<p><button class="small primary" data-go="'+id+'">Go to course</button></p>');
+    toast('You won '+P.name+'.',4000)}
+  else{S.rivals[top.k].cash-=top.b;S.rc[id]={o:top.k,rep:sl.admin?2.7:2.4,day:S.day};
+    news(P.name+' goes to '+RIV[top.k].name+' for '+money(top.b)+'.');
+    if(sl.mine||liveBids)mail('Auction house','Outbid on '+P.name,'<p>'+RIV[top.k].name+' won '+P.name+' with '+money(top.b)+'.</p>'+note+table)}
+  if(R.view==='map')renderOverlay();
+  return top.k;
+}
+/* live */
+const AUC_R=['{n} on the telephone. {m}.','{m}, {n} at the back of the room.','{n} nods. {m}.','{m} from {n}, without hesitation.','{n} again. {m}.'];
+function attend(id){const sl=S.market.sales[id];if(!sl||sl.type!=='live'||sl.closes!==S.day)return;closeSheet();
+  const maxes={};sl.int.forEach(k=>{if(rivalCount(k)<RIV[k].max)maxes[k]=rivalBid(k,sl)});
+  R.auc={id,sl,inc:Math.max(1000,Math.round(sl.guide*.04/1000)*1000),cur:Math.round(sl.guide*.7/1000)*1000,lead:null,quiet:0,nextR:1400,stage:0,maxes,log:[],over:false};
+  aucSay('Lot one. '+PL[id].name+', '+PL[id].area+'. '+(sl.admin?'A going concern, more or less. ':'')+'Who will start me at '+money(R.auc.cur)+'?');
+  openModal('');renderAuction();
+}
+function aucNext(){const A=R.auc;return A.lead?A.cur+A.inc:A.cur}
+function aucSay(t){const A=R.auc;A.log.unshift(t);if(A.log.length>5)A.log.length=5}
+function aucBid(k){const A=R.auc;if(!A||A.over)return;const amt=aucNext();if(k==='you'&&(S.cash<amt||(A.lead==='you'&&A.cur>=Math.round(A.sl.guide*.9/1000)*1000)))return;
+  A.cur=amt;A.lead=k;A.quiet=0;A.stage=0;A.nextR=900+Math.random()*1000;
+  aucSay(k==='you'?fill(rnd(['{m}, the bidder in the front row. That\'s you.','{m}, thank you. New bidder.','{m} in the room.']),{m:money(amt)}):fill(rnd(AUC_R),{n:RIV[k].name,m:money(amt)}));
+  renderAuction()}
+function stepAuction(dt){const A=R.auc;if(!A||A.over)return;A.quiet+=dt;
+  if(A.quiet>=A.nextR){const nx=aucNext(),el=Object.keys(A.maxes).filter(k=>k!==A.lead&&A.maxes[k]>=nx);
+    if(el.length){const k=rnd(el);if(nx<A.maxes[k]*.88||Math.random()<.45||A.quiet>5600){aucBid(k);return}A.nextR=A.quiet+800}else A.nextR=1e9}
+  const st=A.quiet>=7000?3:A.quiet>=5000?2:A.quiet>=3000?1:0;
+  if(st>A.stage){A.stage=st;
+    if(st===1)aucSay(A.lead?'Going once, at '+money(A.cur)+'...':'Come along. Do I hear '+money(A.cur)+'?');
+    else if(st===2)aucSay(A.lead?'Going twice...':'Last chance at '+money(A.cur)+'...');
+    else{aucEnd();return}
+    renderAuction()}
+}
+function aucEnd(){const A=R.auc;A.over=true;const reserve=Math.round(A.sl.guide*.9/1000)*1000;
+  if(!A.lead||A.cur<reserve){aucSay(A.lead?'I\'m sorry, the reserve has not been met. Lot withdrawn.':'No bids. Lot withdrawn.');A.won=resolveSale(A.id,A.lead?[]:[])}
+  else{aucSay('Sold! To '+(A.lead==='you'?'you':RIV[A.lead].name)+', for '+money(A.cur)+'.');A.won=resolveSale(A.id,[{k:A.lead,b:A.cur}])}
+  renderAuction()}
+function aucDrop(){const A=R.auc;if(!A||A.over)return;
+  const c=Object.keys(A.maxes).filter(k=>A.maxes[k]>=(k===A.lead?A.cur:aucNext())).sort((a,b)=>A.maxes[b]-A.maxes[a]);
+  if(c.length){const k=c[0],second=c[1]?A.maxes[c[1]]+A.inc:A.cur;const price=k===A.lead&&!c[1]?A.cur:Math.max(A.cur+(k===A.lead?0:A.inc),Math.min(A.maxes[k],second));
+    A.lead=k;A.cur=price;aucSay('You drop out. '+RIV[k].name+' carries on to '+money(price)+'.')}
+  else aucSay('You drop out.');
+  aucEnd()}
+function renderAuction(){const A=R.auc;if(!A)return;const P=PL[A.id],nx=aucNext();
+  const st=['','Going once','Going twice','Sold'][A.stage];
+  let btns;
+  if(A.over)btns='<button class="primary" id="aDone">'+(A.won==='you'?'Go to your new course':'Back to the map')+'</button>';
+  else btns='<button class="primary big1" id="aBid"'+((A.lead==='you'&&A.cur>=Math.round(A.sl.guide*.9/1000)*1000)||S.cash<nx?' disabled':'')+'>'+(A.lead==='you'?(A.cur<Math.round(A.sl.guide*.9/1000)*1000?'Below reserve. Raise to '+money(nx):'You are the high bidder'):S.cash<nx?'Can\'t afford '+money(nx):'Bid '+money(nx))+'</button><button id="aDrop">'+(A.lead==='you'?'Leave it there':'Drop out')+'</button>';
+  openModal('<div class="auc"><small>Live auction, '+P.area+'</small><h2>'+P.name+'</h2><p class="desc">Guide '+money(A.sl.guide)+'. '+TERRAIN[P.terrain].name+', '+P.holes+' holes'+(A.sl.admin?', with a built course and clubhouse':'')+'.</p>'+
+    '<div class="aucbid"><span>'+money(A.cur)+'</span><small>'+(A.lead?(A.lead==='you'?'You lead':RIV[A.lead].name+' leads'):'Opening bid, no takers yet')+'</small></div>'+
+    '<div class="gavel'+(A.stage?' on':'')+'">'+(st||'&nbsp;')+'</div>'+
+    '<div class="alog">'+A.log.map((l,i)=>'<p'+(i?' class="old"':'')+'>'+l+'</p>').join('')+'</div>'+
+    '<p class="info">Your cash: <b>'+money(S.cash)+'</b></p><div class="abtns">'+btns+'</div></div>');
+  if($('#aBid'))$('#aBid').onclick=()=>aucBid('you');
+  if($('#aDrop'))$('#aDrop').onclick=()=>{if(A.lead==='you'){A.quiet=Math.max(A.quiet,3000)}else aucDrop()};
+  if($('#aDone'))$('#aDone').onclick=()=>{const id=A.id,won=A.won==='you';R.auc=null;closeModal();save();if(won)showCourse(id);else{showMap()}};
+}
+
+/* ---------- members ---------- */
+function memCap(C){return C.holes.length*25}
+function fairSub(C){return Math.round(fairFee(C)*30/50)*50}
+function moodName(m){return m>=60?'Happy':m>=40?'Content':m>=25?'Grumbling':'Mutinous'}
+function memDay(C){const M=C.mem;if(!M.on)return 0;const P=PL[C.plotId],cap=memCap(C);
+  let d=(65-M.mood)*.03;
+  if(C.cond<65){d-=1.5;M.cause='the state of the course'}else if(C.cond>=85)d+=1;
+  if(C.rep>=4)d+=.5;
+  if(C.today.vis>Math.max(60,C.today.memR*4)){d-=.6;M.cause='the number of visitors on the course'}
+  if((C._edits||0)>25){d-=3;M.cause='changes to the course made without consultation'}C._edits=0;
+  M.mood=clamp(M.mood+d,0,100);
+  const target=cap*clamp(P.demand/4,.4,1.4)*(C.rep/4.5)*clamp(1.6-M.sub/fairSub(C)*.6,.2,1.4)*clamp(M.mood/70,.4,1.15);
+  M.wait=Math.max(0,Math.round(target-cap));const goal=Math.min(cap,target);
+  M.n=Math.round(M.n+(goal-M.n)*.1+Math.sign(goal-M.n)*Math.min(2,Math.abs(goal-M.n)));
+  if(M.mood<35)M.n=Math.round(M.n*.97);M.n=clamp(M.n,0,cap);
+  const band=M.mood>=60?3:M.mood>=40?2:M.mood>=25?1:0,P2=PL[C.plotId].name;
+  if(band<M.band){
+    if(band===2)mail('Club committee, '+P2,'A note of concern','<p>Dear owner,</p><p>The committee wishes to record its concern about '+(M.cause||'recent developments')+'. We trust this will be addressed.</p><p>Yours, on behalf of the members</p>');
+    if(band===1)mail('Club committee, '+P2,'Feelings are running high','<p>Dear owner,</p><p>Feelings are running high in the bar about '+(M.cause||'the way the club is run')+'. Until matters improve, the committee will withhold its support for any further tournaments.</p><p>Yours, with some regret</p>');
+    if(band===0)mail('Club committee, '+P2,'Motion of no confidence','<p>Dear owner,</p><p>Members are resigning. A motion of no confidence has been tabled for the next general meeting.</p><p>The committee</p>');
+  }else if(band===3&&M.band<3)mail('Club committee, '+P2,'With thanks','<p>Dear owner,</p><p>The committee would like to place on record its thanks. Morale in the bar is the best it has been for some time.</p>');
+  M.band=band;
+  return Math.round(M.n*M.sub/100);
+}
+function memHtml(C){const M=C.mem;
+  if(!M.on)return '<div class="fac"><div><b>Members</b>: pay and play only<small>Members pay a yearly subscription that ignores the weather, count towards prestige, and get first call on morning tee times. They also come with a committee.</small></div><button class="small primary" data-mem="on">Welcome members</button></div>';
+  const cap=memCap(C);
+  return '<div class="fac"><div><b>Members</b>: '+M.n+' of '+cap+(M.wait?', <b>'+M.wait+'</b> waiting':'')+'<div class="bar"><i style="width:'+Math.round(M.n/cap*100)+'%"></i></div><small>Subscription '+money(M.sub)+' a year, bringing in about '+money(M.n*M.sub/100)+' a day. Locals think '+money(fairSub(C))+' is fair.</small></div><button class="small" data-sub="-1">Lower</button><button class="small" data-sub="1">Raise</button></div>'+
+    '<div class="fac"><div><b>Committee</b>: '+moodName(M.mood)+'<div class="bar"><i style="width:'+Math.round(M.mood)+'%;background:'+(M.mood<40?'var(--warn)':'var(--club)')+'"></i></div><small>Keep the course in good nick, don\'t flood it with visitors, consult before redesigns. Below 40 they block tournaments, below 35 members resign.</small></div><button class="small" data-mem="off">'+(R.confirmOff===C.plotId?'Tap again':'Disband')+'</button></div>';
+}
+function coastHtml(C){if(!C.coast||!C.coast.length)return '';
+  const lost=C.ero.reduce((a,b)=>a+b,0)-C.ero0,lv=C.fac.sea,names=['No defences','Rock armour','Sea wall'],cost=[0,40000,120000];
+  return '<div class="fac"><div><b>Coastline</b>: '+names[lv]+'<small>Holes '+C.coast.map(i=>i+1).join(', ')+' run along the shore. '+(lost?'The sea has taken about <b>'+(lost*YPC)+' yards</b> of land so far.':'No land lost yet.')+' Storms eat away at shoreline holes; rock armour halves the damage, a sea wall stops it.</small></div>'+
+    (lv<2?'<button class="small" data-sea="1"'+(S.cash<cost[lv+1]?' disabled':'')+'>'+names[lv+1]+', '+short(cost[lv+1])+'</button>':'<small>Protected</small>')+'</div>';
+}
+function bindClubExtras(C,el){
+  el.querySelectorAll('[data-mem]').forEach(b=>b.onclick=()=>{const M=C.mem;
+    if(b.dataset.mem==='on'){M.on=true;M.n=Math.round(memCap(C)*.12);M.sub=fairSub(C);M.mood=70;M.band=3;news(PL[C.plotId].name+' becomes a members\' club.');
+      sayText('Members, then. A committee, a dress code and a strongly worded notice about mobile phones in the bar. Very good.')}
+    else{if(R.confirmOff!==C.plotId){R.confirmOff=C.plotId;renderClub();return}R.confirmOff=null;
+      M.on=false;M.n=0;M.wait=0;C.rep=clamp(C.rep-.4,0,5);news('Uproar at '+PL[C.plotId].name+' as the owner disbands the membership.');sayText('The members have been shown the door. I suspect we\'ll be reading about this.')}
+    save();renderClub();hud()});
+  el.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>{const M=C.mem,st=Math.max(50,Math.round(fairSub(C)*.05/50)*50);
+    M.sub=Math.max(50,M.sub+st*+b.dataset.sub);if(+b.dataset.sub>0){M.mood=clamp(M.mood-3,0,100);M.cause='the subscription increase'}else M.mood=clamp(M.mood+1,0,100);save();renderClub()});
+  el.querySelectorAll('[data-sea]').forEach(b=>b.onclick=()=>{const cost=[0,40000,120000][C.fac.sea+1];if(S.cash<cost)return;spend('fac',cost);C.fac.sea++;save();renderClub();hud();
+    sayText(C.fac.sea===1?'Rock armour going in along the shore. Several thousand tonnes of granite, and the sea is not impressed.':'A proper sea wall. King Canute would be green with envy.')});
+}
+
+/* ---------- erosion ---------- */
+function coastFor(p,n){const k=Math.round(p.lat*100+p.lon*10),c=[];for(let i=0;i<n;i++)if(hsh(i,k,77)<.36)c.push(i);
+  if(c.length<2){[Math.floor(n/2),n-1].forEach(i=>{if(!c.includes(i))c.push(i)})}return c.sort((a,b)=>a-b)}
+function stormDay(C,force){
+  if(!force&&C.wx!=='storm')return;if(!C.coast||!C.coast.length)return;
+  const P=PL[C.plotId],lv=C.fac.sea,hit=[];
+  for(let t=0;t<ri(1,2);t++){const hi=rnd(C.coast),rows=lv===2?0:lv===1?(Math.random()<.5?1:0):ri(1,2);if(!rows)continue;
+    const H=C.holes[hi],old=C.ero[hi],nl=Math.min(10,old+rows);if(nl===old)continue;
+    for(let y=old;y<nl;y++)for(let x=0;x<COLS;x++)H.g[idx(x,y)]=SEA;
+    C.ero[hi]=nl;let gone=false;
+    if(H.pin&&H.pin.y<nl){H.pin=null;H.lostGreen=true;gone=true}
+    dirty(C,H);hit.push({hi,yd:(nl-old)*YPC,gone})}
+  if(!hit.length){if(lv)mail('Head greenkeeper, '+P.name,'Storm last night','<p>Big storm last night. The '+(lv===2?'sea wall':'rock armour')+' took a battering but held. Not a yard lost.</p>');return}
+  const gone=hit.filter(h=>h.gone);
+  if(gone.length&&C.open){C.open=false}
+  news('Storm batters '+P.name+'. '+(gone.length?'A green has been lost to the sea.':'Land lost on the shore holes.'));
+  mail('Head greenkeeper, '+P.name,gone.length?'We\'ve lost a green':'Storm damage on the shore',
+    '<p>Rough night. The sea came over the dunes and took a bite out of the course.</p><p>'+hit.map(h=>'The '+ORD(h.hi+1)+': about '+h.yd+' yards gone'+(h.gone?', and the green with it.':'.')).join('<br>')+'</p>'+
+    (gone.length?'<p>The course is closed until that hole has a new green. Auto layout will work round the new shoreline, though the hole will be shorter.</p>':'<p>Play goes on, but those holes are shorter than they were, and the next storm will take more.</p>')+
+    (lv?'':'<p>We could do with some proper sea defences. Rock armour would halve this, a sea wall would stop it.</p>')+'<p><button class="small" data-go="'+C.plotId+'">Go to course</button></p>');
+}
+
+/* ---------- inbox & modal ---------- */
+function menuOpen(){return !$('#modal').hidden||(R.view==='map'&&!$('#sheet').hidden)||(R.view==='course'&&R.tab!=='run')}
+function mail(from,title,body){S.inbox.unshift({day:S.day,from,title,body,read:false});if(S.inbox.length>40)S.inbox.length=40;badge()}
+function badge(){const n=S&&S.inbox?S.inbox.filter(m=>!m.read).length:0,b=$('#inboxN');if(!b)return;b.textContent=n;b.hidden=!n}
+function openModal(html){$('#modal').hidden=false;$('#modalBox').innerHTML=html;$('#modalBox').scrollTop=0;R.hold=true}
+function closeModal(){$('#modal').hidden=true;R.hold=false}
+function openInbox(){
+  openModal('<div class="mhead"><h2>Inbox</h2><button class="small" id="mClose">Close</button></div>'+(S.inbox.length?S.inbox.map((m,i)=>
+    '<button class="mailrow'+(m.read?'':' unread')+'" data-mail="'+i+'"><span class="mfrom">'+m.from+'<small>'+dTxt(m.day,1)+'</small></span><span class="mtitle">'+m.title+'</span></button>').join(''):
+    '<p class="desc">Nothing yet. The Golf Gazette arrives every seven days.</p>'));
+  $('#mClose').onclick=closeModal;document.querySelectorAll('[data-mail]').forEach(b=>b.onclick=()=>openMail(+b.dataset.mail));
+}
+function openMail(i){const m=S.inbox[i];if(!m)return;m.read=true;badge();
+  openModal('<div class="mhead"><button class="small" id="mBack">Inbox</button><button class="small" id="mClose">Close</button></div><div class="mail"><small>'+m.from+', '+dTxt(m.day,1)+'</small><h2>'+m.title+'</h2>'+m.body+'</div>');
+  $('#mBack').onclick=openInbox;$('#mClose').onclick=closeModal;
+  document.querySelectorAll('#modalBox [data-view]').forEach(b=>b.onclick=()=>{const id=b.dataset.view;closeModal();if(R.view!=='map')showMap();if(S.courses[id]||S.market.sales[id]||S.rc[id])openListing(id)});
+  document.querySelectorAll('#modalBox [data-go]').forEach(b=>b.onclick=()=>{const id=b.dataset.go;closeModal();if(S.courses[id])showCourse(id)});
+}
+
+/* ---------- Golf Gazette weekly ---------- */
+const PERCY_COL=["I once watched a man take eleven in a bunker and then thank the bunker. That's golf, really.",
+ "Somebody asked me what makes a great course. Good drainage and a decent bacon roll. Next question.",
+ "The wind is the finest golf architect who ever lived. Unpaid, unreliable and entirely unrepentant.",
+ "Members' committees are like weather fronts. You can see them coming and there is nothing whatsoever you can do.",
+ "Auctions are just golf with money. Everyone thinks they can go a bit further than they actually can.",
+ "There's no such thing as bad weather, only the wrong waterproofs and an empty car park.",
+ "The sea has been redesigning links courses for a thousand years. It has never once asked for planning permission."];
+function gazette(){const wk=Math.floor(S.day/7),M=S.market,ids=Object.keys(M.sales);
+  const ord={live:0,sealed:1,quiet:2};ids.sort((a,b)=>ord[M.sales[a].type]-ord[M.sales[b].type]||(M.sales[a].closes||99)-(M.sales[b].closes||99));
+  const opp=id=>{const sl=M.sales[id],P=PL[id],r=sl.rum.map(k=>RIV[k].short);
+    const t=sl.type==='live'?'Live auction on '+dTxt(sl.closes,1)+', guide '+money(sl.guide):sl.type==='sealed'?'Sealed bids close '+dTxt(sl.closes,1)+', guide '+money(sl.guide):'Asking '+money(salePrice(id))+', no other buyers';
+    return '<div class="opp"><div><b>'+P.name+'</b>, '+P.area+'<small>'+(sl.admin?'In administration. ':'')+TERRAIN[P.terrain].name+', '+P.holes+' holes. '+t+'.'+(sl.type!=='quiet'?(r.length?' '+r.join(' and ')+' rumoured.':' No rival interest rumoured.'):'')+'</small></div><button class="small" data-view="'+id+'">View</button></div>'};
+  let pickId=null,best=-1;ids.forEach(id=>{const P=PL[id],v=(P.demand*P.wealth*P.prestige)/(salePrice(id)/100000)*(M.sales[id].rum.length?.7:1.2);if(v>best){best=v;pickId=id}});
+  let h='<p class="kick">The week\'s opportunities, rivals and gossip.</p>';
+  if(pickId){const P=PL[pickId];h+='<h4>Pick of the week</h4><p><b>'+P.name+'</b>, '+P.area+'. '+(P.prestige>=1.4?'Proper championship land. ':'')+'Golfer demand is '+lab.demand(P.demand).toLowerCase()+' and the locals are '+lab.wealth(P.wealth).toLowerCase()+'. '+(M.sales[pickId].rum.length?'Expect a fight.':'Nobody else seems to have noticed yet.')+'</p>'}
+  h+='<h4>Up for grabs</h4>'+(ids.length?ids.slice(0,8).map(opp).join(''):'<p>Slim pickings this week. Keep an eye out for administrations.</p>');
+  h+='<h4>Rival watch</h4>'+Object.keys(RIV).map(k=>{const n=rivalCount(k),c=S.rivals[k].cash;return '<p><b style="color:'+RIV[k].col+'">'+RIV[k].name+'</b>: '+n+(n===1?' course':' courses')+', '+(c>1500000?'pockets bottomless':c>600000?'well funded':c>200000?'comfortable':'stretched thin')+'.</p>'}).join('');
+  const log=S.wk.log.filter(t=>/goes to|snaps up|administration|Championship goes/.test(t));if(log.length)h+='<p>'+log.join('<br>')+'</p>';
+  const mine=Object.values(S.courses);
+  if(mine.length){const top=mine.slice().sort((a,b)=>b.rep-a.rep)[0];h+='<h4>Your week</h4><p>'+(S.wk.profit>=0?'Profit of ':'A loss of ')+money(Math.abs(S.wk.profit))+' across '+mine.length+(mine.length===1?' course':' courses')+'. Best rated: '+PL[top.plotId].name+' at '+repTxt(top.rep)+'.</p>'}
+  h+='<h4>Percy\'s corner</h4><p class="percy">'+rnd(PERCY_COL)+'</p>';
+  mail('Golf Gazette','Weekly bulletin, week '+wk,h);S.wk={profit:0,log:[]};
+}
+
+/* ---------- feature reviews ---------- */
+function featureDue(){for(const id in S.courses){const C=S.courses[id];if(!C.open||courseIssue(C))continue;
+  if(C.nextRev===undefined){C.nextRev=S.day+ri(6,10);continue}
+  if(S.day>=C.nextRev){C.nextRev=S.day+ri(18,28);featureReview(C);return}}}
+function featureReview(C){
+  const P=PL[C.plotId],q=quality(C),TR=TERRAIN[P.terrain],n=C.holes.length,fair=fairFee(C)*(1+q.interest*.3);
+  const rv=C.reviews.slice(0,15),avg=rv.length?rv.reduce((a,b)=>a+b.stars,0)/rv.length:C.rep;
+  let sc=avg*1.4+(q.design-4)*.8+q.variety*1.5+(C.cond-70)/30+C.fac.club*.25+C.fac.range*.3+(P.prestige-1)*2-q.weak/n*4-Math.max(0,C.fee/fair-1)*3+(Math.random()-.5);
+  sc=clamp(Math.round(sc),1,10);
+  let si=0,sv=-1;C.holes.forEach((H,i)=>{const v=analyzeHole(H).score;if(v>sv){sv=v;si=i}});
+  const SH=C.holes[si],sc2=holeCounts(SH),shy=Math.round(holeYards(SH));
+  const sett={links:P.name+' sits on proper links land at '+P.area+'. Firm turf, big skies, and a wind that never quite stops.',
+    heathland:'Pine, heather and sandy soil at '+P.area+'. The ground drains like a sieve, which in this country counts as a minor miracle.',
+    parkland:'Big old trees and soft turf at '+P.area+'. The kind of English parkland that makes you want a pint before you have even teed off.',
+    moorland:'Upland golf at '+P.area+'. Rugged, wild and frequently damp, though the views do their very best to compensate.'}[P.terrain];
+  const club=['The clubhouse is a portacabin with a kettle, which tells you most of what you need to know about the budget.','The clubhouse is modest but warm, and the tea is hot.','The clubhouse restaurant does a very respectable steak pie, and the bar staff know what they are doing.','The grand clubhouse is a statement, all oak panelling and honours boards, and a lunch you will want to linger over.'][C.fac.club];
+  const des=q.design>=7.5?'Design is the star here. The bunkering asks questions off every tee, and there is barely a lazy hole on the card.':q.design>=5.5?'The design is sound if a little unadventurous. Nothing offends, though not much sticks in the memory either.':'The design is thin. Too many holes are simply grass between a tee and a green, with very little to think about.';
+  const vari=q.variety>0?' The mix of par threes, fours and fives keeps the round moving nicely.':q.variety<0?' The card is monotonous, hole after hole of much the same length.':'';
+  const stand=' The standout is the '+ORD(si+1)+', a '+shy+' yard par '+holePar(SH)+(function(){const fl=analyzeHole(SH).feats.filter(f=>f.p>0).slice(0,2).map(f=>f.n.toLowerCase());return fl.length?', with '+fl.join(' and '):''})()+'. '+(sv>=8?'A genuine signature hole, the kind people drive hours to play.':sv>=6?'Memorable for all the right reasons.':'Solid, if not spectacular.');
+  const weak=q.weak?' A couple of holes feel unfinished, and the round sags because of it.':'';
+  const cond=C.cond>=85?'Conditioning is superb. The greens rolled true all day and the fairways were like carpet.':C.cond>=70?'Condition is decent, with a few tired patches that more staff would sort out.':'Condition is poor. Bare patches, bumpy greens, and a greenkeeping team clearly stretched to breaking point.';
+  const val=C.fee>fair*1.1?' At '+money(C.fee)+' a round it is overpriced, and the half empty car park suggests the locals agree.':C.fee<fair*.75?' At '+money(C.fee)+' a round it is an outright bargain.':' At '+money(C.fee)+' a round, the price feels about right.';
+  const mem=C.mem.on?' As a members\' club it has a proper sense of belonging, though visitors may feel the occasional stare from the bar.':'';
+  const coast=C.coast&&C.ero.reduce((a,b)=>a+b,0)>C.ero0+2?' One worry: the sea is visibly eating the shoreline holes, and the owners will need to act.':'';
+  const verdict=sc>=9?'A genuine gem. Book now, before everyone else does.':sc>=7?'Well worth the trip. A course with real ambition.':sc>=5?'Promising, but not there yet. Worth a look if you are passing.':'Hard to recommend at the moment. Come back in a year.';
+  const head=sc>=9?'A masterpiece at '+P.name:sc>=7?P.name+': well worth the trip':sc>=5?P.name+' shows promise':P.name+': a good walk spoiled';
+  const body='<p class="byline">By Fenella Ashcombe</p><p class="kick">'+TR.name+', '+n+' holes, par '+q.par+', '+q.yards.toLocaleString('en-GB')+' yards</p>'+
+    '<p>'+sett+' '+club+'</p><p>'+des+vari+stand+weak+'</p><p>'+cond+val+mem+coast+'</p><p><b>Verdict.</b> '+verdict+'</p><p class="score">'+sc+' out of 10</p>';
+  if(sc>=8){C.buzz={until:S.day+7,m:1.25};C.rep=clamp(C.rep+.15,0,5)}else if(sc<=4){C.buzz={until:S.day+7,m:.85};C.rep=clamp(C.rep-.15,0,5)}
+  news('The Fairway Review gives '+P.name+' '+sc+' out of 10.');
+  mail('The Fairway Review',head,body+'<p><button class="small" data-go="'+C.plotId+'">Go to course</button></p>');
+  return sc;
+}
+
+/* ---------- challenges & start ---------- */
+function setupCourse(id,o){const p=PL[id];delete S.market.sales[id];delete S.rc[id];const C=newCourse(p);S.courses[id]=C;
+  C.holes.forEach((H,i)=>{let best=null;for(let k=0;k<(o.long?8:1);k++){const nh=genHole(parFor(C,i),p.terrain,H.g,C.ero[i]),y=distY(center(nh.tee),center(nh.pin));if(!best||y>best.y)best={nh,y}}
+    H.g=best.nh.g;H.tee=best.nh.tee;H.pin=best.nh.pin});
+  Object.assign(C.fac,o.fac||{});C.rep=o.rep??2.5;C.cond=o.cond??80;C.open=o.open!==false;if(o.ev)C.evDone=o.ev;C._q=null;
+  C.fee=Math.max(5,Math.round(fairFee(C)/5)*5);C.reviews=[];return C}
+const SCEN=[
+ {id:'brink',name:'Back from the brink',diff:'Gentle',days:45,
+  blurb:'East Neuk Links in Fife went bust and you picked it up for a song. The greens are tired, the clubhouse leaks, and the bank wants results.',
+  goal:'Get East Neuk Links to 8 out of 10 reputation with £300,000 in the bank',
+  setup(){S.cash=60000;setupCourse('crail',{rep:1.8,cond:42,fac:{club:1}})},
+  check(){const C=S.courses.crail;return {done:!!C&&C.rep>=4&&S.cash>=300000,prog:C?'reputation '+repTxt(C.rep)+', '+short(S.cash)+' banked':'course lost'}}},
+ {id:'members',name:'The waiting list',diff:'Moderate',days:60,
+  blurb:'The owners of Tatton Edge in Cheshire want a proper members\' club. The kind with a waiting list, a dress code and a portrait of a former captain in the bar.',
+  goal:'Fill every membership at Tatton Edge, with a waiting list',
+  setup(){S.cash=120000;setupCourse('tatton',{rep:3.0,cond:75,fac:{club:1}})},
+  check(){const C=S.courses.tatton,M=C&&C.mem;return {done:!!(M&&M.on&&M.n>=memCap(C)&&M.wait>=20),prog:M&&M.on?M.n+' of '+memCap(C)+' members'+(M.wait?', '+M.wait+' waiting':''):'no members yet'}}},
+ {id:'belt',name:'Stockbroker belt',diff:'Moderate',days:50,
+  blurb:'Three little southern nine holers, and Meridian Capital owns the two best clubs in the region. They would quite like yours as well.',
+  goal:'Own the highest rated course in the south for ten days running',
+  setup(){S.cash=150000;['norwood','downs','harpenden'].forEach(id=>setupCourse(id,{rep:3.0,cond:78,fac:{club:1}}));
+    ['chobham','cotswold'].forEach((id,i)=>{delete S.market.sales[id];S.rc[id]={o:'meridian',rep:[3.8,3.6][i],day:0}});S.rivals.meridian.cash=2500000;S.rtgt={meridian:3.85};S.streak=0},
+  tick(){const st=this.rank();S.streak=st.me>st.them+.05?(S.streak||0)+1:0},
+  rank(){const south=id=>PL[id].lat<52.3;let me=0,them=0;for(const id in S.courses)if(south(id))me=Math.max(me,S.courses[id].rep);for(const id in S.rc)if(south(id))them=Math.max(them,S.rc[id].rep);return {me,them}},
+  check(){const r=this.rank();return {done:(S.streak||0)>=10,prog:'your best '+repTxt(r.me)+', Meridian\'s '+repTxt(r.them)+(S.streak?', top for '+S.streak+(S.streak===1?' day':' days'):'')}}},
+ {id:'tide',name:'Rising tide',diff:'Hard',days:70,
+  blurb:'Pegwell Bay Links in Kent has hosted the big amateur events and dreams of The Championship. The trouble is the sea, which would like it back.',
+  goal:'Host The Championship at Pegwell Bay Links',
+  setup(){S.cash=250000;S.stormy=3;setupCourse('pegwell',{long:true,rep:4.2,cond:82,fac:{club:2,shop:1,range:1,staff:2},ev:{county:-30,regional:-30}})},
+  check(){const C=S.courses.pegwell;return {done:!!(C&&C.evDone.champ!==undefined),prog:C?quality(C).yards.toLocaleString('en-GB')+' yards, reputation '+repTxt(C.rep):'course lost'}}},
+ {id:'shoestring',name:'Shoestring',diff:'Very hard',days:240,
+  blurb:'Fifty grand and a dream. Go from an empty field to hosting The Championship before the money men beat you to it.',
+  goal:'Host The Championship anywhere',
+  setup(){S.cash=50000},
+  check(){return {done:!!S.career.champ,prog:Object.keys(S.courses).length+(Object.keys(S.courses).length===1?' course, ':' courses, ')+short(S.cash)+' in the bank'}}}
+];
+function scenOf(){return S&&S.mode==='challenge'?SCEN.find(x=>x.id===S.scen):null}
+function goalChip(){const g=$('#goal'),sc=scenOf();if(!sc){g.hidden=true;return}g.hidden=false;const st=sc.check(),left=sc.days-S.day+1;
+  g.innerHTML='<b>'+sc.name+'</b><span>'+(S.scenEnd==='won'?'Complete':S.scenEnd==='lost'?'Out of time':st.prog+', '+Math.max(0,left)+(left===1?' day':' days')+' left')+'</span>'}
+function checkScen(){const sc=scenOf();if(!sc||S.scenEnd)return;if(sc.tick)sc.tick();const st=sc.check();
+  if(st.done){S.scenEnd='won';save();openModal('<div class="start"><h1>Challenge complete</h1><p class="sub">'+sc.name+', done in '+(S.day-1)+' days.</p><p class="percy">"Well, I never. I had my doubts, I don\'t mind telling you. Bravo."</p><p class="desc">Percy Hollis</p><button class="big primary" id="enKeep">Keep playing</button><button class="big" id="enMenu">Main menu</button></div>')}
+  else if(S.day>sc.days){S.scenEnd='lost';save();openModal('<div class="start"><h1>Out of time</h1><p class="sub">'+sc.name+'. You got to '+st.prog+'.</p><p class="percy">"Not to be, I\'m afraid. Still, nobody died, and the bar is still open."</p><p class="desc">Percy Hollis</p><button class="big primary" id="enRetry">Try again</button><button class="big" id="enKeep">Keep playing anyway</button><button class="big" id="enMenu">Main menu</button></div>')}
+  else return;
+  if($('#enKeep'))$('#enKeep').onclick=closeModal;$('#enMenu').onclick=startScreen;if($('#enRetry'))$('#enRetry').onclick=()=>newGame('challenge',sc.id);
+}
+function newGame(mode,sid){
+  S=newState();S.mode=mode;S.led=newLed();registerGen([]);for(let i=0;i<30;i++)genPlot();initWorld();S._live=true;R.watch=null;R.cid=null;R.auc=null;
+  const sc=sid&&SCEN.find(x=>x.id===sid);
+  if(sc){S.scen=sid;sc.setup();S.news=[{day:1,t:sc.goal+'. You have '+sc.days+' days.'}]}
+  mail('Golf Gazette','Welcome to the business',sc?'<p><b>'+sc.name+'.</b> '+sc.blurb+'</p><p><b>Your goal:</b> '+sc.goal+', within '+sc.days+' days.</p><p>Tap the goal strip at the top any time to check progress.</p>':
+    '<p>Land comes up for sale all over Britain. Cheap, unloved plots you can simply buy. Most go to sealed bids with a closing date, and the very best are sold at live auction, in the room.</p><p>Three rivals want the same land: '+Object.keys(RIV).map(k=>'<b style="color:'+RIV[k].col+'">'+RIV[k].name+'</b>').join(', ')+'. Their clubs will pull golfers away from yours if they are close by.</p><p>The Golf Gazette lands here every seven days with what is coming up. The Fairway Review will send a critic once you are open. Good luck.</p><p class="percy">"Golf, money and the British weather. What could possibly go wrong?"</p>');
+  closeModal();showMap();$('#tickText').textContent=S.news[0].t;save();badge();hud();
+  if(!sc||!Object.keys(S.courses).length)setTimeout(()=>toast('Tap a pin to see land for sale. You have '+money(S.cash)+'.',4000),300);
+}
+function startScreen(){R.confirmNew=null;
+  const live=S&&S._live,sc=scenOf();
+  openModal('<div class="start"><svg viewBox="0 0 320 120" class="hero" aria-hidden="true"><defs><linearGradient id="hs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9FC6DE"/><stop offset="1" stop-color="#E9F1E4"/></linearGradient></defs><rect width="320" height="120" rx="10" fill="url(#hs)"/><circle cx="262" cy="34" r="14" fill="#F6D776"/><path d="M0 84 Q70 54 150 74 T320 66 V120 H0Z" fill="#8DBF5E"/><path d="M0 98 Q90 78 180 92 T320 88 V120 H0Z" fill="#6FA748"/><ellipse cx="196" cy="80" rx="26" ry="6" fill="#A9DA74"/><line x1="200" y1="80" x2="200" y2="44" stroke="#fff" stroke-width="2"/><path d="M200 44 L218 50 L200 56Z" fill="#F2C230"/><ellipse cx="90" cy="96" rx="14" ry="4" fill="#EDDFB3"/></svg>'+
+    '<h1>Golf: The Empire</h1><p class="sub">Build a golf empire across Britain, with Percy Hollis on commentary.</p>'+
+    (live?'<button class="big primary" id="stCont">Continue<small>'+(sc?'Challenge: '+sc.name:'Career')+', '+dTxt(S.day,1)+', '+short(S.cash)+'</small></button>':'')+
+    '<button class="big'+(live?'':' primary')+'" id="stCareer">New career<small>The open map. Buy land, win auctions, see off the rivals, and host The Championship.</small></button>'+
+    '<button class="big" id="stChal">Challenges<small>Five scenarios, each with a goal and a deadline.</small></button></div>');
+  if($('#stCont'))$('#stCont').onclick=()=>{closeModal();showMap()};
+  $('#stCareer').onclick=()=>confirmNew('career',null,'#stCareer');
+  $('#stChal').onclick=chalScreen;
+}
+function confirmNew(mode,sid,sel){if(S&&S._live&&R.confirmNew!==(sid||mode)){R.confirmNew=sid||mode;const b=$(sel);b.innerHTML='Tap again to start<small>This replaces your saved game.</small>';return}newGame(mode,sid)}
+function chalScreen(){R.confirmNew=null;
+  openModal('<div class="mhead"><h2>Challenges</h2><button class="small" id="mBack">Back</button></div>'+SCEN.map(sc=>'<div class="scen"><h3><span>'+sc.name+'</span><small>'+sc.diff+', '+sc.days+' days</small></h3><p>'+sc.blurb+'</p><p class="goalt"><b>Goal:</b> '+sc.goal+'.</p><button class="small primary" id="sc_'+sc.id+'">Play</button></div>').join(''));
+  $('#mBack').onclick=startScreen;SCEN.forEach(sc=>$('#sc_'+sc.id).onclick=()=>confirmNew('challenge',sc.id,'#sc_'+sc.id));
+}
+
+/* ================= v5 ================= */
+/* ---------- calendar & seasons ---------- */
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],DOWL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+  MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],MONL=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function todayISO(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function dOf(day){const p=((S&&S.date0)||todayISO()).split('-').map(Number);return new Date(p[0],p[1]-1,p[2]+((day??S.day)-1),12)}
+function dTxt(day,wd){const d=dOf(day);return (wd?DOW[d.getDay()]+' ':'')+d.getDate()+' '+MON[d.getMonth()]}
+function dLong(day){const d=dOf(day);return DOWL[d.getDay()]+' '+d.getDate()+' '+MONL[d.getMonth()]+' '+d.getFullYear()}
+function seasonM(day){return [.7,.72,.82,.92,1.05,1.12,1.12,1.1,1,.92,.8,.72][dOf(day).getMonth()]}
+function weekdayM(day){const w=dOf(day).getDay();return w===6||w===0?1.35:w===5?1.1:1}
+function winter(day){const m=dOf(day).getMonth();return m>=9||m<=1}
+function seasonName(day){const m=dOf(day).getMonth();return m<=1||m===11?'Winter':m<=4?'Spring':m<=7?'Summer':'Autumn'}
+
+/* ---------- money ledger ---------- */
+const LED_IN=[['fees','Green fees'],['bar','Bar and shop'],['mem','Member subscriptions'],['events','Tournaments'],['sales','Course sales']],
+  LED_OUT=[['upkeep','Upkeep'],['wages','Staff wages'],['build','Building work'],['fac','Facilities'],['land','Land and clubs bought']];
+function newLed(){const l={start:S?S.cash:0};LED_IN.concat(LED_OUT).forEach(([k])=>l[k]=0);return l}
+function earn(k,a){S.cash+=a;if(S.led)S.led[k]=(S.led[k]||0)+a}
+function spend(k,a){S.cash-=a;if(S.led)S.led[k]=(S.led[k]||0)+a}
+
+/* ---------- hole analysis: what makes a hole interesting ---------- */
+const FEAT_TIPS={dogleg:'Bend the fairway round a corner to make a dogleg.',water:'Water in front of or around the green is the quickest way to make a hole memorable.',
+  showcase:'A big sweeping bunker, ten tiles or more, gives a hole a signature look.',guard:'Ring the green with three or more bunkers.'};
+function analyzeHole(H){
+  if(H._a)return H._a;const out={feats:[],score:0,tips:[]};
+  if(holeIssue(H))return H._a=out;
+  const g=H.g,c=holeCounts(H),par=holePar(H),yd=holeYards(H),tee=center(H.tee),pin=center(H.pin);
+  const at=(x,y)=>inb(x,y)?g[idx(x,y)]:-1,wet=t=>t===4||t===7,F=[],add=(k,n,p)=>F.push({k,n,p});
+  // green surround
+  let ring=0,wr=0;
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)if(g[idx(x,y)]===2)for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){if(!i&&!j)continue;const t=at(x+i,y+j);if(t!==2){ring++;if(wet(t))wr++}}
+  const wg=ring?wr/ring:0;
+  if(wg>=.7)add('island','Island green',3.2);else if(wg>=.3)add('watergreen','Water guarding the green',1.5);
+  // carry on the line from tee to pin
+  let carry=false;for(let s=.1;s<=.9;s+=.02){if(wet(at(Math.floor(tee.x+(pin.x-tee.x)*s),Math.floor(tee.y+(pin.y-tee.y)*s)))){carry=true;break}}
+  if(carry&&wg<.7)add(par===3?'p3water':'carry',par===3?'Tee shot over water':'Carry over water',par===3?2.2:1.6);
+  // fairway centreline
+  const rows=[];
+  for(let y=Math.floor(Math.min(tee.y,pin.y));y<=Math.floor(Math.max(tee.y,pin.y));y++){let s=0,n=0,mn=99,mx=-1;
+    for(let x=0;x<COLS;x++)if(g[idx(x,y)]===1){s+=x+.5;n++;if(x<mn)mn=x;if(x>mx)mx=x}if(n)rows.push({y:y+.5,x:s/n,mn,mx,n})}
+  let dmax=0,dmin=0,pk=null;
+  rows.forEach(r=>{const t=(r.y-tee.y)/((pin.y-tee.y)||1),d=r.x-(tee.x+(pin.x-tee.x)*t);if(d>dmax){dmax=d;if(d>=-dmin)pk=r}if(d<dmin){dmin=d;if(-d>dmax)pk=r}});
+  let dog=false;
+  if(par>3&&rows.length>=5){
+    if(dmax>=1.6&&dmin<=-1.6){add('double','Double dogleg',2.2);dog=true}
+    else if(Math.max(dmax,-dmin)>=1.8){add('dogleg','Dogleg '+(pin.x<(pk?pk.x:8)?'left':'right'),1.6);dog=true}
+    const w=rows.reduce((a,r)=>a+r.n,0)/rows.length;if(w<2.2)add('narrow','Fairway too narrow',-1)}
+  // bunker clusters
+  const seen=new Uint8Array(g.length),cl=[];
+  for(let i=0;i<g.length;i++)if(g[i]===3&&!seen[i]){const st=[i];let n=0,sx=0,sy=0;seen[i]=1;
+    while(st.length){const k=st.pop(),x=k%COLS,y=(k/COLS)|0;n++;sx+=x;sy+=y;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(inb(xx,yy)){const kk=idx(xx,yy);if(!seen[kk]&&g[kk]===3){seen[kk]=1;st.push(kk)}}}}
+    cl.push({n,x:sx/n+.5,y:sy/n+.5})}
+  const big=cl.reduce((a,b)=>Math.max(a,b.n),0);
+  if(big>=18)add('waste','Vast waste bunker',2);else if(big>=10)add('showcase','Showcase bunker',1.6);
+  if(cl.filter(b=>Math.hypot(b.x-pin.x,b.y-pin.y)<=4.2).length>=3)add('guard','Well guarded green',1);
+  if(cl.filter(b=>b.n<=2).length>=5)add('pots','Pot bunkers',1);
+  // water near the line of play
+  if(!carry&&wg<.3){let wip=false;rows.forEach(r=>{for(let x=r.mn-1;x<=r.mx+1&&!wip;x++)if(wet(at(x,Math.floor(r.y-.5))))wip=true});if(wip)add('wip','Water in play',.7)}
+  // trees framing the fairway
+  if(rows.length>=5){const tl=rows.filter(r=>{const y=Math.floor(r.y-.5);let L=false,Rr=false;for(let k=1;k<=2;k++){if(at(r.mn-k,y)===5)L=true;if(at(r.mx+k,y)===5)Rr=true}return L&&Rr}).length/rows.length;if(tl>=.6)add('trees','Tree lined',.8)}
+  // risk and reward: hazard near the corner of a dogleg
+  if(dog&&pk){let hz=false;for(let y=Math.floor(pk.y-4);y<=pk.y+3&&!hz;y++)for(let x=0;x<COLS;x++){const t=at(x,y);if((wet(t)||t===3||t===5)&&Math.abs(x+.5-pk.x)>1.5&&Math.abs(x+.5-pk.x)<5&&(Math.sign(x+.5-pk.x)===Math.sign(pin.x-pk.x))){hz=true;break}}if(hz)add('risk','Risk and reward corner',1.4)}
+  if(par===4&&yd<=300&&F.some(f=>['guard','watergreen','island','showcase','waste'].includes(f.k)))add('drive','Driveable par 4',1.2);
+  if(!F.some(f=>f.p>0))add('bland','Bland, nothing to think about',-.8);
+  const pos=F.filter(f=>f.p>0).sort((a,b)=>b.p-a.p),neg=F.filter(f=>f.p<0);
+  let sc=3.8+Math.min(c.b,10)*.05+Math.min(c.t,30)*.012;pos.forEach((f,i)=>sc+=f.p*[1,.8,.65,.5,.4,.3,.3][Math.min(i,6)]);neg.forEach(f=>sc+=f.p);
+  out.score=Math.round(clamp(sc,1,10)*10)/10;out.feats=pos.concat(neg);
+  const has=k=>F.some(f=>f.k===k);
+  if(par>3&&!dog)out.tips.push(FEAT_TIPS.dogleg);
+  if(!has('island')&&!has('watergreen')&&!carry)out.tips.push(FEAT_TIPS.water);
+  if(!has('showcase')&&!has('waste'))out.tips.push(FEAT_TIPS.showcase);
+  if(!has('guard'))out.tips.push(FEAT_TIPS.guard);
+  if(has('narrow'))out.tips.unshift('Widen the fairway to at least three tiles.');
+  return H._a=out;
+}
+function designOf(C){
+  const as=C.holes.map(analyzeHole),n=as.length;if(!n)return {d:0,sig:null,kinds:0};
+  const avg=as.reduce((a,b)=>a+b.score,0)/n,kinds=new Set();as.forEach(a=>a.feats.forEach(f=>{if(f.p>0)kinds.add(f.k)}));
+  const pars=new Set(C.holes.filter(H=>!holeIssue(H)).map(holePar));let best=0,bi=null;as.forEach((a,i)=>{if(a.score>best){best=a.score;bi=i}});
+  const d=avg*.85+Math.min(1.5,kinds.size*.2)+(pars.size>=3?.3:pars.size===1?-.4:0)+(best>=8.5?.3:0);
+  return {d:Math.round(clamp(d,0,10)*10)/10,sig:best>=7.5?bi:null,kinds:kinds.size,best};
+}
+function quality(C){
+  if(C._q)return C._q;let interest=0,beauty=0,weak=0,par=0,yards=0;const pars=new Set();
+  C.holes.forEach(H=>{const c=holeCounts(H);
+    interest+=Math.min(1,c.b/6)*.6+Math.min(1,c.w/8)*.45+Math.min(1,c.t/25)*.25;
+    beauty+=Math.min(1,c.t/30)*.5+Math.min(1,c.w/8)*.4;
+    const p=holePar(H),y=holeYards(H);par+=p;yards+=y;pars.add(p);
+    if(y<100||(p>3&&c.f<5))weak++});
+  const n=C.holes.length,ds=designOf(C);
+  return C._q={interest:interest/n,beauty:beauty/n,variety:pars.size>=3?.3:pars.size===2?0:-.3,weak,par,yards:Math.round(yards),design:ds.d,sig:ds.sig};
+}
+function designWord(d){return d>=8.5?'Masterpiece':d>=7.5?'Championship class':d>=6.5?'Excellent':d>=5.5?'Good':d>=4?'Ordinary':'Basic'}
+
+/* ---------- signature hole generator (legendary venues and rivals) ---------- */
+function fancyHole(par,terrain,old,lost){
+  lost=lost||0;const g=old.slice(),set=(x,y,t)=>{if(inb(x,y)&&g[idx(x,y)]!==SEA)g[idx(x,y)]=t};
+  for(let i=0;i<g.length;i++)if(g[i]!==T.TREES&&g[i]!==SEA)g[i]=T.ROUGH;
+  const len=Math.min(par===3?ri(8,12):par===4?ri(18,23):ri(26,28),28-lost),teeY=30,gy=teeY-len,side=Math.random()<.5?-1:1;
+  const dog=par>3&&Math.random()<.65,cy=teeY-Math.round(len*(.5+Math.random()*.12));
+  const cxAt=dog?(y=>clamp(Math.round(y>=cy?8:8+side*Math.min(5,(cy-y)*1.1)),3,12)):(y=>clamp(Math.round(8+side*1.2*((teeY-y)/len)),3,12));
+  for(let y=gy-4;y<=teeY+1;y++){const cx=cxAt(y);for(let x=cx-3;x<=cx+3;x++)if(inb(x,y)&&g[idx(x,y)]===T.TREES)g[idx(x,y)]=T.ROUGH}
+  if(par>3)for(let y=gy+3;y<=teeY-3;y++){const cx=cxAt(y);for(let x=cx-1;x<=cx+2;x++)set(x,y,T.FAIRWAY)}
+  else for(let y=gy+3;y<=gy+4;y++)for(let x=cxAt(y)-1;x<=cxAt(y)+1;x++)set(x,y,T.FAIRWAY);
+  const gx=cxAt(gy);
+  const island=par===3&&Math.random()<.45;
+  if(island)for(let y=gy-4;y<=gy+4;y++)for(let x=gx-4;x<=gx+4;x++){const e=((x-gx)/3.6)**2+((y-gy)/3.1)**2;if(e<=1)set(x,y,T.WATER)}
+  for(let y=gy-3;y<=gy+3;y++)for(let x=gx-3;x<=gx+3;x++)if(inb(x,y)&&g[idx(x,y)]!==SEA&&((x-gx)/2.3)**2+((y-gy)/1.9)**2<=1)g[idx(x,y)]=T.GREEN;
+  if(!island){for(let k=0;k<ri(3,4);k++){const a=k*Math.PI*2/4+Math.random()*.8;const bx=Math.round(gx+Math.cos(a)*3.2),by=Math.round(gy+Math.sin(a)*2.6);
+    if(inb(bx,by)&&g[idx(bx,by)]!==T.GREEN){set(bx,by,T.BUNKER);const bx2=bx+(Math.cos(a)>0?1:-1);if(inb(bx2,by)&&g[idx(bx2,by)]!==T.GREEN)set(bx2,by,T.BUNKER)}}}
+  if(par===3&&!island&&Math.random()<.5)for(let y=gy+3;y<=gy+5;y++)for(let x=gx-3;x<=gx+3;x++)if(g[idx(x,y)]!==T.FAIRWAY||y>gy+3)set(x,y,T.WATER);
+  if(dog){const hx=8+side*3,hy=cy-3,wtr=Math.random()<.45;for(let y=hy-2;y<=hy+1;y++)for(let x=hx-1;x<=hx+1;x++)if(g[idx(clamp(x,0,15),clamp(y,0,31))]!==T.FAIRWAY)set(x,y,wtr?T.WATER:T.BUNKER)}
+  else if(par>3&&Math.random()<.5){const y0=teeY-ri(7,9);for(let y=y0;y<=y0+1;y++){const cx=cxAt(y);for(let x=cx-3;x<=cx+3;x++)set(x,y,T.WATER)}}
+  if(par>3&&Math.random()<.5){const y0=ri(gy+6,teeY-8),cx=cxAt(y0),sx=cx+(Math.random()<.5?-4:4);for(let y=y0-3;y<=y0+3;y++)for(let x=sx-2;x<=sx+2;x++)if(((x-sx)/2.4)**2+((y-y0)/3.4)**2<=1&&g[idx(clamp(x,0,15),clamp(y,0,31))]!==T.FAIRWAY)set(x,y,T.BUNKER)}
+  if(terrain==='links')for(let k=0;k<ri(3,6);k++){const y=ri(gy+4,teeY-4),x=cxAt(y)+(Math.random()<.5?-2:3);if(inb(x,y)&&g[idx(x,y)]===T.ROUGH)set(x,y,T.BUNKER)}
+  set(8,teeY,T.TEE);
+  return {g,tee:{x:8,y:teeY},pin:{x:gx,y:gy}};
+}
+function bestFancy(par,terrain,old,lost,tries){let best=null;for(let k=0;k<(tries||4);k++){const n=fancyHole(par,terrain,old,lost),H={g:n.g,tee:n.tee,pin:n.pin},a=analyzeHole(H);if(!holeIssue(H)&&(!best||a.score>best.s))best={n,s:a.score}}return best?best.n:genHole(par,terrain,old,lost)}
+
+/* ---------- reputation out of 10 with ceilings ---------- */
+function repTxt(r){return (r*2).toFixed(1)}
+function repTiers(C){const q=quality(C),d=q.design;return [
+  {cap:3.0,need:'Open and finished',ok:true},
+  {cap:3.5,need:'A clubhouse and condition 70% or better',ok:C.fac.club>=1&&C.cond>=70},
+  {cap:4.0,need:'Course design 6.5+ and a clubhouse with restaurant',ok:d>=6.5&&C.fac.club>=2},
+  {cap:4.5,need:'Course design 7.5+ and a County Amateur hosted here',ok:d>=7.5&&C.evDone.county!==undefined},
+  {cap:5.0,need:'Course design 8.5+, condition 85%+ and a Regional Pro Am hosted here',ok:d>=8.5&&C.cond>=85&&C.evDone.regional!==undefined}]}
+function repCap(C){let c=3;for(const t of repTiers(C)){if(t.ok)c=t.cap;else break}return c}
+function repNext(C){return repTiers(C).find(t=>!t.ok)}
+
+/* ---------- day end ---------- */
+function endDay(){closeDay()}
+function closeDay(){
+  if(S.dayDone)return;let rounds=0,rev=0,up=0;
+  for(const id in S.courses){const C=S.courses[id];
+    if(C.booked&&C.booked.day===S.day){const E=EVENTS.find(e=>e.id===C.booked.id);C.booked=null;runEvent(C,E)}
+    stormDay(C);
+    const mi=memDay(C);earn('mem',mi);C.today.rev+=mi;C.today.mem=mi;
+    const charged=C.open||C.rounds||C.mem.on,w=charged?wage(C):0,u=charged?upkeep(C):0;
+    spend('upkeep',u-w);spend('wages',w);up+=u;rounds+=C.today.rounds;rev+=C.today.rev;S.wk.profit+=C.today.rev-u;
+    if(C.today.n){const avg=C.today.st/C.today.n,cap=repCap(C);C.rep=clamp(C.rep+(Math.min(avg,cap)-C.rep)*.07,0,cap)}else C.rep=Math.min(C.rep,repCap(C));
+    C.lastDay={...C.today,up:u,wage:w};if(C.today.rev-u>=2000)achieve('profit');
+    C.cond=clamp(C.cond+[0,3,7,12][C.fac.staff]-(C.wx==='rain'?3:C.wx==='storm'?6:0)-(winter()?1:0),20,100);
+    C.today={rounds:0,rev:0,walked:0,memR:0,vis:0,mem:0,st:0,n:0};C._last=-99;C._comp=null;C._q=null;C.wx=rollWx(PL[id],S.day+1);C.holes.forEach(H=>H._ground=null)}
+  S.min=1140;S.dayDone=true;S.lastLed=Object.assign({},S.led,{day:S.day,end:S.cash});
+  save();
+  if(S.auto){toast(dTxt(S.day,1)+': '+rounds+' rounds, '+money(rev)+' in, '+money(up)+' upkeep.',3000);startDay()}else daySummary();
+}
+function startDay(){
+  if(!S.dayDone)return;S.dayDone=false;S.day++;S.min=420;S.led=newLed();closeModal();
+  marketDay();rivalsDay();featureDue();if(S.day%7===0)gazette();checkCareer();
+  if(R.view==='course'){const C=course();if(C){say('wx_'+C.wx);renderHoles();refreshPanels()}}
+  if(R.view==='map')renderOverlay();
+  badge();hud();save();checkScen();
+}
+function daySummary(){
+  const L=S.lastLed||S.led,inT=LED_IN.reduce((a,[k])=>a+(L[k]||0),0),outT=LED_OUT.reduce((a,[k])=>a+(L[k]||0),0),net=L.end-L.start,other=net-(inT-outT);
+  const row=(n,v,cls)=>'<tr'+(cls?' class="'+cls+'"':'')+'><td>'+n+'</td><td>'+money(Math.round(v))+'</td></tr>';
+  let h='<div class="books"><p class="kick">'+dLong(L.day)+'</p><h2>Close of play</h2>';
+  h+='<table><tr class="sec"><td colspan="2">Money in</td></tr>'+LED_IN.filter(([k])=>L[k]).map(([k,n])=>row(n,L[k])).join('')+(inT?'':row('Nothing today',0))+row('Total in',inT,'tot');
+  h+='<tr class="sec"><td colspan="2">Money out</td></tr>'+LED_OUT.filter(([k])=>L[k]).map(([k,n])=>row(n,L[k])).join('')+(outT?'':row('Nothing today',0))+row('Total out',outT,'tot');
+  if(Math.abs(other)>=1)h+=row('Other',other);
+  h+='<tr class="net '+(net>=0?'up':'down')+'"><td>Net for the day</td><td>'+(net>=0?'+':'&minus;')+money(Math.abs(Math.round(net)))+'</td></tr><tr><td>In the bank</td><td><b>'+money(Math.round(S.cash))+'</b></td></tr></table>';
+  const ids=Object.keys(S.courses);
+  if(ids.length){h+='<h4>By course</h4>'+ids.map(id=>{const C=S.courses[id],d=C.lastDay||{rounds:0,rev:0,up:0},n=d.rev-d.up;
+    return '<div class="bc"><div><b>'+PL[id].name+'</b><small>'+d.rounds+' rounds, '+money(d.rev)+' in, '+money(d.up)+' costs. Reputation '+repTxt(C.rep)+'</small></div><span class="'+(n>=0?'up':'down')+'">'+(n>=0?'+':'&minus;')+(Math.abs(n)<10000?money(Math.abs(Math.round(n))):short(Math.abs(n)))+'</span></div>'}).join('')}
+  const tm=S.day+1,notes=[];
+  if(weekdayM(tm)>1.2)notes.push('It\'s the weekend, so expect it busy.');
+  if(seasonName(tm)!==seasonName(S.day))notes.push(seasonName(tm)+' starts tomorrow.');else if(winter(tm))notes.push('Winter: fewer golfers and more storms on the coast.');
+  for(const id in S.courses){const C=S.courses[id];if(C.booked&&C.booked.day===tm)notes.push(EVENTS.find(e=>e.id===C.booked.id).name+' at '+PL[id].name+'.');if(C.wx==='storm')notes.push('Storm forecast at '+PL[id].name+'.')}
+  for(const id in S.market.sales){const sl=S.market.sales[id];if(sl.type==='live'&&sl.closes===tm)notes.push('Live auction: '+PL[id].name+'.');if(sl.type==='sealed'&&sl.closes===S.day&&sl.mine)notes.push('Your sealed bid on '+PL[id].name+' is being decided overnight.')}
+  if(notes.length)h+='<h4>Tomorrow, '+dTxt(tm,1)+'</h4><p>'+notes.join(' ')+'</p>';
+  h+='<label class="auto"><input type="checkbox" id="autoC"'+(S.auto?' checked':'')+'> Skip this summary and carry straight on</label>';
+  h+='<button class="primary big" id="nextDay">Start '+dTxt(tm,1)+'</button></div>';
+  openModal(h);$('#nextDay').onclick=startDay;$('#autoC').onchange=e=>{S.auto=e.target.checked;save()};
+}
+function update(dt){
+  R.t+=dt/1000;
+  if(R.auc)stepAuction(dt);
+  if(S.dayDone){if($('#modal').hidden&&!S.auto&&!R.hold)daySummary();return}
+  if(!S.speed||R.hold||menuOpen())return;
+  const before=S.min;S.min=Math.min(1140,S.min+dt/1000*10*S.speed);
+  const mins=Math.floor(S.min)-Math.floor(before);
+  for(let i=0;i<mins;i++)minuteTick();
+  if(S.min>=1140)closeDay();
+  const sp=Math.max(1,Math.min(S.speed,4));
+  if(R.watch)stepWatch(dt*sp);
+  if(R.view==='course')stepAmbient(dt*sp/1000);
+}
+
+/* ---------- selling your clubs ---------- */
+function courseValue(C){const P=PL[C.plotId],q=quality(C);let build=0;
+  C.holes.forEach(H=>{const c=holeCounts(H);build+=c.f*15+c.g*60+c.b*30+c.w*80+(H.tee?150:0)});
+  let fac=0;FAC.forEach(F=>{for(let l=1;l<=(C.fac[F.id]||0);l++)fac+=F.cost[l]||0});fac+=[0,40000,160000][C.fac.sea||0];
+  if(P.legend)return Math.round(legendGuide(C.plotId)*clamp(.75+(C.rep-4.6)*.5+(q.design-8)*.03,.4,1.05)/10000)*10000;
+  const base=priceOf(C.plotId);
+  return Math.round((base+build*.6+fac*.7)*(.7+C.rep/5*.6)*(.85+q.design*.03)*(C.mem.on?1+C.mem.n/memCap(C)*.15:1)/1000)*1000}
+function canSell(C){return C.since===undefined||S.day>=C.since+14}
+function sellUI(id){const C=S.courses[id],sh=$('#sheet'),sl=S.market.sales[id],v=courseValue(C),d=document.createElement('div');d.className='sell';
+  if(sl&&sl.own)d.innerHTML='<h3>For sale</h3><p class="info">Sealed bids close at the end of '+dTxt(sl.closes,1)+'. Guide '+money(sl.guide)+'. '+(sl.rum.length?sl.rum.map(k=>RIV[k].name).join(' and ')+' rumoured to be interested.':'No rival interest rumoured yet.')+' It keeps trading as normal until it sells.</p><button id="sellX">Withdraw from sale</button>';
+  else if(!canSell(C))d.innerHTML='<h3>Sell this club</h3><p class="info">Valued at about <b>'+money(v)+'</b>. You can sell from '+dTxt(C.since+14,1)+', two weeks after buying it.</p>';
+  else{const q=Math.round(v*.85/1000)*1000;
+    d.innerHTML='<h3>Sell this club</h3><p class="info">Valued at about <b>'+money(v)+'</b>, based on the land, the course, the facilities, reputation and design.</p><div class="row"><button id="sellQ">'+(R.confirmSell===id?'Tap again: sell for '+money(q):'Quick sale, '+money(q))+'</button><button id="sellA">Auction it</button></div>'}
+  sh.appendChild(d);
+  if($('#sellX'))$('#sellX').onclick=()=>{delete S.market.sales[id];save();openListing(id)};
+  if($('#sellQ'))$('#sellQ').onclick=()=>{if(R.confirmSell!==id){R.confirmSell=id;openListing(id);return}R.confirmSell=null;quickSale(id)};
+  if($('#sellA'))$('#sellA').onclick=()=>auctionOwn(id);
+}
+function buyerFor(price,P){const ks=Object.keys(RIV).filter(k=>rivalCount(k)<RIV[k].max&&S.rivals[k].cash>=price);ks.sort((a,b)=>(RIV[b].want(P,price)?1:0)-(RIV[a].want(P,price)?1:0));return ks[0]||'private'}
+function quickSale(id){const C=S.courses[id],v=courseValue(C),q=Math.round(v*.85/1000)*1000,k=buyerFor(q,PL[id]);transferOut(id,k,q)}
+function auctionOwn(id){const C=S.courses[id],v=courseValue(C),int=[],rum=[];
+  for(const k in RIV){const w=rivalCount(k)<RIV[k].max&&S.rivals[k].cash>=v*.8&&Math.random()<(RIV[k].want(PL[id],v)?.8:.45);if(w)int.push(k);if(w!==(Math.random()<.15))rum.push(k)}
+  S.market.sales[id]={type:'sealed',guide:v,own:true,admin:false,closes:S.day+5,mine:null,int,rum};
+  news(PL[id].name+' is up for sale. Sealed bids invited, guide '+money(v)+'.');save();toast('On the market. Bids close '+dTxt(S.day+5,1)+'.');openListing(id)}
+function resolveOwn(id){const sl=S.market.sales[id];delete S.market.sales[id];const C=S.courses[id];if(!C)return;
+  const bids=[];sl.int.forEach(k=>{if(rivalCount(k)>=RIV[k].max)return;const b=Math.min(Math.round(sl.guide*(RIV[k].bid[0]-.1+Math.random()*(RIV[k].bid[1]-RIV[k].bid[0]+.1))/1000)*1000,Math.floor(S.rivals[k].cash/1000)*1000);bids.push({k,b})});
+  if(Math.random()<.55)bids.push({k:'private',b:Math.round(sl.guide*(.85+Math.random()*.2)/1000)*1000});
+  bids.sort((a,b)=>b.b-a.b);const reserve=Math.round(sl.guide*.9/1000)*1000,top=bids[0];
+  const table='<h4>Sealed bids</h4><p>'+(bids.length?bids.map(x=>who(x.k)+': '+money(x.b)).join('<br>'):'None')+'</p><p>Reserve: '+money(reserve)+'.</p>';
+  if(!top||top.b<reserve){news(PL[id].name+' fails to sell. The owner keeps it, for now.');mail('Auction house','No sale: '+PL[id].name,'<p>Nobody met the reserve, so '+PL[id].name+' stays yours.</p>'+table);return}
+  transferOut(id,top.k,top.b,table)}
+function transferOut(id,k,price,table){const C=S.courses[id],P=PL[id];earn('sales',price);delete S.courses[id];delete S.market.sales[id];
+  if(k!=='private'){S.rivals[k].cash-=price;S.rc[id]={o:k,rep:C.rep,day:S.day}}else S.market.cool[id]=S.day+ri(25,45);
+  news(P.name+' sold to '+who(k).replace(/^A /,'a ')+' for '+money(price)+'.');
+  mail('Auction house','Sold: '+P.name,'<p>'+P.name+' has been sold to '+who(k).replace(/^A /,'a ')+' for <b>'+money(price)+'</b>. The money is in the bank.</p>'+(table||''));
+  if(R.cid===id){R.watch=null;R.cid=null;showMap()}else{closeSheet();renderOverlay()}
+  save();hud();toast('Sold '+P.name+' for '+money(price)+'.',4000)}
+
+/* ---------- legendary venues ---------- */
+function legendGuide(id){return Math.round(PL[id].price*(S.market.mult[id]||1)/10000)*10000}
+function privateLegends(){return PLOTS.filter(p=>p.legend&&!S.courses[p.id]&&!S.rc[p.id]&&!S.market.sales[p.id])}
+function legendDay(){const M=S.market;if(M.nextLegend===undefined)M.nextLegend=S.day+ri(18,28);
+  if(S.day<M.nextLegend)return;M.nextLegend=S.day+ri(20,32);const pool=privateLegends();if(!pool.length)return;const p=rnd(pool),guide=legendGuide(p.id);
+  const int=[],rum=[];for(const k in RIV){const w=rivalCount(k)<RIV[k].max+1&&(k==='meridian'||Math.random()<.5)&&S.rivals[k].cash*4>=guide*.9;if(w)int.push(k);if(w!==(Math.random()<.1))rum.push(k)}
+  M.sales[p.id]={type:'live',guide,admin:false,legend:true,closes:S.day+7,mine:null,int,rum};M.fresh[p.id]=S.day;
+  news('Breaking: '+p.name+' is for sale. One of the great venues, at live auction on '+dTxt(S.day+7,1)+'. Guide '+money(guide)+'.');
+  mail('Golf Gazette','Breaking: '+p.name+' for sale','<p>In news that has stunned the golfing world, <b>'+p.name+'</b> in '+p.area+' is coming up for sale. It goes under the hammer at live auction on <b>'+dLong(S.day+7)+'</b>, guide <b>'+money(guide)+'</b>.</p><p>It comes with a finished championship course, grand clubhouse, flagship pro shop, range and a full membership. '+(rum.length?rum.map(k=>RIV[k].name).join(' and ')+' are said to be lining up finance.':'No buyers have shown their hand yet.')+'</p><p class="percy">"They don\'t make many of these, and they sell even fewer. Bring your cheque book and a stiff drink."</p><p><button class="small" data-view="'+p.id+'">View on map</button></p>');
+}
+function setupLegend(C){const p=PL[C.plotId];
+  C.holes.forEach((H,i)=>{const n=bestFancy(parFor(C,i),p.terrain,H.g,C.ero[i],6);H.g=n.g;H.tee=n.tee;H.pin=n.pin;H._a=null;H._c=null});
+  Object.assign(C.fac,{club:3,shop:2,range:1,staff:3});C.rep=4.6;C.cond=92;C.open=true;C.evDone={county:-60,regional:-60};
+  C.mem.on=true;C.mem.n=Math.round(memCap(C)*.75);C.mem.sub=fairSub(C);C.mem.mood=70;C.mem.band=3;C._q=null;C.fee=Math.max(5,Math.round(fairFee(C)/5)*5)}
+
+/* ---------- livelier land market ---------- */
+function marketDay(){
+  const M=S.market;M.cool=M.cool||{};
+  PLOTS.forEach(p=>{if(S.courses[p.id]||S.rc[p.id])return;M.mult[p.id]=clamp((M.mult[p.id]||1)*(1+gauss()*.015),.8,1.35)});
+  for(const id in M.fresh)if(M.fresh[id]<S.day-4)delete M.fresh[id];
+  for(const id of Object.keys(M.sales)){const sl=M.sales[id];
+    if(sl.own){if(sl.closes<S.day)resolveOwn(id);continue}
+    if(sl.type!=='quiet'&&sl.closes<S.day){if(sl.legend)resolveLegend(id);else resolveSale(id)}}
+  for(const id of Object.keys(M.sales)){const sl=M.sales[id];if(sl.type!=='quiet'||sl.own)continue;
+    if(sl.exp===undefined)sl.exp=S.day+ri(6,12);
+    if(S.day>=sl.exp){delete M.sales[id];M.cool[id]=S.day+ri(8,20);news(rnd(['Withdrawn: '+PL[id].name+'. The owners have had second thoughts.','No longer for sale: '+PL[id].name+'. The family are keeping it, for now.','Off the market: '+PL[id].name+'. Planning trouble, apparently.']))}}
+  for(const id in M.sales){const sl=M.sales[id];if(sl.type==='live'&&sl.closes===S.day){news('Live auction today: '+PL[id].name+', guide '+money(sl.guide)+'. Tap the pin to attend.');toast('Live auction today at '+PL[id].name+'. Tap its pin to attend.',4500)}}
+  const free=()=>PLOTS.filter(p=>!p.legend&&!S.courses[p.id]&&!S.rc[p.id]&&!M.sales[p.id]&&!(M.cool[p.id]>S.day));
+  if(S.day>=M.nextNew){const n=Math.random()<.35?2:1;for(let k=0;k<n;k++){const pool=free();if(!pool.length)break;const p=rnd(pool);M.mult[p.id]=clamp(.85+Math.random()*.4,.8,1.35);const sl=newSale(p.id,false);news((M.seen&&M.seen[p.id]?'Back on the market. ':'New to market. ')+saleNews(p.id,sl));M.seen=M.seen||{};M.seen[p.id]=1}M.nextNew=S.day+ri(2,4)}
+  if(S.day>=M.nextAdmin){const pool=free();if(pool.length){const p=rnd(pool),sl=newSale(p.id,true,6);news(p.name+' golf club goes into administration. '+saleNews(p.id,sl))}M.nextAdmin=S.day+ri(12,20)}
+  for(const id of Object.keys(M.sales)){const sl=M.sales[id];if(sl.type==='sealed'&&!sl.own&&!sl.mine&&!sl.admin&&sl.closes-S.day>1&&Math.random()<.015){delete M.sales[id];M.cool[id]=S.day+ri(10,25);news('Withdrawn before bids closed: '+PL[id].name+'. A private deal, they say.')}}
+  for(const id of Object.keys(S.rc)){if(PL[id].legend||S.market.sales[id]||Math.random()>1/220)continue;const o=S.rc[id].o;delete S.rc[id];S.rivals[o].cash+=priceOf(id)*.5;const sl=newSale(id,true,ri(5,8));news(RIV[o].name+' is selling '+PL[id].name+'. '+saleNews(id,sl))}
+  M.seen=M.seen||{};for(const id in M.sales)M.seen[id]=1;
+  genSpawn();legendDay();
+}
+function resolveLegend(id){const sl=S.market.sales[id];
+  if(!sl.int.length){delete S.market.sales[id];news(PL[id].name+' withdrawn from auction. No buyer came close to the reserve.');return}
+  const bids=sl.int.map(k=>({k,b:Math.min(Math.round(sl.guide*(.95+Math.random()*.25)/10000)*10000,Math.floor(S.rivals[k].cash*4/10000)*10000)})).filter(x=>x.b>=sl.guide*.9).sort((a,b)=>b.b-a.b);
+  delete S.market.sales[id];if(!bids.length){news(PL[id].name+' withdrawn from auction. The reserve was not met.');return}
+  const t=bids[0];S.rivals[t.k].cash-=t.b;S.rc[id]={o:t.k,rep:4.6,day:S.day};news(PL[id].name+' goes to '+RIV[t.k].name+' for '+money(t.b)+'. The end of an era.')}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function ensureStarter(){const q=Object.values(S.market.sales).filter(x=>x.type==='quiet').length;if(q>=2)return;
+  PLOTS.filter(p=>!p.legend&&!S.market.sales[p.id]&&!S.rc[p.id]&&!S.courses[p.id]&&p.prestige<1.3&&priceOf(p.id)<90000).sort((a,b)=>priceOf(a.id)-priceOf(b.id)).slice(0,2-q).forEach(p=>newSale(p.id,false))}
+function sigQuote(C,i){const a=analyzeHole(C.holes[i]),f=a.feats.find(x=>x.p>0);
+  return rnd([(f?'That '+f.n.toLowerCase()+' on the '+ORD(i+1)+'! ':'The '+ORD(i+1)+'! ')+'Worth the green fee on its own.','The '+ORD(i+1)+' is one of the best holes I\'ve ever played.','Still thinking about the '+ORD(i+1)+'. What a hole.'])}
+function rateCol(s){return s>=8.5?'#B8860B':s>=6.5?'#2E7D4F':s>=4.5?'#6B7F4E':'#A8553E'}
+function holeCard(C,H){if(holeIssue(H))return '';const a=analyzeHole(H),q=quality(C);
+  return '<div class="hcard"><div class="hrate" style="background:'+rateCol(a.score)+'">'+a.score.toFixed(1)+'</div><div class="hbody"><b>Hole rating</b>'+(q.sig===R.hole?' <span class="chip sig">Signature hole</span>':'')+
+    '<div class="chips">'+a.feats.map(f=>'<span class="chip'+(f.p<0?' bad':'')+'">'+f.n+'</span>').join('')+'</div>'+(a.tips[0]?'<small>Tip: '+a.tips[0]+'</small>':'')+
+    '<small>Course design <b>'+q.design.toFixed(1)+'</b> of 10, '+designWord(q.design).toLowerCase()+'. Design drives reviews, green fees, demand and reputation.</small></div></div>'}
+function repHtml(C){const cap=repCap(C),nx=repNext(C);
+  return '<div class="fac"><div><b>Reputation</b>: '+repTxt(C.rep)+' of 10, ceiling '+repTxt(cap)+'<div class="bar"><i style="width:'+Math.round(C.rep*20)+'%"></i></div><small>'+
+    (nx?(C.holes.length===9&&nx.cap>=4.5?'Nine hole courses top out at 8.0; they can\'t host the big amateur events.':'To raise the ceiling to '+repTxt(nx.cap)+': '+nx.need.toLowerCase()+'.'):'No ceiling. As good as it gets.')+' Reputation follows what golfers think, a little each day.</small></div></div>'}
+/* ---------- v6: generated sites so every career is different ---------- */
+const BASE_N=PLOTS.length;
+const PLACES=[
+['Wick','Caithness',58.44,-3.09,'lm',.55,1.0],['Golspie','Sutherland',57.97,-3.98,'lm',.6,1.0],['Tain','Ross-shire',57.81,-4.05,'lp',.65,1.2],['Inverness','Highlands',57.48,-4.22,'pm',.75,2.4],
+['Elgin','Moray',57.65,-3.32,'pm',.75,1.6],['Banff','Aberdeenshire',57.67,-2.52,'l',.65,1.2],['Peterhead','Aberdeenshire',57.51,-1.78,'l',.7,1.6],['Aberdeen','Aberdeen',57.15,-2.09,'lp',.95,3.6],
+['Stonehaven','Aberdeenshire',56.96,-2.21,'lp',.85,1.8],['Braemar','Aberdeenshire',57.01,-3.40,'m',.8,1.0],['Arbroath','Angus',56.56,-2.58,'l',.7,1.8],['Dundee','Angus',56.46,-2.97,'pl',.8,3.4],
+['Perth','Perthshire',56.40,-3.43,'pm',.95,2.8],['Elie','Fife',56.19,-2.82,'l',1.2,1.8],['Lundin','Fife',56.21,-2.95,'l',1.0,1.8],['Kinross','Perthshire',56.21,-3.42,'pm',1.0,2.0],
+['Stirling','Stirlingshire',56.12,-3.94,'pm',.95,3.0],['Dunbar','East Lothian',56.00,-2.52,'l',1.1,2.2],['Musselburgh','East Lothian',55.94,-3.05,'lp',1.05,4.0],['Peebles','Borders',55.65,-3.19,'pm',1.0,1.6],
+['Kelso','Borders',55.60,-2.43,'p',.95,1.4],['Troon','Ayrshire',55.54,-4.66,'l',.95,3.0],['Largs','Ayrshire',55.79,-4.87,'lp',.9,2.2],['Glasgow','Glasgow',55.86,-4.25,'p',.9,5.5],
+['Oban','Argyll',56.41,-5.47,'lm',.75,1.0],['Islay','Argyll',55.63,-6.19,'l',.6,.6],['Stranraer','Galloway',54.90,-5.02,'l',.6,1.0],['Dumfries','Dumfries and Galloway',55.07,-3.61,'pm',.75,2.0],
+['Berwick','Northumberland',55.77,-2.00,'l',.8,1.4],['Alnwick','Northumberland',55.41,-1.71,'pl',.95,1.6],['Newcastle','Tyne and Wear',54.98,-1.61,'p',.95,5.2],['Durham','County Durham',54.78,-1.57,'p',.95,3.2],
+['Seaton Carew','County Durham',54.66,-1.18,'l',.75,3.0],['Whitby','North Yorkshire',54.49,-.61,'lm',.85,1.6],['Scarborough','North Yorkshire',54.28,-.40,'lh',.85,2.4],['Helmsley','North Yorkshire',54.25,-1.06,'mh',1.0,1.4],
+['Ripon','North Yorkshire',54.14,-1.52,'p',1.05,2.2],['Leeds','West Yorkshire',53.80,-1.55,'pm',1.0,5.6],['Sheffield','South Yorkshire',53.38,-1.47,'pm',.9,5.0],['Hebden Bridge','West Yorkshire',53.74,-2.01,'m',.9,2.6],
+['Beverley','East Yorkshire',53.84,-.43,'p',1.0,2.4],['Bridlington','East Yorkshire',54.08,-.19,'l',.75,2.0],['Windermere','Cumbria',54.38,-2.91,'m',1.1,1.6],['Penrith','Cumbria',54.66,-2.75,'mp',.9,1.4],
+['Morecambe','Lancashire',54.07,-2.86,'l',.75,2.4],['Blackpool','Lancashire',53.82,-3.05,'l',.8,4.0],['Clitheroe','Lancashire',53.87,-2.39,'pm',1.0,2.4],['Manchester','Greater Manchester',53.48,-2.24,'p',1.0,6.0],
+['Wilmslow','Cheshire',53.33,-2.23,'p',1.6,4.6],['Delamere','Cheshire',53.23,-2.67,'hp',1.3,3.6],['West Kirby','Wirral',53.37,-3.18,'l',1.15,4.0],['Ainsdale','Merseyside',53.60,-3.04,'l',1.05,4.4],
+['Llandudno','Conwy',53.32,-3.83,'lm',.8,1.8],['Rhosneigr','Anglesey',53.23,-4.51,'l',.7,1.0],['Pwllheli','Gwynedd',52.89,-4.42,'l',.7,1.0],['Aberystwyth','Ceredigion',52.41,-4.08,'lm',.7,1.4],
+['Tenby','Pembrokeshire',51.67,-4.70,'l',.95,1.6],['Gower','Swansea',51.57,-4.09,'l',.95,2.2],['Cardiff','Glamorgan',51.48,-3.18,'p',.95,5.0],['Monmouth','Monmouthshire',51.81,-2.72,'p',1.1,1.8],
+['Shrewsbury','Shropshire',52.71,-2.75,'p',1.05,2.6],['Church Stretton','Shropshire',52.54,-2.81,'m',1.1,1.6],['Ludlow','Shropshire',52.37,-2.72,'p',1.1,1.6],['Malvern','Worcestershire',52.11,-2.33,'pm',1.25,2.4],
+['Stratford upon Avon','Warwickshire',52.19,-1.71,'p',1.35,3.2],['Leamington Spa','Warwickshire',52.29,-1.53,'p',1.3,3.6],['Lichfield','Staffordshire',52.68,-1.83,'ph',1.15,3.6],['Cannock Chase','Staffordshire',52.75,-2.0,'h',1.0,3.4],
+['Leicester','Leicestershire',52.64,-1.13,'p',1.0,4.6],['Stamford','Lincolnshire',52.65,-.48,'p',1.3,2.2],['Skegness','Lincolnshire',53.14,.34,'l',.75,2.0],['Matlock','Derbyshire',53.14,-1.55,'m',1.05,2.4],
+['Cromer','Norfolk',52.93,1.30,'l',1.15,1.8],['Thetford','Norfolk',52.41,.75,'h',1.0,1.8],['Aldeburgh','Suffolk',52.15,1.60,'lh',1.4,1.8],['Woodbridge','Suffolk',52.09,1.32,'h',1.35,2.0],
+['Cambridge','Cambridgeshire',52.21,.12,'p',1.6,4.0],['Frinton','Essex',51.83,1.25,'l',1.3,2.6],['Chelmsford','Essex',51.74,.47,'p',1.45,4.6],['St Albans','Hertfordshire',51.75,-.34,'p',1.75,5.6],
+['Oxford','Oxfordshire',51.75,-1.26,'p',1.6,4.6],['Henley','Oxfordshire',51.54,-.90,'p',1.85,3.6],['Marlow','Buckinghamshire',51.57,-.77,'p',1.85,4.0],['Ascot','Berkshire',51.41,-.68,'h',1.95,6.0],
+['Reigate','Surrey',51.24,-.21,'hp',1.8,5.6],['Guildford','Surrey',51.24,-.57,'h',1.8,5.8],['Haslemere','Surrey',51.09,-.71,'h',1.75,3.6],['Sevenoaks','Kent',51.27,.19,'p',1.8,5.4],
+['Canterbury','Kent',51.28,1.08,'p',1.35,3.6],['Whitstable','Kent',51.36,1.03,'l',1.3,3.4],['Littlestone','Kent',50.97,.97,'l',1.25,2.4],['Brighton','East Sussex',50.82,-.14,'p',1.45,5.2],
+['Midhurst','West Sussex',50.99,-.74,'h',1.7,2.6],['Chichester','West Sussex',50.84,-.78,'pl',1.6,3.2],['Winchester','Hampshire',51.06,-1.31,'p',1.7,3.4],['New Forest','Hampshire',50.87,-1.60,'h',1.55,3.0],
+['Bournemouth','Dorset',50.72,-1.88,'h',1.4,4.0],['Studland','Dorset',50.64,-1.95,'lh',1.5,2.4],['Sherborne','Dorset',50.95,-2.52,'p',1.4,1.8],['Minehead','Somerset',51.20,-3.47,'lm',.95,1.6],
+['Exeter','Devon',50.72,-3.53,'p',1.15,3.4],['Thurlestone','Devon',50.27,-3.86,'l',1.4,1.8],['Westward Ho','Devon',51.04,-4.24,'l',1.0,1.6],['Okehampton','Devon',50.74,-4.00,'m',.95,1.4],
+['Newquay','Cornwall',50.41,-5.08,'l',1.0,2.4],['St Ives','Cornwall',50.21,-5.48,'l',1.15,1.8],['Bodmin','Cornwall',50.47,-4.72,'m',.85,1.4]];
+const GEN_NAMES={
+ links:[['Curlew','Marram','Saltings','Sandpiper','Seagate','Shingle','Tern','Kittiwake','Bents','Spindrift','Oystercatcher','Whitesands','Greymare','Lantern','Driftwood','Gullrock','Sealholme','Skerry','Sea Holly','Wrack','Lookout','Harbourside','Sandhaven','Coble'],['Links','Dunes','Sands','Shore Links','Bay Links','Sandhills']],
+ heathland:[['Heatherdene','Pinewood','Larkhill','Foxwarren','Gorsefield','Birchmere','Heronsgate','Silverbirch','Ridgeway','Bracken','Nightjar','Sandpit','Firwood','Woodlark','Juniper','Scotch Pine','Stonechat','Highwood','Furzedown','Dartford Warbler'],['Heath','Common','Ridge','Heath Club']],
+ parkland:[['Oakhurst','Ashcombe','Willowmere','Kingsmead','Hollybank','Beechwood','Hartwell','Chestnut','Swallowfield','Rookery','Abbotswood','Deerleap','Millpond','Coach House','Hazelwood','Orchard','Cedar','Lime Avenue','Walled Garden','Dovecote','Old Rectory'],['Park','Parkland','Manor','Hall','Estate','Park Club']],
+ moorland:[['Grouse','Whinmoor','Heatherhope','High Fell','Stonecross','Black Tarn','Ling','Moorcock','Cairn','Peatburn','Windyhill','Curlew Crag','Merlin','Drystone','Bilberry','Cotton Grass','Raven Crag','Shepherd'],['Moor','Fell','Hill','Edge','Moor Club']]};
+const TCODE={l:'links',h:'heathland',p:'parkland',m:'moorland'};
+function addPlot(a){const p={id:a[0],name:a[1],area:a[2],lat:a[3],lon:a[4],terrain:a[5],holes:a[6],wealth:a[7],demand:a[8],prestige:a[9],gen:true};
+  p.price=Math.round((p.holes===18?150000:70000)*Math.pow(p.wealth,1.8)*(.6+p.prestige*.4)/5000)*5000;PLOTS.push(p);PL[p.id]=p;return p}
+function registerGen(list){for(let i=PLOTS.length-1;i>=BASE_N;i--){delete PL[PLOTS[i].id];PLOTS.pop()}(list||[]).forEach(addPlot)}
+function genPlot(){
+  const used=new Set(S.gen.map(a=>a[11])),free=PLACES.map((p,i)=>i).filter(i=>!used.has(i));if(!free.length)return null;
+  const pi=rnd(free),P=PLACES[pi],terrain=TCODE[rnd(P[4].split(''))],L=GEN_NAMES[terrain],names=new Set(PLOTS.map(p=>p.name));
+  let name;for(let k=0;k<30;k++){name=rnd(L[0])+' '+rnd(L[1]);if(!names.has(name))break}
+  const holes=Math.random()<(terrain==='links'&&P[2]>55?.65:.5)?18:9;
+  const pr={links:1.15+Math.random()*.35+(P[2]>55?.08:0),heathland:1.05+Math.random()*.3,parkland:.95+Math.random()*.25,moorland:.95+Math.random()*.2}[terrain];
+  const a=['g'+(S.gen.length+1)+'_'+pi,name,P[0]+', '+P[1],P[2]+(Math.random()-.5)*.06,P[3]+(Math.random()-.5)*.08,terrain,holes,
+    Math.round(P[5]*(.9+Math.random()*.2)*100)/100,Math.round(P[6]*(.8+Math.random()*.35)*10)/10,Math.round(clamp(pr,.9,1.6)*100)/100,0,pi];
+  S.gen.push(a);return addPlot(a)}
+function genSpawn(){const M=S.market;if(M.nextGen===undefined)M.nextGen=S.day+ri(3,6);if(S.day<M.nextGen)return;M.nextGen=S.day+ri(4,8);
+  if(S.gen.length>=95)return;const p=genPlot();if(!p)return;const sl=newSale(p.id,false);news('New site: planning permission granted for golf at '+P_area(p)+'. '+saleNews(p.id,sl))}
+function P_area(p){return p.area.split(',')[0]}
+
+/* ---------- wiring ---------- */
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+$('#back').onclick=showMap;
+$('#mineBtn').onclick=openMine;
+$('#ticker').onclick=openNews;
+$('#inboxBtn').onclick=openInbox;
+$('#goal').onclick=()=>{const sc=scenOf();if(!sc)return;const st=sc.check();openModal('<div class="mhead"><h2>'+sc.name+'</h2><button class="small" id="mClose">Close</button></div><p class="desc">'+sc.blurb+'</p><p><b>Goal:</b> '+sc.goal+'.</p><p><b>Progress:</b> '+st.prog+'.</p><p><b>Time:</b> day '+S.day+' of '+sc.days+'.</p>');$('#mClose').onclick=closeModal};
+$('#speed').onclick=()=>{const seq=[0,1,4,10];S.speed=seq[(seq.indexOf(S.speed)+1)%seq.length];hud()};
+$('#openBtn').onclick=()=>{const C=course();if(C.open){C.open=false;hud();save();return}const e=courseIssue(C);if(e){toast(e);return}
+  C.open=true;checkCareer();hud();save();sayText('And we are open for business. Tee times are filling up already, I gather.')};
+$('#watchBtn').onclick=startWatch;
+$('#feeDown').onclick=()=>{const C=course();C.fee=Math.max(5,C.fee-5);hud()};
+$('#feeUp').onclick=()=>{const C=course();C.fee=Math.min(300,C.fee+5);hud()};
+$('#brush').onclick=()=>{brush=brush===1?3:1;$('#brush').textContent='Brush: '+(brush===1?'small':'large')};
+$('#auto').onclick=autoHole;$('#autoAll').onclick=autoAll;$('#clearHole').onclick=clearHole;
+
+let last=performance.now(),saveT=0,hudT=0;
+function frame(now){
+  const dt=Math.min(100,now-last);last=now;
+  try{update(dt);draw()}catch(err){console.error(err)}
+  hudT+=dt;if(hudT>300){hudT=0;hud();if(R.view==='course'&&(R.tab==='club'||R.tab==='events')&&(R.pT=(R.pT||0)+1)%7===0)refreshPanels()}
+  saveT+=dt;if(saveT>5000){saveT=0;save()}
+  requestAnimationFrame(frame);
+}
+R.t=0;
+{const ld=load();S=ld||newState();if(ld){S._live=true;if(S._needWorld){initWorld();delete S._needWorld;save()}}else initWorld();if(!S.led)S.led=newLed();if(!S.date0)S.date0=todayISO();if(!S.gen)S.gen=[];if(!S.gen.length){for(let i=0;i<30;i++)genPlot()}}
+buildMap();renderTools();
+if(S.news[0])$('#tickText').textContent=S.news[0].t;
+window.addEventListener('resize',()=>{if(R.view==='course'){resize()}else{sizeMap();renderOverlay()}});
+showMap();badge();startScreen();
+requestAnimationFrame(frame);
+window.__LT={PLOTS,PARS18,dirty,analyzeHole,designOf,repCap,closeDay,startDay,daySummary,courseValue,quickSale,auctionOwn,resolveOwn,legendDay,fancyHole,bestFancy,dTxt,closeSheet,menuOpen,newGame,attend,stepAuction,aucBid,aucDrop,resolveSale,newSale,openInbox,openMail,gazette,featureReview,stormDay,memDay,rivalsDay,startScreen,chalScreen,closeModal,SCEN,RIV,salePrice,memCap,checkScen,get S(){return S},R,update,minuteTick,endDay,genHole,PL,newCourse,headlessRound,quality,courseIssue,showCourse,showMap,buy,autoAll,startWatch,rate,fairFee,upkeep,openListing,openMine,openNews,setTab,draw,EVENTS,eventState,runEvent,adminPrice};
+})();
+
+</script>
+</body>
+</html>
