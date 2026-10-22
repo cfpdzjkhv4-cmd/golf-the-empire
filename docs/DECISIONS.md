@@ -2,6 +2,13 @@
 
 Decisions made after DESIGN.md version 2, newest first. Where these and DESIGN.md disagree, these win until DESIGN.md is updated.
 
+## October 2026: Milestone 2 art (Claude's calls, flagged to Harry)
+
+1. **Holes are drawn as vector shapes, not tiled textures.** The tile grid is traced into smooth outlines (fairways, greens, bunkers, water, sea) and painted in flat colour with soft shading, light from the top left. This replaces most `tex_*`, `mask_edge_soft`, `ovl_bunker_lip` and `ovl_mowing` manifest rows: those looks are now drawn in code by `CourseArt/HoleArtist.swift`. A fine grain texture may still be added later.
+2. **One style guide**, `Packages/GameCore/Sources/CourseArt/Resources/style.json`, read by the game and by every generator.
+3. **The golfer rig is drawn face on**, like a TV camera behind the ball, with nine poses blended into animation frames at run time and outfits (shirt, trousers, skin, hair, five hats) chosen per golfer.
+4. Art can be reviewed without a phone: `make preview`.
+
 ## October 2026: Milestone 2 rules (Claude's calls, flagged to Harry)
 
 1. **Golfers now score like real club golfers.** The prototype's golfers were far too good: ordinary players averaged level par, even on island greens, so hazards never bit. Shot numbers are retuned (shorter hitting, wider sprays, harder putting) so a 20 handicapper drops about a shot a hole and an island green costs ordinary golfers a ball every other round. Numbers are in `balance.json` under `shots`; ScoringTests prints the table.

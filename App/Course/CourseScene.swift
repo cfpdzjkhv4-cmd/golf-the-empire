@@ -1,3 +1,4 @@
+import CourseArt
 import GameCore
 import SpriteKit
 import UIKit
@@ -31,6 +32,12 @@ final class CourseScene: SKScene {
     private var pinch: UIPinchGestureRecognizer?
     private var lastPainted: GridPoint?
     private var painting = false
+
+    // Watch a round
+    private let ball = SKShapeNode(circleOfRadius: 3)
+    private let ballShadow = SKShapeNode(ellipseOf: CGSize(width: 6, height: 3))
+    private lazy var golfer = GolferSprite(heightInWorld: tile * 1.15)
+    private var pendingShot: CheckedContinuation<Void, Never>?
 
     private var worldSize: CGSize { CGSize(width: CGFloat(columns) * tile, height: CGFloat(rows) * tile) }
 
@@ -66,6 +73,19 @@ final class CourseScene: SKScene {
         flag.addChild(pennant)
         flag.zPosition = 3
         addChild(flag)
+
+        ball.fillColor = .white
+        ball.strokeColor = UIColor(white: 0.25, alpha: 1)
+        ball.lineWidth = 0.75
+        ball.zPosition = 6
+        ballShadow.fillColor = UIColor(white: 0, alpha: 0.3)
+        ballShadow.strokeColor = .clear
+        ballShadow.zPosition = 5
+        golfer.zPosition = 4
+        for node in [ball, ballShadow, golfer] {
+            node.isHidden = true
+            addChild(node)
+        }
     }
 
     @available(*, unavailable)
@@ -95,11 +115,11 @@ final class CourseScene: SKScene {
     // MARK: Showing a hole
 
     /// Redraws the hole. With `resetCamera`, jumps back to the tee at full width.
-    func show(_ hole: Hole, land: LandKind, resetCamera: Bool) {
+    func show(_ hole: Hole, land: LandKind, seed: UInt64, resetCamera: Bool) {
         columns = hole.columns
         rows = hole.rows
-        let texture = SKTexture(image: Self.render(hole, land: land))
-        texture.filteringMode = .nearest
+        let texture = SKTexture(image: HoleImageRenderer.image(for: hole, land: land, seed: seed))
+        texture.filteringMode = .linear
         holeNode.texture = texture
         holeNode.size = worldSize
 
@@ -133,24 +153,6 @@ final class CourseScene: SKScene {
         let y = Int(floor((worldSize.height / 2 - point.y) / tile))
         guard x >= 0, y >= 0, x < columns, y < rows else { return nil }
         return GridPoint(x: x, y: y)
-    }
-
-    /// Flat placeholder art: one coloured square per tile.
-    private static func render(_ hole: Hole, land: LandKind) -> UIImage {
-        let px: CGFloat = 8
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = 2
-        let size = CGSize(width: CGFloat(hole.columns) * px, height: CGFloat(hole.rows) * px)
-        return UIGraphicsImageRenderer(size: size, format: format).image { ctx in
-            for y in 0..<hole.rows {
-                for x in 0..<hole.columns {
-                    guard let t = hole[x, y] else { continue }
-                    let variant = (x * 7 + y * 13) % 5 == 0 || (t == .fairway && y % 2 == 0)
-                    PlaceholderPalette.colour(for: t, land: land, variant: variant).setFill()
-                    ctx.fill(CGRect(x: CGFloat(x) * px, y: CGFloat(y) * px, width: px, height: px))
-                }
-            }
-        }
     }
 
     // MARK: Camera
@@ -200,6 +202,110 @@ final class CourseScene: SKScene {
         cameraNode.setScale(min(max(next, minScale), maxScale))
         g.scale = 1
         clampCamera()
+    }
+
+    // MARK: Watch a round
+
+    private func world(_ v: GridVector) -> CGPoint {
+        CGPoint(x: CGFloat(v.x) * tile - worldSize.width / 2, y: worldSize.height / 2 - CGFloat(v.y) * tile)
+    }
+
+    /// Dresses the golfer for a new round.
+    func dressGolfer(seed: UInt64) {
+        golfer.dress(seed: seed)
+    }
+
+    /// Puts the golfer and ball on the tee.
+    func startRound(at start: GridVector?) {
+        guard let start else { return }
+        let p = world(start)
+        ball.position = p
+        ballShadow.position = p
+        golfer.removeAllActions()
+        golfer.position = CGPoint(x: p.x - 9, y: p.y - 2)
+        for node in [ball, ballShadow, golfer] { node.isHidden = false }
+        follow(p, duration: 0.6)
+    }
+
+    /// Animates one shot: flight with height, bounce and roll, then the golfer walks after it.
+    func play(_ shot: Shot) async {
+        let from = world(shot.from), landing = world(shot.landing), end = world(shot.end)
+        await withCheckedContinuation { (done: CheckedContinuation<Void, Never>) in
+            pendingShot = done
+            ball.position = from
+            ballShadow.position = from
+            ball.isHidden = false
+            ballShadow.isHidden = false
+            // After a drop or a stroke and distance the ball isn't where the golfer walked to.
+            golfer.removeAction(forKey: "walk")
+            golfer.removeAction(forKey: "legs")
+            golfer.xScale = abs(golfer.xScale)
+            golfer.position = CGPoint(x: from.x - 9, y: from.y - 2)
+            ball.setScale(1)
+            let flight: SKAction
+            let shadowFlight: SKAction
+            if shot.isPutt {
+                let time = 0.5 + Double(hypot(end.x - from.x, end.y - from.y)) / 160
+                flight = .move(to: end, duration: time)
+                flight.timingMode = .easeOut
+                shadowFlight = .move(to: end, duration: time)
+                shadowFlight.timingMode = .easeOut
+            } else {
+                let air = 0.6 + shot.carryYards / 260
+                let height = min(2.2, 1 + shot.carryYards / 180)
+                let up = SKAction.scale(to: height, duration: air / 2)
+                up.timingMode = .easeOut
+                let down = SKAction.scale(to: 1, duration: air / 2)
+                down.timingMode = .easeIn
+                let roll = SKAction.move(to: end, duration: 0.35)
+                roll.timingMode = .easeOut
+                flight = .sequence([.group([.move(to: landing, duration: air), .sequence([up, down])]), roll])
+                shadowFlight = .sequence([.move(to: landing, duration: air), .move(to: end, duration: 0.35)])
+            }
+            // Swing first, then the ball goes.
+            golfer.run(golfer.swingAction(putt: shot.isPutt)) { [weak self] in
+                guard let self else { return }
+                self.ballShadow.run(shadowFlight)
+                self.follow(end, duration: shot.isPutt ? 0.8 : 1.2)
+                self.ball.run(flight) { [weak self] in
+                    guard let self else { return }
+                    if shot.holed {
+                        self.ball.isHidden = true
+                        self.ballShadow.isHidden = true
+                        self.golfer.react(GolferRig.celebrate)
+                    } else if shot.outcome == .water || shot.outcome == .outOfBounds {
+                        self.golfer.react(GolferRig.despair)
+                    } else {
+                        let distance = hypot(end.x - self.golfer.position.x, end.y - self.golfer.position.y)
+                        self.golfer.walk(to: CGPoint(x: end.x - 9, y: end.y - 2), duration: min(1.3, 0.4 + Double(distance) / 120))
+                    }
+                    self.finishShot()
+                }
+            }
+        }
+    }
+
+    private func finishShot() {
+        let done = pendingShot
+        pendingShot = nil
+        done?.resume()
+    }
+
+    /// Hides the ball and golfer, and releases anyone waiting on a shot.
+    func clearRound() {
+        for node in [ball, ballShadow, golfer] { node.isHidden = true }
+        finishShot()
+    }
+
+    private func follow(_ point: CGPoint, duration: TimeInterval) {
+        let scale = cameraNode.xScale
+        let halfW = size.width * scale / 2, halfH = size.height * scale / 2
+        let maxX = max(0, worldSize.width / 2 - halfW + tile)
+        let maxY = max(0, worldSize.height / 2 - halfH + tile)
+        let target = CGPoint(x: min(max(point.x, -maxX), maxX), y: min(max(point.y + halfH * 0.25, -maxY), maxY))
+        let move = SKAction.move(to: target, duration: duration)
+        move.timingMode = .easeInEaseOut
+        cameraNode.run(move, withKey: "follow")
     }
 
     // MARK: Painting

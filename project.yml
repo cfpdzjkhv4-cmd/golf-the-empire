@@ -24,6 +24,9 @@ targets:
       - path: App
     dependencies:
       - package: GameCore
+        product: GameCore
+      - package: GameCore
+        product: CourseArt
     info:
       path: Config/Info.plist
       properties:

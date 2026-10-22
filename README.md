@@ -26,7 +26,8 @@ With a free Apple ID the app stops opening after 7 days; just press Play in Xcod
 | Command | What it does |
 |---|---|
 | `make project` | Rebuilds the Xcode project after files are added or `project.yml` changes |
-| `make test` | Runs the rules tests headless (41 tests, about 10 seconds) |
+| `make test` | Runs the rules and art tests headless (55 tests, a few seconds) |
+| `make preview` | Draws sample holes and the golfer rig to `art-preview-output/index.html`, to review the look without a phone |
 | `make assets` | Regenerates every asset by manifest id |
 | `make data` | Re-extracts plots, towns and Percy's lines from the prototype |
 
@@ -40,6 +41,8 @@ Packages/GameCore/        All the rules. No SpriteKit or SwiftUI. Deterministic 
     Rules/                Hole analysis, course design score, hole generators
     Sim/                  The engine: clock, close of play, books, building and undo
     Save/                 Versioned JSON saves with migrations
+  Sources/CourseArt/      The style guide (style.json), smooth hole shapes, the golfer rig
+  Sources/art-preview/    Renders the art to SVG for review
   Tests/GameCoreTests/    XCTest: analysis, design, 30 day headless runs, saves, data
 App/                      The iPhone and iPad app (SwiftUI screens, SpriteKit course view)
   Assets/AssetLibrary     The only code that loads art, always by manifest id

@@ -6,37 +6,56 @@ struct CourseScreen: View {
     @Environment(GameStore.self) private var store
     private var scene: CourseScene { store.courseScene }
 
-    private var design: CourseDesign? {
-        store.course.flatMap { store.engine?.design(of: $0.plotID) }
-    }
+    private var design: CourseDesign? { store.quality?.design }
 
     var body: some View {
+        @Bindable var store = store
         VStack(spacing: 0) {
             header
             SpriteView(scene: scene, options: [.ignoresSiblingOrder])
                 .overlay(alignment: .top) { messageBanner }
-            holeStrip
-            ScrollView {
-                if let design, design.holes.indices.contains(store.selectedHole) {
-                    HoleCardView(design: design, holeIndex: store.selectedHole)
-                        .padding(12)
+                .overlay(alignment: .bottom) {
+                    if let watching = store.watching { PercyBox(watching: watching) }
                 }
+            holeStrip
+            Picker("Tab", selection: $store.tab) {
+                ForEach(GameStore.CourseTab.allCases) { Text($0.rawValue).tag($0) }
             }
-            .frame(height: 210)
-            .background(Color(uiColor: .secondarySystemBackground))
-            BuildBar()
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .disabled(store.watching != nil)
+            panel
+                .frame(height: 300)
         }
         .onAppear(perform: connectScene)
         .onChange(of: store.currentHole) { redraw(resetCamera: false) }
-        .onChange(of: store.selectedHole) { redraw(resetCamera: true) }
-        .onChange(of: store.tool) { scene.paintMode = store.tool != nil }
-        .alert(dayTitle, isPresented: Binding(
-            get: { store.dayJustEnded != nil },
-            set: { if !$0 { store.dayJustEnded = nil } }
-        )) {
-            Button("Start \(store.dateLabel)") { store.dayJustEnded = nil }
-        } message: {
-            Text(dayMessage)
+        .onChange(of: store.selectedHole) { redraw(resetCamera: store.watching == nil) }
+        .onChange(of: store.mode) { scene.paintMode = store.mode != .look }
+        .sheet(isPresented: $store.showingCloseOfPlay) {
+            CloseOfPlayView()
+                .interactiveDismissDisabled()
+                .presentationDetents([.large])
+        }
+    }
+
+    @ViewBuilder
+    private var panel: some View {
+        switch store.tab {
+        case .build:
+            VStack(spacing: 0) {
+                ScrollView {
+                    if let design, design.holes.indices.contains(store.selectedHole) {
+                        HoleCardView(design: design, holeIndex: store.selectedHole, playtest: store.playtest)
+                            .padding(12)
+                    }
+                }
+                .background(Color(uiColor: .secondarySystemBackground))
+                BuildBar()
+            }
+        case .run: RunPanel()
+        case .club: ClubPanel()
+        case .reviews: ReviewsPanel()
         }
     }
 
@@ -45,27 +64,23 @@ struct CourseScreen: View {
     private var header: some View {
         HStack(spacing: 10) {
             Button {
+                store.stopWatching()
                 store.save()
                 store.screen = .start
             } label: {
                 Image(systemName: "chevron.left")
             }
+            .accessibilityLabel("Back to the start screen")
             VStack(alignment: .leading, spacing: 1) {
                 Text(store.plot?.name ?? "").font(.headline).lineLimit(1)
-                Text("\(store.dateLabel) · \(store.course?.isOpen == true ? "Open" : "Closed")")
-                    .font(.caption)
+                Text("\(store.dateLabel) · \(store.clockLabel) · \(store.course?.isOpen == true ? "Open" : "Closed")")
+                    .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
             }
             Spacer()
             Text(Money.text(store.engine?.state.cash ?? 0))
                 .font(.headline.monospacedDigit())
                 .foregroundStyle((store.engine?.state.cash ?? 0) < 0 ? Color.red : Color.primary)
-            Menu {
-                Button(store.course?.isOpen == true ? "Close the course" : "Open the course") { store.toggleOpen() }
-                Button("End the day") { store.finishDay() }
-            } label: {
-                Image(systemName: "ellipsis.circle").font(.title3)
-            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -87,7 +102,7 @@ struct CourseScreen: View {
                                     .font(.caption2.monospacedDigit())
                             }
                             .frame(width: 40, height: 40)
-                            .background(Color(uiColor: PlaceholderPalette.rating(score)).opacity(i == store.selectedHole ? 1 : 0.55))
+                            .background(Palette.rating(score).opacity(i == store.selectedHole ? 1 : 0.55))
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(
@@ -95,6 +110,8 @@ struct CourseScreen: View {
                                     .stroke(i == store.selectedHole ? Color.primary : .clear, lineWidth: 2)
                             )
                         }
+                        .disabled(store.watching != nil)
+                        .accessibilityLabel("Hole \(i + 1), rated \(String(format: "%.1f", score))")
                         .id(i)
                     }
                 }
@@ -123,41 +140,58 @@ struct CourseScreen: View {
         }
     }
 
-    // MARK: Day summary
-
-    private var dayTitle: String {
-        guard let books = store.dayJustEnded, let engine = store.engine else { return "" }
-        return "Close of play, \(engine.calendar.shortLabel(day: books.day))"
-    }
-
-    private var dayMessage: String {
-        guard let books = store.dayJustEnded else { return "" }
-        var lines: [String] = []
-        for category in LedgerCategory.allCases where books[category] != 0 {
-            lines.append("\(category.label): \(Money.text(books[category]))")
-        }
-        if lines.isEmpty { lines.append("No money in or out today.") }
-        lines.append("Net for the day: \(Money.text(books.net))")
-        lines.append("In the bank: \(Money.text(books.closingCash))")
-        return lines.joined(separator: "\n")
-    }
-
     // MARK: Scene wiring
 
     private func connectScene() {
         scene.onPaint = { point in store.paint(at: point) }
         scene.onStrokeEnded = { store.endStroke() }
         scene.onSwipe = { step in
-            guard let count = store.course?.holes.count else { return }
+            guard store.watching == nil, let count = store.course?.holes.count else { return }
             store.selectHole(min(max(store.selectedHole + step, 0), count - 1))
         }
-        scene.paintMode = store.tool != nil
+        scene.paintMode = store.mode != .look
         redraw(resetCamera: true)
     }
 
     private func redraw(resetCamera: Bool) {
         guard let hole = store.currentHole, let plot = store.plot else { return }
-        scene.show(hole, land: plot.land, resetCamera: resetCamera)
+        scene.show(hole, land: plot.land, seed: HoleImageRenderer.seed(plotID: plot.id, hole: store.selectedHole), resetCamera: resetCamera)
+    }
+}
+
+/// Percy's commentary box while watching a round.
+struct PercyBox: View {
+    @Environment(GameStore.self) private var store
+    let watching: GameStore.Watching
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text("Percy Hollis").font(.caption.bold())
+                Spacer()
+                Text("\(watching.round.golfer.name) · Hole \(watching.holeIndex + 1), par \(watching.round.holes[safe: watching.holeIndex]?.par ?? 0) · \(watching.strokesThisHole) so far")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            Text(watching.line)
+                .font(.system(.subheadline, design: .serif).italic())
+                .fixedSize(horizontal: false, vertical: true)
+            if let previous = watching.previousLine {
+                Text(previous)
+                    .font(.system(.caption, design: .serif).italic())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            HStack {
+                Spacer()
+                Button(watching.finished ? "Done" : "Stop watching") { store.stopWatching() }
+                    .font(.caption.bold())
+            }
+        }
+        .padding(12)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .padding(8)
+        .animation(.easeInOut(duration: 0.2), value: watching.line)
     }
 }
 

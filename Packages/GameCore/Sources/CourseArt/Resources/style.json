@@ -1,0 +1,94 @@
+{
+  "_note": "The shared style guide. Every art generator and the in game renderer read this file. Colours are hex sRGB. Light comes from the top left.",
+  "light": {
+    "fromX": -1,
+    "fromY": -1
+  },
+  "shadow": {
+    "colour": "#1E3218",
+    "opacity": 0.28,
+    "offsetX": 0.16,
+    "offsetY": 0.22
+  },
+  "strokes": {
+    "hairline": 0.5,
+    "thin": 1,
+    "regular": 1.5,
+    "bold": 2.5
+  },
+  "cornerRadius": {
+    "small": 6,
+    "medium": 10,
+    "large": 16
+  },
+  "grain": {
+    "opacity": 0.06
+  },
+  "terrain": {
+    "fairway": "#86BA55",
+    "fairwayStripe": "#98C966",
+    "green": "#A2D269",
+    "greenHighlight": "#B4DC7E",
+    "fringe": "#82B957",
+    "tee": "#A9D374",
+    "teeEdge": "#7FAE4F",
+    "sand": "#E9DAA9",
+    "sandShade": "#C2A66A",
+    "sandLip": "#5E6E36",
+    "water": "#4B84B0",
+    "waterShade": "#36678F",
+    "waterHighlight": "#8FB9D6",
+    "sea": "#3A6A8C",
+    "seaFoam": "#DDE8EC",
+    "beach": "#E4D3A2",
+    "firstCut": "#77A94C"
+  },
+  "lands": {
+    "links": {
+      "rough": "#A2AA66",
+      "roughMottle": "#939D5A",
+      "deepRough": "#8A8F52",
+      "tree": "#6F7A32",
+      "treeLight": "#8C9A44",
+      "flower": "#E8C33A"
+    },
+    "heathland": {
+      "rough": "#7A8A4C",
+      "roughMottle": "#6D7E44",
+      "deepRough": "#7B5E78",
+      "tree": "#2D5133",
+      "treeLight": "#3F6B45",
+      "flower": "#A879A8"
+    },
+    "parkland": {
+      "rough": "#5E9446",
+      "roughMottle": "#548A3E",
+      "deepRough": "#4C7F39",
+      "tree": "#2E5B2A",
+      "treeLight": "#457A3A",
+      "flower": "#F2E9D8"
+    },
+    "moorland": {
+      "rough": "#7D8650",
+      "roughMottle": "#717A48",
+      "deepRough": "#8A6E50",
+      "tree": "#455C35",
+      "treeLight": "#5C7445",
+      "flower": "#B88A9E"
+    }
+  },
+  "ui": {
+    "ink": "#1F2A1C",
+    "paper": "#F4F0E6",
+    "paperDark": "#1C221B",
+    "accent": "#2E6B45",
+    "gold": "#C9971A",
+    "rating": [
+      "#B5523B",
+      "#C98A2B",
+      "#8DA33A",
+      "#3F8F4A",
+      "#C9971A"
+    ]
+  }
+}

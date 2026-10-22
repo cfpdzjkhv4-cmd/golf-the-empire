@@ -6,6 +6,8 @@ import SwiftUI
 struct HoleCardView: View {
     let design: CourseDesign
     let holeIndex: Int
+    /// How ordinary golfers get on, from the shot simulation.
+    let playtest: Playtest?
 
     private var analysis: HoleAnalysis { design.holes[holeIndex] }
     private var effective: Double { design.effectiveHoleScores[holeIndex] }
@@ -24,11 +26,11 @@ struct HoleCardView: View {
                 if design.signatureHole == holeIndex {
                     Label("Signature hole", systemImage: "star.fill")
                         .font(.caption.bold())
-                        .foregroundStyle(Color(uiColor: PlaceholderPalette.rating(9)))
+                        .foregroundStyle(Palette.gold)
                 }
                 Text(effective > 0 ? String(format: "%.1f", effective) : "·")
                     .font(.title2.bold().monospacedDigit())
-                    .foregroundStyle(Color(uiColor: PlaceholderPalette.rating(effective)))
+                    .foregroundStyle(Palette.rating(effective))
             }
 
             if !analysis.isPlayable {
@@ -44,7 +46,7 @@ struct HoleCardView: View {
                             .padding(.vertical, 4)
                             .background(feature.points > 0 ? Color.green.opacity(0.18) : Color.red.opacity(0.18), in: Capsule())
                     }
-                    Text("\(analysis.fairness.band.rawValue) for golfers")
+                    Text("\(band.rawValue) for golfers")
                         .font(.caption)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -58,6 +60,11 @@ struct HoleCardView: View {
                 }
                 if effective != analysis.score {
                     Text(String(format: "Rated %.1f on its own.", analysis.score))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                if let playtest {
+                    Text(playtestText(playtest))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -78,8 +85,21 @@ struct HoleCardView: View {
         }
     }
 
+    private var band: Fairness.Band { playtest?.band ?? analysis.fairness.band }
+
+    private func playtestText(_ p: Playtest) -> String {
+        var text = String(format: "Ordinary golfers average %.1f here (par %d)", p.averageStrokes, p.par)
+        if p.ballsLost >= 0.05 {
+            let oneIn = max(1, Int((1 / p.ballsLost).rounded()))
+            text += oneIn == 1 ? " and lose a ball every time." : " and lose a ball 1 time in \(oneIn)."
+        } else {
+            text += " and rarely lose a ball."
+        }
+        return text
+    }
+
     private var fairnessColour: Color {
-        switch analysis.fairness.band {
+        switch band {
         case .fair: .green
         case .testing: .orange
         case .brutal: .red

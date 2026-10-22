@@ -16,3 +16,6 @@ Config/Info.plist
 
 # macOS
 .DS_Store
+
+# make preview
+art-preview-output/
