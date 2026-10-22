@@ -2,6 +2,14 @@
 
 Decisions made after DESIGN.md version 2, newest first. Where these and DESIGN.md disagree, these win until DESIGN.md is updated.
 
+## October 2026: version 1 scope
+
+Version 1 is a smaller, complete game, worth £1.99 with no placeholders. It contains course design with proper phone build tools; golfers, reviews and Percy; running the club (fees, condition, greenkeepers, clubhouse, shop, range); the calendar and close of play books; the map with the 66 hand made plots; quiet sales and sealed bids; simplified rivals; events up to The Championship; a tutorial; three challenges; the art and sound those screens need.
+
+Challenges in version 1 are Back from the brink, Stockbroker belt and Shoestring. The waiting list needs members and Rising tide needs storms, so they arrive with those updates.
+
+Moved to free updates: members and committee, storms and erosion, inbox, Gazette and Fairway Review, legendary venues, live auctions, selling clubs, administration sales, generated sites, iCloud saves, music. The data and rules already written for these stay in GameCore unused until then.
+
 ## October 2026: price
 
 1. **Paid upfront at £1.99. No in-app purchases, ever.** Replaces the free download plus £5.99 unlock in DESIGN.md section 1. No StoreKit purchase code, no unlocks, no tip jar. Later content ships as free updates.

@@ -39,14 +39,17 @@ The game ships with a complete asset pack (art, animation, music, sound) and **n
 * The prototype was tested the same way (headless days in a script); keep that habit.
 * Add a balance report test that prints daily revenue, rounds and rep for a few reference plots so tuning changes are visible.
 
-## Milestones
-1. **Foundations.** Xcode project, GameCore skeleton, data files from DESIGN.md, asset manifest loader, placeholder generator, save and load. One course on screen with placeholder terrain.
-2. **Style guide and one course, playable, with design scoring.** The hero hole art and golfer rig, hole analysis and the hole card, Build tools, auto layout, golfers and shot sim, fees, reviews, Percy text, Run tab, watch a round, upkeep, condition, facilities.
-3. **The empire.** Calendar and close of play books, map of Britain, generated sites, quiet sales, sealed bids, live auctions, selling clubs, rivals, legendary venues, administration, events and The Championship rota.
-4. **Depth.** Members and committee, storms and erosion, inbox, weekly Gazette, The Fairway Review, milestones.
-5. **Modes and polish.** Start screen, challenges, tutorial, settings, iCloud saves, accessibility (Dynamic Type, VoiceOver labels, colour blind safe terrain).
-6. **Art and audio pass.** Finish every manifest asset through the generators, tune animation timing, compose and render the music, mix ambience.
-7. **Release.** App Store assets, TestFlight with Harry's testers, performance on older iPhones, submission.
+## Milestones (version 1 for launch, then free updates)
+Version 1 scope is agreed: see docs/DECISIONS.md. Build only what version 1 needs before launch.
+
+1. **Foundations.** Done.
+2. **Style guide and one course, playable, with design scoring.** The hero hole art and golfer rig, the hole card, proper phone Build tools (curved fairway brush, ring the green with water, bunker stamps), golfers and shot sim, fees, reviews, Percy text, Run tab, watch a round, upkeep, condition, facilities. Calibrate fairness against the shot sim. First TestFlight to friends.
+3. **The empire, version 1.** Map of Britain, the 66 hand made plots, quiet sales and sealed bids, simplified rivals (buy, run, compete for golfers, bid against you), events up to The Championship and its rota, a light news ticker.
+4. **Modes and polish.** Start screen, tutorial, three challenges (Back from the brink, Stockbroker belt, Shoestring), settings, accessibility (Dynamic Type, VoiceOver labels, colour blind safe terrain). Sandbox and the asset gallery hidden in release builds.
+5. **Art and audio for version 1.** Every asset the version 1 screens use, through the generators. Ambience and key sound effects; no music yet.
+6. **Release.** Privacy policy page, App Store screenshots and text, TestFlight with Harry's testers, performance on older iPhones, submission at £1.99.
+
+**Free updates after launch**, roughly in this order: members and committee (with The waiting list challenge); storms and erosion (with Rising tide); inbox, weekly Gazette and The Fairway Review; legendary venues and live auctions; selling clubs and administration sales; generated sites; iCloud saves; composed music.
 
 Show Harry something he can run on his phone at the end of every milestone.
 
