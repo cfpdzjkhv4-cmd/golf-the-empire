@@ -194,3 +194,13 @@ public struct PercyText: Decodable, Sendable {
     /// Quips for the weekly Gazette.
     public let column: [String]
 }
+
+public struct ReviewText: Decodable, Sendable {
+    public struct Signature: Decodable, Sendable {
+        public let withFeature: [String]
+        public let plain: [String]
+    }
+    /// Quotes keyed by the factor that mattered most (design, price, condN...).
+    public let quotes: [String: [String]]
+    public let signature: Signature
+}

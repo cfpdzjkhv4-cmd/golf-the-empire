@@ -17,6 +17,37 @@ public struct Facilities: Codable, Equatable, Sendable {
     public init() {}
 }
 
+/// One golfer's verdict after a round.
+public struct Review: Codable, Equatable, Sendable {
+    public let day: Int
+    public let golfer: String
+    public let stars: Int
+    public let score: Int
+    public let par: Int
+    public let quote: String
+}
+
+/// Running totals for one course for one day.
+public struct CourseDay: Codable, Equatable, Sendable {
+    public var rounds = 0
+    public var visitors = 0
+    /// Groups who turned up while the tee was busy and went home.
+    public var walkedAway = 0
+    public var greenFees = 0
+    public var barAndShop = 0
+    public var upkeep = 0
+    public var wages = 0
+    public var starsTotal = 0
+    public var reviews = 0
+
+    public init() {}
+
+    public var takings: Int { greenFees + barAndShop }
+    public var costs: Int { upkeep + wages }
+    public var net: Int { takings - costs }
+    public var averageStars: Double? { reviews > 0 ? Double(starsTotal) / Double(reviews) : nil }
+}
+
 /// A course the player owns, on one plot.
 public struct Course: Codable, Equatable, Sendable, Identifiable {
     public var id: String { plotID }
@@ -31,6 +62,16 @@ public struct Course: Codable, Equatable, Sendable, Identifiable {
     public var condition: Double
     public var facilities = Facilities()
     public var weather: Weather = .cloud
+    /// Newest first.
+    public var reviews: [Review] = []
+    public var today = CourseDay()
+    public var yesterday: CourseDay?
+    public var totalRounds = 0
+    public var bestScore: Int?
+    /// Minute the last group teed off today.
+    public var lastTeeMinute: Int?
+    /// Event ids hosted here, with the day they were held.
+    public var eventsHosted: [String: Int] = [:]
 
     public init(plotID: String, holes: [Hole], reputation: Double, condition: Double) {
         self.plotID = plotID

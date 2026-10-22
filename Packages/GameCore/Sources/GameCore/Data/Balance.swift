@@ -80,6 +80,16 @@ public struct Balance: Decodable, Sendable {
     }
 
     public struct Fairness: Decodable, Sendable {
+        public struct Playtest: Decodable, Sendable {
+            public let golfers: Int
+            public let skillMin: Double
+            public let skillMax: Double
+            public let testingOverPar: Double
+            public let brutalOverPar: Double
+            public let testingPenalties: Double
+            public let brutalPenalties: Double
+        }
+        public let playtest: Playtest
         public let severity: [String: Double]
         public let testingFrom: Double
         public let brutalFrom: Double
@@ -117,6 +127,8 @@ public struct Balance: Decodable, Sendable {
         public let conditionMax: Double
         public let rainConditionLoss: Double
         public let stormConditionLoss: Double
+        public let wearPerRound18: Double
+        public let wearPerRound9: Double
     }
 
     public struct Upkeep: Decodable, Sendable {
@@ -146,6 +158,147 @@ public struct Balance: Decodable, Sendable {
         public let demand: [String: Double]
     }
 
+    public struct Golfers: Decodable, Sendable {
+        public let skillBase: Double
+        public let skillRandom: Double
+        public let skillPerReputation: Double
+        public let skillMin: Double
+        public let skillMax: Double
+        public let groupSizeMax: Int
+        public let teeIntervalMinutes: Int
+        public let pickUpAfterShots: Int
+        public let pickUpOverPar: Int
+    }
+
+    public struct Shots: Decodable, Sendable {
+        public let baseCarry: Double
+        public let carryPerSkill: Double
+        public let minTargetYards: Double
+        public let mustGainYards: Double
+        public let pinReachFactor: Double
+        public let lieDistance: [String: Double]
+        public let bunkerShortYards: Double
+        public let targetPenalty: [String: Double]
+        public let pinTargetScore: Double
+        public let nearWaterPenalty: Double
+        public let nearWaterSkillOffset: Double
+        public let lieError: [String: Double]
+        public let aimErrorBase: Double
+        public let aimErrorPerMissingSkill: Double
+        public let shankChancePerMissingSkill: Double
+        public let shankAngleMin: Double
+        public let shankAngleRandom: Double
+        public let lengthErrorBase: Double
+        public let lengthErrorPerMissingSkill: Double
+        public let minCarry: Double
+        public let roll: [String: Double]
+        public let chipInYards: Double
+        public let chipInChance: Double
+        public let puttHoleBase: Double
+        public let puttHolePerSkill: Double
+        public let puttLongYards: Double
+        public let puttLeaveMin: Double
+        public let puttLeaveBase: Double
+        public let puttLeaveRandom: Double
+        public let puttLeaveSkillOffset: Double
+        public let windFactor: [String: Double]
+    }
+
+    public struct Demand: Decodable, Sendable {
+        public let groupsPerHourPerDemand: Double
+        public let reputationBase: Double
+        public let reputationDivisor: Double
+        public let priceBase: Double
+        public let pricePerFairRatio: Double
+        public let priceMin: Double
+        public let priceMax: Double
+        public let rangeBonus: Double
+        public let designBase: Double
+        public let designPer: Double
+    }
+
+    public struct Fees: Decodable, Sendable {
+        public let base: Double
+        public let perReputation: Double
+        public let eighteenHoleFactor: Double
+        public let designBase: Double
+        public let designPer: Double
+        public let interestUplift: Double
+        public let step: Int
+        public let minimum: Int
+        public let maximum: Int
+    }
+
+    public struct Spend: Decodable, Sendable {
+        public let barBase: Double
+        public let barPerStar: Double
+    }
+
+    public struct Quality: Decodable, Sendable {
+        public let interestBunkerTiles: Double
+        public let interestBunker: Double
+        public let interestWaterTiles: Double
+        public let interestWater: Double
+        public let interestTreeTiles: Double
+        public let interestTrees: Double
+        public let beautyTreeTiles: Double
+        public let beautyTrees: Double
+        public let beautyWaterTiles: Double
+        public let beautyWater: Double
+        public let varietyAllPars: Double
+        public let varietyTwoPars: Double
+        public let varietyOnePar: Double
+        public let weakUnderYards: Double
+        public let weakMinFairwayTiles: Int
+    }
+
+    public struct Reviews: Decodable, Sendable {
+        public let base: Double
+        public let randomSpread: Double
+        public let designPer: Double
+        public let designFrom: Double
+        public let beautyWeight: Double
+        public let prestigeWeight: Double
+        public let scoreUnderPar: Double
+        public let scoreGreatBelow: Double
+        public let scoreSmallOver: Double
+        public let scoreSmallOverLimit: Double
+        public let scoreFairLimit: Double
+        public let scoreBadLimit: Double
+        public let scoreBad: Double
+        public let scoreAwful: Double
+        public let penaltyEach: Double
+        public let penaltyMax: Double
+        public let weakPer: Double
+        public let conditionFrom: Double
+        public let conditionRange: Double
+        public let conditionWeight: Double
+        public let clubhousePerLevel: Double
+        public let range: Double
+        public let shopPerLevel: Double
+        public let rain: Double
+        public let overpricedRange: Double
+        public let overpricedWeight: Double
+        public let bargainBelow: Double
+        public let bargain: Double
+        public let signatureQuoteChance: Double
+        public let kept: Int
+    }
+
+    public struct Reputation: Decodable, Sendable {
+        public struct Ceiling: Decodable, Sendable {
+            public let cap: Double
+            public let need: String
+            public let clubhouse: Int?
+            public let condition: Double?
+            public let design: Double?
+            public let hosted: String?
+        }
+        public let dailyMove: Double
+        public let nineHoleCap: Double
+        public let ceilings: [Ceiling]
+    }
+
     public let grid: Grid
     public let par: Par
     public let tileCost: TileCost
@@ -160,6 +313,21 @@ public struct Balance: Decodable, Sendable {
     public let upkeep: Upkeep
     public let greenkeepers: Greenkeepers
     public let weather: Weather
+    public let golfers: Golfers
+    public let shots: Shots
+    public let demand: Demand
+    public let fees: Fees
+    public let spend: Spend
+    public let quality: Quality
+    public let reviews: Reviews
+    public let reputation: Reputation
+    public struct Stamps: Decodable, Sendable {
+        /// Stamp ids in the order the tool bar shows them.
+        public let order: [String]
+        /// Rows of text, top to bottom; '#' is sand.
+        public let shapes: [String: [String]]
+    }
+    public let stamps: Stamps
 }
 
 extension Balance.Analysis {

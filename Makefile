@@ -12,7 +12,7 @@ project:
 
 # Run the GameCore rules tests headless.
 test:
-	cd Packages/GameCore && swift test
+	cd Packages/GameCore && swift test -c release -Xswiftc -enable-testing
 
 # Re-extract plots, towns, names and Percy's lines from the prototype.
 data:

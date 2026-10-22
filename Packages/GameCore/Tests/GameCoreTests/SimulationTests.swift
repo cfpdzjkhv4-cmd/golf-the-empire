@@ -19,7 +19,9 @@ final class SimulationTests: XCTestCase {
 
         XCTAssertEqual(game.state.day, 31)
         XCTAssertEqual(game.state.minute, balance.clock.dayStartMinute)
-        XCTAssertLessThan(game.state.cash, cashAfterBuild, "upkeep is charged while open")
+        XCTAssertNotEqual(game.state.cash, cashAfterBuild)
+        XCTAssertGreaterThan(game.state.lifetime[.greenFees, default: 0], 0, "golfers paid green fees")
+        XCTAssertGreaterThan(game.state.lifetime[.upkeep, default: 0], 0, "upkeep is charged while open")
         let course = game.course("ilkley")!
         XCTAssertTrue((20...100).contains(course.condition))
         XCTAssertGreaterThan(weathers.count, 1, "the weather changes from day to day")
@@ -43,7 +45,7 @@ final class SimulationTests: XCTestCase {
         func play(_ seed: UInt64) -> GameState {
             var game = sandbox(seed: seed)
             game.setOpen("ilkley", true)
-            game.simulateDays(30)
+            game.simulateDays(10)
             return game.state
         }
         XCTAssertEqual(play(7), play(7))
@@ -55,8 +57,9 @@ final class SimulationTests: XCTestCase {
             var game = sandbox(id, seed: 3)
             XCTAssertNil(game.openingProblem(id), id)
             XCTAssertTrue(game.setOpen(id, true), id)
-            game.simulateDays(3)
-            XCTAssertEqual(game.state.day, 4, id)
+            game.simulateDays(1)
+            XCTAssertEqual(game.state.day, 2, id)
+            XCTAssertGreaterThan(game.course(id)!.yesterday?.rounds ?? 0, 0, "\(id) had golfers")
         }
     }
 

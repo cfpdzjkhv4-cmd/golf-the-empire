@@ -2,6 +2,13 @@
 
 Decisions made after DESIGN.md version 2, newest first. Where these and DESIGN.md disagree, these win until DESIGN.md is updated.
 
+## October 2026: Milestone 2 rules (Claude's calls, flagged to Harry)
+
+1. **Golfers now score like real club golfers.** The prototype's golfers were far too good: ordinary players averaged level par, even on island greens, so hazards never bit. Shot numbers are retuned (shorter hitting, wider sprays, harder putting) so a 20 handicapper drops about a shot a hole and an island green costs ordinary golfers a ball every other round. Numbers are in `balance.json` under `shots`; ScoringTests prints the table.
+2. **Reviews judge a round against the golfer's own handicap**, not against par. Otherwise realistic scores would make every review a grumble.
+3. **Fairness on the hole card comes from a playtest**: 40 ordinary golfers play the hole in the simulator, and the card says how they scored and how many balls they lost. The quick estimate from hazards still drives the course design score (it has to be instant while painting); CalibrationTests compares the two.
+4. **Does design pay?** Over four game weeks in May, a signature layout takes 1.3 to 1.5 times more money than an auto layout on the same plot, and averages about 4.2 stars against 2.9. DESIGN.md hoped for about double. Busy plots hit the tee sheet limit (one group every 8 minutes), so design shows up in the fee you can charge rather than in more golfers. Revisit in the balance pass; DesignPaysTests prints the numbers.
+
 ## October 2026: version 1 scope
 
 Version 1 is a smaller, complete game, worth £1.99 with no placeholders. It contains course design with proper phone build tools; golfers, reviews and Percy; running the club (fees, condition, greenkeepers, clubhouse, shop, range); the calendar and close of play books; the map with the 66 hand made plots; quiet sales and sealed bids; simplified rivals; events up to The Championship; a tutorial; three challenges; the art and sound those screens need.

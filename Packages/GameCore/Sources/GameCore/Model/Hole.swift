@@ -17,7 +17,7 @@ public struct GridPoint: Codable, Hashable, Sendable {
 }
 
 /// A point in tile units, where (0.5, 0.5) is the centre of the top left tile.
-public struct GridVector: Equatable, Sendable {
+public struct GridVector: Codable, Equatable, Sendable {
     public var x: Double
     public var y: Double
 

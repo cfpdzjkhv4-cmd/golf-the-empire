@@ -15,6 +15,7 @@ public struct GameData: Sendable {
     public let siteNames: [LandKind: SiteNameWords]
     public let golferNames: GolferNames
     public let percy: PercyText
+    public let reviewText: ReviewText
 
     public enum LoadError: Error, CustomStringConvertible {
         case missingFile(String)
@@ -66,7 +67,8 @@ public struct GameData: Sendable {
                 LandKind(rawValue: key).map { ($0, value) }
             }),
             golferNames: try read("golfer_names", as: GolferNames.self),
-            percy: try read("percy", as: PercyText.self)
+            percy: try read("percy", as: PercyText.self),
+            reviewText: try read("reviews", as: ReviewText.self)
         )
     }
 

@@ -1,0 +1,28 @@
+{
+  "_note": "Golfer review quotes, keyed by the factor that mattered most. From prototype 5. {hole} is an ordinal like 7th, {feature} a feature name in lower case.",
+  "quotes": {
+    "pretty": ["Gorgeous spot. Barely noticed my score.", "Lovely setting, all those trees."],
+    "variety": ["Great mix of holes. Never a dull moment."],
+    "setting": ["What a bit of land. Proper old school golf country.", "You can feel the history in the turf."],
+    "score": ["Played out of my skin. Best course in the county.", "Had a blinder. Ten out of ten."],
+    "pens": ["Lost balls everywhere. Never again.", "Penalty after penalty. Who designed this?"],
+    "weak": ["A couple of holes are barely holes.", "Some of it feels unfinished."],
+    "condN": ["Course is in a right state. Bare patches everywhere.", "Greens are bumpy as a farm track."],
+    "price": ["Far too pricey for what it is.", "Daylight robbery at that green fee."],
+    "cheap": ["Bargain. Can't argue at that price."],
+    "cond": ["Greens like carpet. Immaculate.", "Absolutely immaculate condition."],
+    "club": ["Lovely clubhouse. Stayed for three pints.", "Great facilities. Feels like a proper club."],
+    "rain": ["Got drenched. Not the course's fault, I suppose."],
+    "design": ["Brilliant design. Every hole asks a question.", "Proper architecture, this. Loved every hole."],
+    "designN": ["Every hole looks the same.", "Dull layout. Nothing to think about all day."],
+    "meh": ["Pleasant enough. Bit forgettable.", "Fine. Nothing special."]
+  },
+  "signature": {
+    "withFeature": ["That {feature} on the {hole}! Worth the green fee on its own."],
+    "plain": [
+      "The {hole}! Worth the green fee on its own.",
+      "The {hole} is one of the best holes I've ever played.",
+      "Still thinking about the {hole}. What a hole."
+    ]
+  }
+}

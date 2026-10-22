@@ -19,18 +19,22 @@ public enum BuildResult: Equatable, Sendable {
 /// The game: rules applied to a GameState. Rendering and UI send it commands and read its state.
 public struct GameEngine: Sendable {
     public let data: GameData
-    public private(set) var state: GameState
+    public internal(set) var state: GameState
 
-    private struct UndoStep: Sendable {
+    struct UndoStep: Sendable {
         let courseID: String
         let holeIndex: Int
         let before: Hole
         var cost: Int
     }
     /// Not saved: undo only lasts for the session.
-    private var undoSteps: [UndoStep] = []
-    private var openStroke: UndoStep?
-    private static let maxUndoSteps = 50
+    var undoSteps: [UndoStep] = []
+    var openStroke: UndoStep?
+    static let maxUndoSteps = 50
+    /// Percy's last line in each category, so he never repeats himself back to back. Not saved.
+    var percyLast: [String: String] = [:]
+    /// Each open course's layout worked out for play, reused until its holes change. Not saved.
+    var preparedCourses: [String: PreparedCourse] = [:]
 
     public init(data: GameData = .bundled, state: GameState) {
         self.data = data
@@ -42,7 +46,9 @@ public struct GameEngine: Sendable {
     public var designer: CourseDesigner { CourseDesigner(balance: balance) }
     public var analyzer: HoleAnalyzer { HoleAnalyzer(balance: balance) }
     public var holeRules: HoleRules { HoleRules(balance: balance) }
-    private var generator: HoleGenerator { HoleGenerator(balance: balance) }
+    var generator: HoleGenerator { HoleGenerator(balance: balance) }
+    public var economy: ClubEconomy { ClubEconomy(data: data) }
+    var simulator: ShotSimulator { ShotSimulator(balance: balance) }
 
     // MARK: Starting a game
 
@@ -120,7 +126,24 @@ public struct GameEngine: Sendable {
     @discardableResult
     public mutating func advance(minutes: Int) -> Bool {
         guard !state.isDayOver, minutes > 0 else { return false }
-        state.minute = min(state.minute + minutes, balance.clock.dayEndMinute)
+        let end = min(state.minute + minutes, balance.clock.dayEndMinute)
+        // Layouts can't change while the clock runs, so work out each open course's quality once.
+        var prepared: [String: PreparedCourse] = [:]
+        for id in state.courseOrder {
+            guard let course = state.courses[id], course.isOpen else { continue }
+            if let cached = preparedCourses[id], cached.layout == course.holes {
+                prepared[id] = cached
+            } else {
+                prepared[id] = prepare(course)
+                preparedCourses[id] = prepared[id]
+            }
+        }
+        while state.minute < end {
+            for id in state.courseOrder {
+                if let course = prepared[id] { teeTimes(courseID: id, prepared: course) }
+            }
+            state.minute += 1
+        }
         if state.minute >= balance.clock.dayEndMinute {
             closeOfPlay()
             return true
@@ -135,9 +158,19 @@ public struct GameEngine: Sendable {
         for id in state.courseOrder {
             guard var course = state.courses[id], let plot = data.plot(id) else { continue }
             if course.isOpen {
-                spend(.upkeep, upkeep(of: course))
-                spend(.staffWages, wages(of: course))
+                let u = upkeep(of: course), w = wages(of: course)
+                spend(.upkeep, u)
+                spend(.staffWages, w)
+                course.today.upkeep = u
+                course.today.wages = w
             }
+            // Reputation moves 7% of the way towards today's average review, up to the ceiling.
+            let quality = CourseQuality.of(course.holes, balance: balance)
+            let cap = economy.reputationCeiling(course, quality: quality)
+            if let average = course.today.averageStars {
+                course.reputation += (min(average, cap) - course.reputation) * balance.reputation.dailyMove
+            }
+            course.reputation = min(cap, max(0, course.reputation))
             let c = balance.course
             let recovery = balance.greenkeepers.conditionRecovery[max(0, min(course.facilities.staff - 1, 2))]
             let weatherLoss = course.weather == .rain ? c.rainConditionLoss : course.weather == .storm ? c.stormConditionLoss : 0
@@ -155,6 +188,13 @@ public struct GameEngine: Sendable {
         if !state.isDayOver { closeOfPlay() }
         state.pastDays.append(state.today)
         if state.pastDays.count > 60 { state.pastDays.removeFirst(state.pastDays.count - 60) }
+        for id in state.courseOrder {
+            guard var course = state.courses[id] else { continue }
+            course.yesterday = course.today
+            course.today = CourseDay()
+            course.lastTeeMinute = nil
+            state.courses[id] = course
+        }
         state.day += 1
         state.minute = balance.clock.dayStartMinute
         state.isDayOver = false
@@ -212,9 +252,7 @@ public struct GameEngine: Sendable {
     /// The fair fee before the design "interest" uplift, rounded to £5. Used as the opening green fee.
     public func suggestedFee(_ courseID: String) -> Int {
         guard let course = state.courses[courseID], let plot = data.plot(courseID) else { return 10 }
-        let design = designer.design(of: course.holes).score
-        let fair = (20 + course.reputation * 7) * plot.wealth * (plot.holes == 18 ? 1.6 : 1) * (0.8 + design * 0.045)
-        return max(5, Int((fair / 5).rounded()) * 5)
+        return economy.roundedFee(economy.fairFee(course, plot: plot, quality: CourseQuality.of(course.holes, balance: balance)))
     }
 
     // MARK: Courses
@@ -244,7 +282,7 @@ public struct GameEngine: Sendable {
 
     // MARK: Building
 
-    /// Paints one tile, or a 3 × 3 patch with `brushRadius` 1. Call `endStroke()` when the finger lifts,
+    /// Paints one tile, or a round patch: `brushRadius` 1 is 3 × 3, 2 is 21 tiles. Call `endStroke()` when the finger lifts,
     /// so one drag is one undo step.
     @discardableResult
     public mutating func build(_ tool: BuildTool, courseID: String, hole holeIndex: Int, at point: GridPoint, brushRadius: Int = 0) -> BuildResult {
@@ -272,7 +310,7 @@ public struct GameEngine: Sendable {
         case .paint(let tile):
             guard tile != .sea, tile != .tee else { return .nothingChanged }
             for dy in -brushRadius...brushRadius {
-                for dx in -brushRadius...brushRadius {
+                for dx in -brushRadius...brushRadius where dx * dx + dy * dy <= brushRadius * brushRadius + brushRadius {
                     let x = point.x + dx, y = point.y + dy
                     guard let t = hole[x, y], t != tile, t != .sea else { continue }
                     let price = costs.cost(of: tile)
