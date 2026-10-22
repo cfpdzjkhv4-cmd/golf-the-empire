@@ -2,6 +2,10 @@
 
 Decisions made after DESIGN.md version 2, newest first. Where these and DESIGN.md disagree, these win until DESIGN.md is updated.
 
+## October 2026: price
+
+1. **Paid upfront at £1.99. No in-app purchases, ever.** Replaces the free download plus £5.99 unlock in DESIGN.md section 1. No StoreKit purchase code, no unlocks, no tip jar. Later content ships as free updates.
+
 ## October 2026: review of the handoff pack (agreed with Harry)
 
 1. **Minimum iOS is 17.**

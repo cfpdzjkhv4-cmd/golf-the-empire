@@ -17,7 +17,7 @@ A British golf empire game for iPhone and iPad. You buy land across Great Britai
 
 ### Platform and business
 * Target: iPhone and iPad, App Store. Recommended engine: Swift with SpriteKit for the game, SwiftUI for menus (see CLAUDE.md).
-* Monetisation (proposed): free download with tutorial and one challenge, then a single unlock of around £5.99 for Career and all challenges.
+* Monetisation (decided, see DECISIONS.md): paid upfront at £1.99, no in-app purchases. Later content ships as free updates.
 * Apple Arcade is worth pitching.
 
 ### Fictional names and IP rules

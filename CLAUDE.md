@@ -61,4 +61,4 @@ Harry's strongest piece of feedback: course design must matter and must not feel
 ## Never
 * Use real people's names, voices or likenesses (Percy Hollis is fictional and must not be an impression of anyone).
 * Use "The Open", R&A marks, real club names or logos, or map tiles.
-* Add ads, loot boxes, energy timers or premium currency.
+* Add ads, loot boxes, energy timers, premium currency or in-app purchases of any kind. The game is £1.99 upfront.
