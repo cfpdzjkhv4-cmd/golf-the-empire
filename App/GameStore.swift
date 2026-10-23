@@ -8,11 +8,11 @@ import Observation
 @Observable
 final class GameStore {
     enum Screen {
-        case start, pickPlot, course, gallery
+        case start, pickPlot, map, course, gallery
     }
 
     enum CourseTab: String, CaseIterable, Identifiable {
-        case build = "Build", run = "Run", club = "Club", reviews = "Reviews"
+        case build = "Build", run = "Run", club = "Club", events = "Events", reviews = "Reviews"
         var id: String { rawValue }
     }
 
@@ -37,6 +37,10 @@ final class GameStore {
 
     private(set) var engine: GameEngine?
     var screen: Screen = .start
+    /// The course on screen; nil falls back to the first one owned.
+    var currentCourseID: String?
+    /// A sheet open over the map (listing, market, my clubs, letters, goals). The clock pauses while one is open.
+    var mapSheetOpen = false
     var tab: CourseTab = .build
     var selectedHole = 0
     var mode: BuildMode = .look
@@ -96,6 +100,17 @@ final class GameStore {
 
     // MARK: Starting
 
+    func newCareer() {
+        stopWatching()
+        engine = GameEngine.newCareer(seed: UInt64.random(in: 1...UInt64.max), startDate: GameCalendar.isoDate(Date()), data: data)
+        currentCourseID = nil
+        selectedHole = 0
+        mode = .look
+        showingCloseOfPlay = false
+        save()
+        screen = .map
+    }
+
     func newSandbox(plotID: String) {
         stopWatching()
         engine = GameEngine.newSandbox(
@@ -114,7 +129,102 @@ final class GameStore {
 
     // MARK: Reading
 
-    var course: Course? { engine?.state.orderedCourses.first }
+    var course: Course? {
+        guard let engine else { return nil }
+        if let id = currentCourseID, let c = engine.state.courses[id] { return c }
+        return engine.state.orderedCourses.first
+    }
+
+    var isCareer: Bool { engine.map { $0.state.mode != .sandbox } ?? false }
+
+    /// Opens one of your courses.
+    func openCourse(_ id: String) {
+        stopWatching()
+        currentCourseID = id
+        selectedHole = 0
+        mode = .look
+        tab = (engine?.openingProblem(id) != nil) ? .build : .run
+        screen = .course
+    }
+
+    func backToMap() {
+        stopWatching()
+        endStroke()
+        save()
+        screen = isCareer ? .map : .start
+    }
+
+    // MARK: The market
+
+    func buyNow(_ plotID: String) -> Bool {
+        guard var engine else { return false }
+        let result = engine.buyNow(plotID)
+        self.engine = engine
+        switch result {
+        case .done:
+            SoundBoard.shared.play("sfx_till")
+            save()
+            return true
+        case .notEnoughCash(let needed): message = "Not enough cash. You need \(Money.text(needed))."
+        default: message = "That's no longer for sale."
+        }
+        return false
+    }
+
+    func placeOffer(_ plotID: String, amount: Int) {
+        guard var engine else { return }
+        switch engine.placeOffer(plotID, amount: amount) {
+        case .done:
+            message = "Offer of \(Money.text(amount)) submitted."
+            SoundBoard.shared.play("sfx_ui_confirm")
+        case .offerTooLow(let minimum): message = "The agents won't accept less than \(Money.text(minimum))."
+        default: message = "That's no longer for sale."
+        }
+        self.engine = engine
+        save()
+    }
+
+    func withdrawOffer(_ plotID: String) {
+        guard var engine else { return }
+        engine.withdrawOffer(plotID)
+        self.engine = engine
+        save()
+    }
+
+    func toggleFavourite(_ plotID: String) {
+        guard var engine else { return }
+        engine.toggleFavourite(plotID)
+        self.engine = engine
+        save()
+    }
+
+    func markLettersRead() {
+        guard var engine else { return }
+        engine.markLettersRead()
+        self.engine = engine
+        save()
+    }
+
+    var unreadLetters: Int { engine?.state.letters.filter { !$0.read }.count ?? 0 }
+
+    // MARK: Events
+
+    func bookEvent(_ eventID: String) {
+        guard var engine, let course else { return }
+        if engine.bookEvent(courseID: course.plotID, eventID: eventID) {
+            message = "Booked for tomorrow. The course will be closed to the public."
+            SoundBoard.shared.play("sfx_ui_confirm")
+        }
+        self.engine = engine
+        save()
+    }
+
+    func cancelBooking() {
+        guard var engine, let course else { return }
+        engine.cancelBooking(courseID: course.plotID)
+        self.engine = engine
+        save()
+    }
     var plot: Plot? { course.flatMap { data.plot($0.plotID) } }
 
     var currentHole: Hole? {
@@ -283,10 +393,10 @@ final class GameStore {
 
     var speeds: [Int] { data.balance.clock.speeds }
 
-    /// The clock only runs on the Run tab, with nothing else going on.
+    /// The clock runs on the map with nothing open, and on a course's Run tab.
     var clockIsRunning: Bool {
-        screen == .course && tab == .run && speeds[speedIndex] > 0 && watching == nil
-            && !(engine?.state.isDayOver ?? true) && !showingCloseOfPlay
+        let place = (screen == .course && tab == .run) || (screen == .map && !mapSheetOpen)
+        return place && speeds[speedIndex] > 0 && watching == nil && !(engine?.state.isDayOver ?? true) && !showingCloseOfPlay
     }
 
     private func startClock() {
@@ -308,12 +418,13 @@ final class GameStore {
         let minutes = Int(minuteRemainder)
         guard minutes > 0 else { return }
         minuteRemainder -= Double(minutes)
-        let groupsBefore = course?.lastTeeMinute
-        let roundsBefore = course?.totalRounds ?? 0
+        let shown = screen == .course ? course : nil
+        let groupsBefore = shown?.lastTeeMinute
+        let roundsBefore = shown?.totalRounds ?? 0
         let dayEnded = engine.advance(minutes: minutes)
         self.engine = engine
         // Show golfers playing through on the hole on screen.
-        if let course, course.totalRounds > roundsBefore, course.lastTeeMinute != groupsBefore {
+        if screen == .course, let course, course.totalRounds > roundsBefore, course.lastTeeMinute != groupsBefore {
             courseScene.sendGroup(size: min(4, course.totalRounds - roundsBefore))
         }
         if dayEnded {

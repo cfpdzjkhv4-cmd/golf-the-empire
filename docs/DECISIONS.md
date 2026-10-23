@@ -2,6 +2,14 @@
 
 Decisions made after DESIGN.md version 2, newest first. Where these and DESIGN.md disagree, these win until DESIGN.md is updated.
 
+## October 2026: Milestone 3, the empire (version 1)
+
+1. **Britain only for version 1.** Harry is weighing a worldwide game; the plan is Britain at launch and new regions later as a big update (Ireland first). The market is built on data (map outline, plots, towns, land types, real latitude and longitude) so a new region is mostly new data and art.
+2. **Members are waived from The Championship's requirements** until the members update arrives.
+3. **Rival interest uses DESIGN.md's 38%** rather than the prototype's 30%.
+4. **The property listings** are presented by a fictional firm, Bramble & Pike, land agents to the golfing trade. Each plot has an aerial view drawn from its land.
+5. **Saves are now version 2**, with a migration from version 1.
+
 ## October 2026: Milestone 2 art (Claude's calls, flagged to Harry)
 
 1. **Holes are drawn as vector shapes, not tiled textures.** The tile grid is traced into smooth outlines (fairways, greens, bunkers, water, sea) and painted in flat colour with soft shading, light from the top left. This replaces most `tex_*`, `mask_edge_soft`, `ovl_bunker_lip` and `ovl_mowing` manifest rows: those looks are now drawn in code by `CourseArt/HoleArtist.swift`. A fine grain texture may still be added later.

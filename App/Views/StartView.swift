@@ -16,16 +16,17 @@ struct StartView: View {
                 .foregroundStyle(.secondary)
             Spacer()
 
-            if let engine = store.engine, let course = store.course, let plot = store.plot {
+            if let engine = store.engine {
                 Button {
-                    store.screen = .course
+                    store.screen = store.isCareer ? .map : .course
                 } label: {
                     VStack(spacing: 2) {
                         Text("Continue").font(.headline)
-                        Text("\(plot.name) · \(engine.calendar.shortLabel(day: engine.state.day)) · \(Money.text(engine.state.cash))")
+                        Text("\(store.isCareer ? "Career" : "Sandbox") · \(engine.calendar.shortLabel(day: engine.state.day)) · \(Money.text(engine.state.cash))")
                             .font(.caption)
                             .opacity(0.85)
-                        if course.isOpen { Text("Open for play").font(.caption2).opacity(0.7) }
+                        Text(engine.state.courses.count == 1 ? "1 club" : "\(engine.state.courses.count) clubs")
+                            .font(.caption2).opacity(0.7)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -38,24 +39,33 @@ struct StartView: View {
                     confirmNew = true
                 } else {
                     confirmNew = false
-                    store.screen = .pickPlot
+                    store.newCareer()
                 }
             } label: {
-                Text(confirmNew ? "Tap again to replace your saved game" : "New sandbox course")
+                Text(confirmNew ? "Tap again to replace your saved game" : "New career")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
             .tint(confirmNew ? Color.red : Color.accentColor)
 
-            Button("Asset gallery") { store.screen = .gallery }
-                .buttonStyle(.bordered)
-
-            Text("Milestone 1 preview. Career, challenges and the map arrive in later milestones.")
+            Text("£200,000, no land, three rivals, and the whole of Britain for sale.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-                .padding(.top, 8)
+
+            #if DEBUG
+            HStack {
+                Button("Sandbox course") {
+                    confirmNew = false
+                    store.screen = .pickPlot
+                }
+                Button("Asset gallery") { store.screen = .gallery }
+            }
+            .buttonStyle(.bordered)
+            .font(.footnote)
+            .padding(.top, 8)
+            #endif
         }
         .padding(24)
         .frame(maxWidth: 520)

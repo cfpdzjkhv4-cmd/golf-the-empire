@@ -70,6 +70,11 @@ struct RunPanel: View {
                         statRow("Golfers expected", String(format: "%.1f groups an hour", perHour))
                     }
                     .font(.subheadline)
+                    let rivals = engine.nearbyRivals(of: course.plotID)
+                    if !rivals.isEmpty {
+                        Text("Rival clubs nearby are taking \(Int(((1 - engine.competition(for: course.plotID)) * 100).rounded()))% of your golfers: \(rivals.prefix(3).map { store.data.plot($0.course.plotID)?.name ?? "" }.joined(separator: ", ")).")
+                            .font(.caption).foregroundStyle(.orange)
+                    }
                     if let yesterday = course.yesterday {
                         Text("Yesterday: \(yesterday.rounds) rounds, \(Money.text(yesterday.takings)) taken, net \(Money.text(yesterday.net)).")
                             .font(.caption).foregroundStyle(.secondary)
@@ -286,6 +291,55 @@ struct CloseOfPlayView: View {
             Text(label)
             Spacer()
             Text(Money.text(amount)).monospacedDigit()
+        }
+    }
+}
+
+/// Events tab: what each event needs, and booking it for tomorrow.
+struct EventsPanel: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        ScrollView {
+            if let engine = store.engine, let course = store.course {
+                VStack(alignment: .leading, spacing: 14) {
+                    if let booking = course.booking, let spec = store.data.events.first(where: { $0.id == booking.eventID }) {
+                        HStack {
+                            Label("\(spec.name) on \(engine.calendar.shortLabel(day: booking.day)). Closed to the public that day.", systemImage: "calendar")
+                                .font(.subheadline.bold())
+                            Spacer()
+                            Button("Cancel", role: .destructive) { store.cancelBooking() }.font(.caption)
+                        }
+                    }
+                    ForEach(store.data.events) { spec in
+                        if let status = engine.eventStatus(courseID: course.plotID, eventID: spec.id) {
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack(alignment: .firstTextBaseline) {
+                                    Text(spec.name).font(.headline)
+                                    Spacer()
+                                    Text(Money.text(spec.pay)).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
+                                }
+                                Text(spec.blurb).font(.caption).foregroundStyle(.secondary)
+                                ForEach(Array(status.requirements.enumerated()), id: \.offset) { _, r in
+                                    Label(r.text, systemImage: r.met ? "checkmark.circle.fill" : "circle")
+                                        .font(.caption)
+                                        .foregroundStyle(r.met ? Palette.accent : Color.secondary)
+                                }
+                                if status.waitDays > 0 {
+                                    Text(spec.onRota == true ? "The Championship rota opens in \(status.waitDays) days." : "Can be held here again in \(status.waitDays) days.")
+                                        .font(.caption).foregroundStyle(.orange)
+                                }
+                                Button("Book for tomorrow") { store.bookEvent(spec.id) }
+                                    .buttonStyle(.borderedProminent)
+                                    .disabled(!status.canBook)
+                            }
+                            .padding(12)
+                            .background(Color(uiColor: .secondarySystemBackground), in: RoundedRectangle(cornerRadius: 10))
+                        }
+                    }
+                }
+                .padding(12)
+            }
         }
     }
 }

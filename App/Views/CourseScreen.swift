@@ -46,12 +46,8 @@ struct CourseScreen: View {
         .onChange(of: conditionBand) { redraw(resetCamera: false) }
         .onChange(of: carsBand) { if store.selectedHole == 0 { redraw(resetCamera: false) } }
         .onChange(of: store.selectedHole) { redraw(resetCamera: store.watching == nil) }
+        .onChange(of: store.currentCourseID) { redraw(resetCamera: true) }
         .onChange(of: store.mode) { scene.paintMode = store.mode != .look }
-        .sheet(isPresented: $store.showingCloseOfPlay) {
-            CloseOfPlayView()
-                .interactiveDismissDisabled()
-                .presentationDetents([.large])
-        }
     }
 
     @ViewBuilder
@@ -70,6 +66,7 @@ struct CourseScreen: View {
             }
         case .run: RunPanel()
         case .club: ClubPanel()
+        case .events: EventsPanel()
         case .reviews: ReviewsPanel()
         }
     }
@@ -79,13 +76,11 @@ struct CourseScreen: View {
     private var header: some View {
         HStack(spacing: 10) {
             Button {
-                store.stopWatching()
-                store.save()
-                store.screen = .start
+                store.backToMap()
             } label: {
-                Image(systemName: "chevron.left")
+                Image(systemName: store.isCareer ? "map" : "chevron.left")
             }
-            .accessibilityLabel("Back to the start screen")
+            .accessibilityLabel(store.isCareer ? "Back to the map" : "Back to the start screen")
             VStack(alignment: .leading, spacing: 1) {
                 Text(store.plot?.name ?? "").font(.headline).lineLimit(1)
                 Text("\(store.dateLabel) · \(store.clockLabel) · \(store.course?.isOpen == true ? "Open" : "Closed")")
