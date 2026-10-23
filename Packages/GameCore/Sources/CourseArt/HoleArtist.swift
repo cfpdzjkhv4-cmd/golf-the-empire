@@ -25,7 +25,8 @@ public struct HoleArtist: Sendable {
 
     /// `seed` should stay the same for a hole as it is edited (plot and hole number),
     /// so the rough's pattern doesn't jump about while painting.
-    public func paint(_ hole: Hole, land: LandKind, seed: UInt64) -> [DrawOp] {
+    /// `condition` (20 to 100) browns the turf and scatters bare patches as it falls below 75.
+    public func paint(_ hole: Hole, land: LandKind, seed: UInt64, condition: Double = 85) -> [DrawOp] {
         var ops: [DrawOp] = []
         let landStyle = style.land(land)
         let bounds = ArtPath.rect(0, 0, Double(hole.columns), Double(hole.rows))
@@ -93,6 +94,21 @@ public struct HoleArtist: Sendable {
             for loop in green.loops {
                 let c = centroid(loop)
                 ops.append(.ellipse(centre: ArtPoint(c.x - 0.4, c.y - 0.35), rx: 1.3, ry: 0.9, style.terrain("greenHighlight", opacity: 0.6)))
+            }
+            ops.append(.endClip)
+        }
+
+        // A tired course: browner fairways and greens, with worn patches.
+        let wear = max(0, min(1, (75 - condition) / 55))
+        if wear > 0 && !(fairway.isEmpty && green.isEmpty) {
+            let turf = ArtPath(loops: fringe.loops + fairway.loops)
+            ops.append(.clip(turf))
+            ops.append(.fill(bounds, style.terrain("straw", opacity: 0.45 * wear)))
+            var wearRng = SeededRandom(seed: seed &+ 99)
+            for _ in 0..<Int(wear * 60) {
+                let c = ArtPoint(wearRng.unit() * Double(hole.columns), wearRng.unit() * Double(hole.rows))
+                let r = 0.15 + wearRng.unit() * 0.35
+                ops.append(.ellipse(centre: c, rx: r, ry: r * 0.7, style.terrain("wornTurf", opacity: 0.7)))
             }
             ops.append(.endClip)
         }
@@ -205,5 +221,18 @@ public struct HoleArtist: Sendable {
     private func centroid(_ loop: [ArtPoint]) -> ArtPoint {
         let n = Double(max(1, loop.count))
         return ArtPoint(loop.reduce(0) { $0 + $1.x } / n, loop.reduce(0) { $0 + $1.y } / n)
+    }
+}
+
+extension DrawOp {
+    /// The same instruction moved by (dx, dy) tiles.
+    public func translated(_ dx: Double, _ dy: Double) -> DrawOp {
+        switch self {
+        case .fill(let p, let c): .fill(p.offset(dx, dy), c)
+        case .stroke(let p, let c, let w): .stroke(p.offset(dx, dy), c, width: w)
+        case .ellipse(let centre, let rx, let ry, let c): .ellipse(centre: ArtPoint(centre.x + dx, centre.y + dy), rx: rx, ry: ry, c)
+        case .clip(let p): .clip(p.offset(dx, dy))
+        case .endClip: .endClip
+        }
     }
 }

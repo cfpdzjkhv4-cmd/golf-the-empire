@@ -3177,7 +3177,7 @@
    "source": "Synthesised noise beds by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "amb_sea",
@@ -3191,7 +3191,7 @@
    "source": "Synthesised noise beds by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "amb_wind",
@@ -3205,7 +3205,7 @@
    "source": "Synthesised noise beds by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "amb_rain",
@@ -3289,7 +3289,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_iron",
@@ -3303,7 +3303,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_wedge",
@@ -3317,7 +3317,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_putt",
@@ -3331,7 +3331,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_cup",
@@ -3345,7 +3345,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_splash",
@@ -3359,7 +3359,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_sand",
@@ -3373,7 +3373,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_trees",
@@ -3387,7 +3387,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_applause_polite",
@@ -3401,7 +3401,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_applause_big",
@@ -3457,7 +3457,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_mail",
@@ -3485,7 +3485,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_ui_confirm",
@@ -3499,7 +3499,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_ui_error",
@@ -3513,7 +3513,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_build_paint",
@@ -3527,7 +3527,7 @@
    "source": "Synthesised by script (optional upgrade: CC0 recordings, free)",
    "notes": "",
    "kind": "audio",
-   "status": "missing"
+   "status": "final"
   },
   {
    "id": "sfx_construction",

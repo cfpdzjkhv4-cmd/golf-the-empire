@@ -27,6 +27,8 @@ final class CourseScene: SKScene {
     private let flag = SKNode()
     private var columns = 16
     private var rows = 32
+    /// Rows below the hole for the club area (first hole only).
+    private var extraRows = 0
     private var teeWorld = CGPoint.zero
     private var pan: UIPanGestureRecognizer?
     private var pinch: UIPinchGestureRecognizer?
@@ -39,7 +41,12 @@ final class CourseScene: SKScene {
     private lazy var golfer = GolferSprite(heightInWorld: tile * 1.15)
     private var pendingShot: CheckedContinuation<Void, Never>?
 
-    private var worldSize: CGSize { CGSize(width: CGFloat(columns) * tile, height: CGFloat(rows) * tile) }
+    // Golfers playing through while the clock runs.
+    private var playingLine: (tee: CGPoint, pin: CGPoint)?
+    private let ambientLayer = SKNode()
+    private var ambientSeed: UInt64 = 1
+
+    private var worldSize: CGSize { CGSize(width: CGFloat(columns) * tile, height: CGFloat(rows + extraRows) * tile) }
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -115,10 +122,11 @@ final class CourseScene: SKScene {
     // MARK: Showing a hole
 
     /// Redraws the hole. With `resetCamera`, jumps back to the tee at full width.
-    func show(_ hole: Hole, land: LandKind, seed: UInt64, resetCamera: Bool) {
+    func show(_ hole: Hole, land: LandKind, seed: UInt64, condition: Double, club: ClubhouseArtist.Club?, resetCamera: Bool) {
         columns = hole.columns
         rows = hole.rows
-        let texture = SKTexture(image: HoleImageRenderer.image(for: hole, land: land, seed: seed))
+        extraRows = club == nil ? 0 : ClubhouseArtist.rows
+        let texture = SKTexture(image: HoleImageRenderer.image(for: hole, land: land, seed: seed, condition: condition, club: club))
         texture.filteringMode = .linear
         holeNode.texture = texture
         holeNode.size = worldSize
@@ -137,6 +145,16 @@ final class CourseScene: SKScene {
         } else {
             flag.isHidden = true
         }
+        if let tee = hole.tee, let pin = hole.pin {
+            playingLine = (world(tee), world(pin))
+        } else {
+            playingLine = nil
+        }
+        if ambientLayer.parent == nil {
+            ambientLayer.zPosition = 4
+            addChild(ambientLayer)
+        }
+        if resetCamera { ambientLayer.removeAllChildren() }
         if resetCamera { lookFromTee() }
     }
 
@@ -262,14 +280,23 @@ final class CourseScene: SKScene {
                 flight = .sequence([.group([.move(to: landing, duration: air), .sequence([up, down])]), roll])
                 shadowFlight = .sequence([.move(to: landing, duration: air), .move(to: end, duration: 0.35)])
             }
-            // Swing first, then the ball goes.
+            // Swing first, then the ball goes. The strike sound lands on impact.
+            let club = shot.isPutt ? "sfx_putt" : shot.carryYards > 190 ? "sfx_drive" : shot.carryYards < 60 ? "sfx_wedge" : "sfx_iron"
+            SoundBoard.shared.play(club, after: shot.isPutt ? 0.5 : 0.55)
             golfer.run(golfer.swingAction(putt: shot.isPutt)) { [weak self] in
                 guard let self else { return }
                 self.ballShadow.run(shadowFlight)
                 self.follow(end, duration: shot.isPutt ? 0.8 : 1.2)
                 self.ball.run(flight) { [weak self] in
                     guard let self else { return }
+                    switch shot.outcome {
+                    case .water: SoundBoard.shared.play("sfx_splash")
+                    case .bunker: SoundBoard.shared.play("sfx_sand", volume: 0.7)
+                    case .trees: SoundBoard.shared.play("sfx_trees", volume: 0.8)
+                    default: break
+                    }
                     if shot.holed {
+                        SoundBoard.shared.play("sfx_cup")
                         self.ball.isHidden = true
                         self.ballShadow.isHidden = true
                         self.golfer.react(GolferRig.celebrate)
@@ -306,6 +333,46 @@ final class CourseScene: SKScene {
         let move = SKAction.move(to: target, duration: duration)
         move.timingMode = .easeInEaseOut
         cameraNode.run(move, withKey: "follow")
+    }
+
+    // MARK: Golfers playing through
+
+    /// A group tees off on the hole on screen and plays it: drive, walk, approach, putt out, leave.
+    func sendGroup(size: Int) {
+        guard let line = playingLine, ambientLayer.children.count < 8, ball.isHidden else { return }
+        let dx = line.pin.x - line.tee.x, dy = line.pin.y - line.tee.y
+        for k in 0..<min(size, 4) {
+            ambientSeed &+= 0x9E37_79B9
+            let golfer = GolferSprite(heightInWorld: tile * 0.95)
+            golfer.dress(seed: ambientSeed)
+            let side = CGFloat(k) * 7 - 10
+            golfer.position = CGPoint(x: line.tee.x + side, y: line.tee.y - 4)
+            golfer.alpha = 0
+            ambientLayer.addChild(golfer)
+            let jitter = { CGFloat(Int(self.ambientSeed >> UInt64(8 + k * 4)) % 30) - 15 }
+            let landing = CGPoint(x: line.tee.x + dx * 0.55 + jitter(), y: line.tee.y + dy * 0.55 + jitter() * 0.5)
+            let green = CGPoint(x: line.pin.x + side, y: line.pin.y - 10)
+            let first = Double(hypot(landing.x - golfer.position.x, landing.y - golfer.position.y)) / 40
+            let second = Double(hypot(green.x - landing.x, green.y - landing.y)) / 40
+            golfer.run(.sequence([
+                .fadeIn(withDuration: 0.3),
+                .run {
+                    golfer.run(golfer.swingAction(putt: false))
+                    SoundBoard.shared.play("sfx_drive", volume: 0.2, after: 0.55)
+                },
+                .wait(forDuration: 1.4 + Double(k) * 0.9),
+                .run { golfer.walk(to: landing, duration: first) },
+                .wait(forDuration: first + 1.2),
+                .run { golfer.run(golfer.swingAction(putt: false)) },
+                .wait(forDuration: 1.3),
+                .run { golfer.walk(to: green, duration: second) },
+                .wait(forDuration: second + 0.5),
+                .run { golfer.run(golfer.swingAction(putt: true)) },
+                .wait(forDuration: 1.5),
+                .fadeOut(withDuration: 0.6),
+                .removeFromParent(),
+            ]))
+        }
     }
 
     // MARK: Painting

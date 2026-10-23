@@ -4,6 +4,7 @@
 
 # Regenerate every asset by manifest id (placeholders until the real generators land).
 assets:
+	python3 art/audio.py
 	python3 art/placeholders.py
 
 # Regenerate the Xcode project from project.yml (needs: brew install xcodegen).

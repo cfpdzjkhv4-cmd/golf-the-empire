@@ -55,6 +55,7 @@ final class GameStore {
     /// The SpriteKit scene for the course view, kept for the life of the app.
     @ObservationIgnored let courseScene = CourseScene(size: CGSize(width: 390, height: 560))
     @ObservationIgnored private var lastPaintedCell: GridPoint?
+    @ObservationIgnored private var strokeHadWork = false
     @ObservationIgnored private var clockTask: Task<Void, Never>?
     @ObservationIgnored private var watchTask: Task<Void, Never>?
     @ObservationIgnored private var minuteRemainder = 0.0
@@ -174,6 +175,10 @@ final class GameStore {
 
     func endStroke() {
         lastPaintedCell = nil
+        if strokeHadWork {
+            strokeHadWork = false
+            SoundBoard.shared.play("sfx_build_paint", volume: 0.6)
+        }
         guard var engine else { return }
         engine.endStroke()
         self.engine = engine
@@ -185,11 +190,15 @@ final class GameStore {
         let result = engine.ringGreen(courseID: course.plotID, hole: selectedHole, with: tile, style: style, width: tile == .water ? 2 : 1)
         self.engine = engine
         report(result)
-        if case .built(let cost) = result { message = "Done, for \(Money.text(cost))." }
+        if case .built(let cost) = result {
+            message = "Done, for \(Money.text(cost))."
+            SoundBoard.shared.play("sfx_build_paint", volume: 0.6)
+        }
         save()
     }
 
     private func report(_ result: BuildResult) {
+        if case .built(let cost) = result, cost > 0, mode != .look { strokeHadWork = true }
         switch result {
         case .notEnoughCash(let needed): message = "Not enough cash. That costs \(Money.text(needed))."
         case .isSea: message = "That's the sea now."
@@ -252,7 +261,9 @@ final class GameStore {
         guard var engine, let course else { return }
         switch engine.upgrade(facilityID, courseID: course.plotID) {
         case .notEnoughCash(let needed): message = "Not enough cash. That costs \(Money.text(needed))."
-        case .done: message = "Done. The builders are in."
+        case .done:
+            message = "Done. The builders are in."
+            SoundBoard.shared.play("sfx_till")
         default: break
         }
         self.engine = engine
@@ -295,8 +306,14 @@ final class GameStore {
         let minutes = Int(minuteRemainder)
         guard minutes > 0 else { return }
         minuteRemainder -= Double(minutes)
+        let groupsBefore = course?.lastTeeMinute
+        let roundsBefore = course?.totalRounds ?? 0
         let dayEnded = engine.advance(minutes: minutes)
         self.engine = engine
+        // Show golfers playing through on the hole on screen.
+        if let course, course.totalRounds > roundsBefore, course.lastTeeMinute != groupsBefore {
+            courseScene.sendGroup(size: min(4, course.totalRounds - roundsBefore))
+        }
         if dayEnded {
             showingCloseOfPlay = true
             save()
@@ -382,6 +399,9 @@ final class GameStore {
                 guard await pause(1.5) else { return }
             }
             say(hole.verdict)
+            if !hole.shots.isEmpty, hole.strokes < hole.par, hole.verdict != nil {
+                SoundBoard.shared.play("sfx_applause_polite", volume: 0.6)
+            }
         }
         guard await pause(1.6) else { return }
         say(round.closing)

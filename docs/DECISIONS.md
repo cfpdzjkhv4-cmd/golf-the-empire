@@ -8,6 +8,9 @@ Decisions made after DESIGN.md version 2, newest first. Where these and DESIGN.m
 2. **One style guide**, `Packages/GameCore/Sources/CourseArt/Resources/style.json`, read by the game and by every generator.
 3. **The golfer rig is drawn face on**, like a TV camera behind the ball, with nine poses blended into animation frames at run time and outfits (shirt, trousers, skin, hair, five hats) chosen per golfer.
 4. Art can be reviewed without a phone: `make preview`.
+5. **The first hole has a club area below it**: clubhouse (four levels, stone in the north, brick in the south), pro shop, range and a car park that fills up on busy days.
+6. **Condition shows**: below 75% the fairways and greens brown and wear patches appear.
+7. **Sound is synthesised** by `art/audio.py`: 14 effects and 3 ambience loops (birdsong, wind, sea). No music in version 1. Club strikes and applause sound a little thin; free CC0 recordings are the upgrade if wanted (log their licences).
 
 ## October 2026: Milestone 2 rules (Claude's calls, flagged to Harry)
 

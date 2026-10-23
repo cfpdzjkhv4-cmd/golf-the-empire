@@ -27,6 +27,21 @@ for (name, land, par, seed) in examples {
     try svg.write(to: out.appendingPathComponent(file), atomically: true, encoding: .utf8)
     cards.append("<figure><img src=\"\(file)\"><figcaption>\(name) · rated \(String(format: "%.1f", score))</figcaption></figure>")
 }
+// The first hole with its club area, at each clubhouse level, and a tired course.
+let clubArtist = ClubhouseArtist()
+for (level, north) in [(0, true), (1, true), (2, false), (3, false)] {
+    var rng = SeededRandom(seed: 40)
+    let base = generator.baseLand(.parkland, rng: &rng)
+    let hole = generator.autoLayout(par: 4, land: .parkland, on: base, rng: &rng)
+    let club = ClubhouseArtist.Club(clubhouse: level, shop: level >= 1 ? min(2, level) : 0, range: level >= 2 ? 1 : 0, north: north, carsParked: 3 + level * 3)
+    var ops = artist.paint(hole, land: .parkland, seed: 40, condition: level == 0 ? 35 : 85)
+    ops += clubArtist.paint(club, columns: hole.columns, land: .parkland, seed: 40).map { $0.translated(0, Double(hole.rows)) }
+    let height = Double(hole.rows + ClubhouseArtist.rows)
+    let file = "club_\(level).svg"
+    try SVGRenderer.svg(ops, width: Double(hole.columns), height: height, scale: scale).write(to: out.appendingPathComponent(file), atomically: true, encoding: .utf8)
+    cards.append("<figure><img src=\"\(file)\"><figcaption>Clubhouse level \(level), \(north ? "stone" : "brick")\(level == 0 ? ", condition 35%" : "")</figcaption></figure>")
+}
+
 // The golfer rig in every pose, three outfits.
 let poses: [(String, GolferRig.Pose, Bool)] = [
     ("idle", GolferRig.idle, false), ("walk", GolferRig.walkA, false), ("address", GolferRig.address, false),

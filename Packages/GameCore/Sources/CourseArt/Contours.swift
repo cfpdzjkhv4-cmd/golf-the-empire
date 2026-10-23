@@ -24,6 +24,10 @@ public struct ArtPath: Equatable, Sendable {
         ArtPath(loops: loops.map { $0.map { ArtPoint($0.x + dx, $0.y + dy) } })
     }
 
+    public static func polygon(_ pts: [(Double, Double)]) -> ArtPath {
+        ArtPath(loops: [pts.map { ArtPoint($0.0, $0.1) }])
+    }
+
     public static func rect(_ x: Double, _ y: Double, _ w: Double, _ h: Double) -> ArtPath {
         ArtPath(loops: [[ArtPoint(x, y), ArtPoint(x + w, y), ArtPoint(x + w, y + h), ArtPoint(x, y + h)]])
     }

@@ -48,6 +48,11 @@ final class AssetLibrary {
 
     func entry(_ id: String) -> Entry? { entries.first { $0.id == id } }
 
+    /// The sound file for a manifest id, if it has been made.
+    func soundURL(_ id: String) -> URL? {
+        Bundle.main.url(forResource: id, withExtension: "wav")
+    }
+
     /// The image for a manifest id. Never nil: anything not yet made draws a labelled stand in.
     func image(_ id: String) -> UIImage {
         if let cached = cache[id] { return cached }

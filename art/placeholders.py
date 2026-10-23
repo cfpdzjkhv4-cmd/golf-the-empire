@@ -26,6 +26,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MANIFEST = os.path.join(ROOT, "docs", "assets_manifest.csv")
 OUT = os.path.join(ROOT, "App", "Resources", "GeneratedAssets")
 FINAL_LIST = os.path.join(ROOT, "art", "final_assets.txt")
+AUDIO = os.path.join(ROOT, "App", "Resources", "GeneratedAudio")
 
 # Placeholders are capped at this many pixels on the longest side.
 MAX_PIXELS = 1024
@@ -134,6 +135,9 @@ def main():
                         with open(os.path.join(OUT, f"{asset_id}@{scale}x.png"), "wb") as out:
                             out.write(placeholder(asset_id, row["category"], w, h))
                     made += 1
+            elif kind == "audio":
+                made_audio = os.path.exists(os.path.join(AUDIO, asset_id + ".wav"))
+                entry["status"] = "final" if made_audio else "missing"
             else:
                 entry["status"] = "cut" if kind == "cut" else "missing"
             index.append(entry)

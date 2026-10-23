@@ -6,9 +6,16 @@ import UIKit
 /// this file only knows how to follow them.
 enum HoleImageRenderer {
     /// `pointsPerTile` sets the detail; the scene stretches the image over the hole.
-    static func image(for hole: Hole, land: LandKind, seed: UInt64, pointsPerTile: CGFloat = 16) -> UIImage {
-        let ops = HoleArtist().paint(hole, land: land, seed: seed)
-        let size = CGSize(width: CGFloat(hole.columns) * pointsPerTile, height: CGFloat(hole.rows) * pointsPerTile)
+    /// With `club`, the club area (clubhouse, shop, range, car park) is drawn below the hole.
+    static func image(for hole: Hole, land: LandKind, seed: UInt64, condition: Double, club: ClubhouseArtist.Club?,
+                      pointsPerTile: CGFloat = 16) -> UIImage {
+        var ops = HoleArtist().paint(hole, land: land, seed: seed, condition: condition)
+        var rows = hole.rows
+        if let club {
+            ops += ClubhouseArtist().paint(club, columns: hole.columns, land: land, seed: seed).map { $0.translated(0, Double(hole.rows)) }
+            rows += ClubhouseArtist.rows
+        }
+        let size = CGSize(width: CGFloat(hole.columns) * pointsPerTile, height: CGFloat(rows) * pointsPerTile)
         return render(ops, size: size, unit: pointsPerTile, opaque: true)
     }
 

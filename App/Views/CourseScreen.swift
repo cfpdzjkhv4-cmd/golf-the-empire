@@ -1,3 +1,4 @@
+import CourseArt
 import GameCore
 import SpriteKit
 import SwiftUI
@@ -7,6 +8,9 @@ struct CourseScreen: View {
     private var scene: CourseScene { store.courseScene }
 
     private var design: CourseDesign? { store.quality?.design }
+    /// Redraw when condition crosses a 5% step, not on every tiny change.
+    private var conditionBand: Int { Int((store.course?.condition ?? 85) / 5) }
+    private var carsBand: Int { min(12, 2 + (store.course?.today.rounds ?? 0) / 6) }
 
     var body: some View {
         @Bindable var store = store
@@ -28,8 +32,16 @@ struct CourseScreen: View {
             panel
                 .frame(height: 300)
         }
-        .onAppear(perform: connectScene)
+        .onAppear {
+            connectScene()
+            startAmbience()
+        }
+        .onDisappear { SoundBoard.shared.stopAmbience() }
+        .onChange(of: store.course?.weather) { startAmbience() }
         .onChange(of: store.currentHole) { redraw(resetCamera: false) }
+        .onChange(of: store.course?.facilities) { redraw(resetCamera: false) }
+        .onChange(of: conditionBand) { redraw(resetCamera: false) }
+        .onChange(of: carsBand) { if store.selectedHole == 0 { redraw(resetCamera: false) } }
         .onChange(of: store.selectedHole) { redraw(resetCamera: store.watching == nil) }
         .onChange(of: store.mode) { scene.paintMode = store.mode != .look }
         .sheet(isPresented: $store.showingCloseOfPlay) {
@@ -140,6 +152,21 @@ struct CourseScreen: View {
         }
     }
 
+    // MARK: Sound
+
+    private func startAmbience() {
+        guard let plot = store.plot else { return }
+        var beds: [String]
+        switch plot.land {
+        case .links: beds = ["amb_sea", "amb_wind"]
+        case .moorland: beds = ["amb_wind", "amb_birdsong"]
+        default: beds = ["amb_birdsong"]
+        }
+        if store.course?.weather == .wind || store.course?.weather == .storm, !beds.contains("amb_wind") { beds.append("amb_wind") }
+        if store.course?.weather == .rain || store.course?.weather == .storm { beds.removeAll { $0 == "amb_birdsong" } }
+        SoundBoard.shared.playAmbience(beds)
+    }
+
     // MARK: Scene wiring
 
     private func connectScene() {
@@ -154,8 +181,13 @@ struct CourseScreen: View {
     }
 
     private func redraw(resetCamera: Bool) {
-        guard let hole = store.currentHole, let plot = store.plot else { return }
-        scene.show(hole, land: plot.land, seed: HoleImageRenderer.seed(plotID: plot.id, hole: store.selectedHole), resetCamera: resetCamera)
+        guard let hole = store.currentHole, let plot = store.plot, let course = store.course else { return }
+        let club = store.selectedHole == 0
+            ? ClubhouseArtist.Club(clubhouse: course.facilities.clubhouse, shop: course.facilities.shop, range: course.facilities.range,
+                                   north: plot.lat >= 54, carsParked: min(12, 2 + course.today.rounds / 6))
+            : nil
+        scene.show(hole, land: plot.land, seed: HoleImageRenderer.seed(plotID: plot.id, hole: store.selectedHole),
+                   condition: course.condition, club: club, resetCamera: resetCamera)
     }
 }
 

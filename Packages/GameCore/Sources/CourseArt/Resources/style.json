@@ -41,7 +41,19 @@
     "sea": "#3A6A8C",
     "seaFoam": "#DDE8EC",
     "beach": "#E4D3A2",
-    "firstCut": "#77A94C"
+    "firstCut": "#77A94C",
+    "straw": "#C8B977",
+    "wornTurf": "#A99560",
+    "gravel": "#CFC4AA",
+    "tarmac": "#5B5F62",
+    "stoneWall": "#BDB29C",
+    "slateRoof": "#4D5560",
+    "brickWall": "#A65A3E",
+    "tileRoof": "#7A3B2A",
+    "cabinWall": "#C9CCCF",
+    "cabinRoof": "#8C9094",
+    "door": "#3C2F28",
+    "window": "#3E4C59"
   },
   "lands": {
     "links": {
