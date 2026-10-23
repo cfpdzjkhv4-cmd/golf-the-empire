@@ -10,6 +10,8 @@ Decisions made after DESIGN.md version 2, newest first. Where these and DESIGN.m
 4. Art can be reviewed without a phone: `make preview`.
 5. **The first hole has a club area below it**: clubhouse (four levels, stone in the north, brick in the south), pro shop, range and a car park that fills up on busy days.
 6. **Condition shows**: below 75% the fairways and greens brown and wear patches appear.
+8. **Footbridges** (Harry's idea): a Bridge paint tool that only works over water, and an "Island green with a bridge" helper. For the ball and the hole analysis a bridge is still water, so an island green stays an island green.
+9. **Zooming**: pinch zooms about your fingers, double tap zooms in on a spot (and back out), and there are zoom buttons on screen for Macs and one handed play.
 7. **Sound is synthesised** by `art/audio.py`: 14 effects and 3 ambience loops (birdsong, wind, sea). No music in version 1. Club strikes and applause sound a little thin; free CC0 recordings are the upgrade if wanted (log their licences).
 
 ## October 2026: Milestone 2 rules (Claude's calls, flagged to Harry)

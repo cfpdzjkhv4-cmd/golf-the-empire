@@ -13,6 +13,7 @@ public enum BuildResult: Equatable, Sendable {
     case notEnoughCash(needed: Int)
     case isSea
     case pinMustBeOnGreen
+    case bridgeNeedsWater
     case noSuchHole
 }
 
@@ -309,10 +310,13 @@ public struct GameEngine: Sendable {
             hole.tee = point
         case .paint(let tile):
             guard tile != .sea, tile != .tee else { return .nothingChanged }
+            if tile == .bridge && current != .water && current != .bridge { return .bridgeNeedsWater }
             for dy in -brushRadius...brushRadius {
                 for dx in -brushRadius...brushRadius where dx * dx + dy * dy <= brushRadius * brushRadius + brushRadius {
                     let x = point.x + dx, y = point.y + dy
                     guard let t = hole[x, y], t != tile, t != .sea else { continue }
+                    // Bridges only go over water.
+                    if tile == .bridge && t != .water { continue }
                     let price = costs.cost(of: tile)
                     guard state.cash >= cost + price else {
                         if cost == 0 { return .notEnoughCash(needed: price) }

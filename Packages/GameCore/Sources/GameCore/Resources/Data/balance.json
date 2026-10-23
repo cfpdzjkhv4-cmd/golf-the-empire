@@ -50,7 +50,8 @@
     "bunker": 120,
     "water": 400,
     "trees": 40,
-    "tee": 500
+    "tee": 500,
+    "bridge": 300
   },
   "clock": {
     "dayStartMinute": 420,

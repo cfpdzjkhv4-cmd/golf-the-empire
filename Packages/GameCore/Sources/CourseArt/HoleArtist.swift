@@ -50,7 +50,7 @@ public struct HoleArtist: Sendable {
         }
 
         // Water: bank shadow on the top left inside edge, a little sky reflected bottom right.
-        let water = tracer.outline(hole) { $0 == .water }
+        let water = tracer.outline(hole) { $0 == .water || $0 == .bridge }
         if !water.isEmpty {
             ops.append(.fill(water, style.terrain("waterShade")))
             ops.append(.clip(water))
@@ -63,6 +63,7 @@ public struct HoleArtist: Sendable {
             ops.append(.endClip)
             ops.append(.stroke(water, style.terrain("waterShade", opacity: 0.8), width: 0.08))
         }
+        ops.append(contentsOf: bridges(hole))
 
         // Fairway with mowing stripes across the line of play.
         let fairway = tracer.outline(hole) { $0 == .fairway }
@@ -192,6 +193,37 @@ public struct HoleArtist: Sendable {
             ops.append(.ellipse(centre: c, rx: r, ry: r, dark))
             ops.append(.ellipse(centre: ArtPoint(c.x - r * 0.28, c.y - r * 0.3), rx: r * 0.62, ry: r * 0.58, light))
             ops.append(.ellipse(centre: ArtPoint(c.x - r * 0.42, c.y - r * 0.45), rx: r * 0.25, ry: r * 0.22, light.opacity(0.8)))
+        }
+        return ops
+    }
+
+    /// Wooden footbridges: a deck of planks with a rail each side, casting a shadow on the water.
+    func bridges(_ hole: Hole) -> [DrawOp] {
+        var ops: [DrawOp] = []
+        let wood = style.terrain("bridgeWood"), rail = style.terrain("bridgeRail")
+        for y in 0..<hole.rows {
+            for x in 0..<hole.columns where hole[x, y] == .bridge {
+                let fx = Double(x), fy = Double(y)
+                let across = hole[x - 1, y] == .bridge || hole[x + 1, y] == .bridge
+                let along = hole[x, y - 1] == .bridge || hole[x, y + 1] == .bridge
+                // Decks run up and down unless the bridge clearly runs side to side.
+                let vertical = along || !across
+                let deck: ArtPath = vertical ? .rect(fx + 0.22, fy - 0.05, 0.56, 1.1) : .rect(fx - 0.05, fy + 0.22, 1.1, 0.56)
+                ops.append(.fill(deck.offset(0.1, 0.14), style.shadow))
+                ops.append(.fill(deck, wood))
+                for k in 1...4 {
+                    let t = Double(k) * 0.2
+                    let plank: ArtPath = vertical ? .rect(fx + 0.22, fy + t, 0.56, 0.025) : .rect(fx + t, fy + 0.22, 0.025, 0.56)
+                    ops.append(.fill(plank, rail.opacity(0.5)))
+                }
+                if vertical {
+                    ops.append(.fill(.rect(fx + 0.2, fy - 0.05, 0.06, 1.1), rail))
+                    ops.append(.fill(.rect(fx + 0.74, fy - 0.05, 0.06, 1.1), rail))
+                } else {
+                    ops.append(.fill(.rect(fx - 0.05, fy + 0.2, 1.1, 0.06), rail))
+                    ops.append(.fill(.rect(fx - 0.05, fy + 0.74, 1.1, 0.06), rail))
+                }
+            }
         }
         return ops
     }

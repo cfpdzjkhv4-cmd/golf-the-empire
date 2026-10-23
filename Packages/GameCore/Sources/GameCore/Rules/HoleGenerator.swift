@@ -71,7 +71,7 @@ public struct HoleGenerator: Sendable {
             self.clampColumn(self.round(Double(self.middle) + side * amplitude * (Double(self.teeRow - y) / Double(length))))
         }
 
-        for i in hole.tiles.indices where ![.trees, .water, .sea].contains(hole.tiles[i]) {
+        for i in hole.tiles.indices where ![.trees, .water, .sea, .bridge].contains(hole.tiles[i]) {
             hole.set(i % columns, i / columns, .rough)
         }
         // Clear a playing corridor through trees and water.
@@ -80,7 +80,7 @@ public struct HoleGenerator: Sendable {
             for x in (cx - 3)...(cx + 3) {
                 guard let t = hole[x, y] else { continue }
                 if t == .trees && (abs(x - cx) < 3 || rng.chance(0.5)) { hole.set(x, y, .rough) }
-                if t == .water { hole.set(x, y, .rough) }
+                if t == .water || t == .bridge { hole.set(x, y, .rough) }
             }
         }
         if par > 3 {

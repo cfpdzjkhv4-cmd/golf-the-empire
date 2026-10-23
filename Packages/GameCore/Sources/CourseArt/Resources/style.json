@@ -53,7 +53,9 @@
     "cabinWall": "#C9CCCF",
     "cabinRoof": "#8C9094",
     "door": "#3C2F28",
-    "window": "#3E4C59"
+    "window": "#3E4C59",
+    "bridgeWood": "#A07A50",
+    "bridgeRail": "#5E4630"
   },
   "lands": {
     "links": {

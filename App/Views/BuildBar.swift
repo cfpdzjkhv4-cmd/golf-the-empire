@@ -19,6 +19,7 @@ struct BuildBar: View {
         ToolChoice(id: "bunker", label: "Sand", symbol: "circle.dotted", mode: .brush(.bunker)),
         ToolChoice(id: "water", label: "Water", symbol: "drop.fill", mode: .brush(.water)),
         ToolChoice(id: "trees", label: "Trees", symbol: "tree.fill", mode: .brush(.trees)),
+        ToolChoice(id: "bridge", label: "Bridge", symbol: "road.lanes", mode: .brush(.bridge)),
         ToolChoice(id: "rough", label: "Rough", symbol: "eraser", mode: .brush(.rough)),
         ToolChoice(id: "tee", label: "Tee", symbol: "t.square", mode: .tee),
         ToolChoice(id: "pin", label: "Pin", symbol: "flag.fill", mode: .pin),
@@ -78,6 +79,7 @@ struct BuildBar: View {
 
                 Menu {
                     Button("Island green (water all round)") { store.ringGreen(with: .water, style: .all) }
+                    Button("Island green with a bridge") { store.ringGreen(with: .water, style: .all, bridge: true) }
                     Button("Water in front of the green") { store.ringGreen(with: .water, style: .front) }
                     Button("Bunkers round the green") { store.ringGreen(with: .bunker, style: .all) }
                     Button("Sand in front of the green") { store.ringGreen(with: .bunker, style: .front) }

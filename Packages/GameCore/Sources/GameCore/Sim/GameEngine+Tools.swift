@@ -1,3 +1,5 @@
+import Foundation
+
 /// The phone friendly build tools: smooth strokes, ringing a green, and bunker stamps.
 public enum RingStyle: String, CaseIterable, Sendable {
     /// All the way round: water makes an island green.
@@ -32,7 +34,8 @@ extension GameEngine {
     /// Rings the green with water or sand. Water `all` the way round makes an island green;
     /// `front` guards the side facing the tee. Width is in tiles.
     @discardableResult
-    public mutating func ringGreen(courseID: String, hole holeIndex: Int, with tile: Tile, style: RingStyle, width: Int = 2) -> BuildResult {
+    public mutating func ringGreen(courseID: String, hole holeIndex: Int, with tile: Tile, style: RingStyle, width: Int = 2,
+                                   bridge: Bool = false) -> BuildResult {
         guard let course = state.courses[courseID], course.holes.indices.contains(holeIndex) else { return .noSuchHole }
         let hole = course.holes[holeIndex]
         var greens: [GridPoint] = []
@@ -54,7 +57,23 @@ extension GameEngine {
                 changes.append(GridPoint(x: x, y: y))
             }
         }
-        return apply(changes.map { ($0, tile) }, courseID: courseID, hole: holeIndex)
+        // A footbridge from the green towards the tee, across the new water.
+        var bridged = Set<GridPoint>()
+        if bridge && tile == .water {
+            var dx = tee.x - cx, dy = tee.y - cy
+            let len = max(0.001, (dx * dx + dy * dy).squareRoot())
+            dx /= len
+            dy /= len
+            let ring = Set(changes)
+            var step = 0.0
+            while step < Double(width + 6) {
+                let p = GridPoint(x: Int(floor(cx + dx * step)), y: Int(floor(cy + dy * step)))
+                if ring.contains(p) || hole[p.x, p.y] == .water { bridged.insert(p) }
+                step += 0.25
+            }
+        }
+        return apply(changes.map { ($0, bridged.contains($0) ? .bridge : tile) } + bridged.subtracting(changes).map { ($0, .bridge) },
+                     courseID: courseID, hole: holeIndex)
     }
 
     /// Stamp ids, in tool bar order.

@@ -6,7 +6,7 @@ import UIKit
 /// Draws one hole and moves a camera over it.
 ///
 /// The hole is tall and narrow, so instead of shrinking it to fit the screen the camera
-/// fills the width and starts at the tee; drag to look up the hole, pinch to zoom.
+/// fills the width and starts at the tee; drag to look up the hole, pinch or double tap to zoom.
 /// In paint mode one finger paints and two fingers move the camera.
 @MainActor
 final class CourseScene: SKScene {
@@ -110,6 +110,10 @@ final class CourseScene: SKScene {
         let pinch = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
         view.addGestureRecognizer(pinch)
         self.pinch = pinch
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
+        doubleTap.numberOfTapsRequired = 2
+        doubleTap.cancelsTouchesInView = false
+        view.addGestureRecognizer(doubleTap)
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
@@ -215,11 +219,57 @@ final class CourseScene: SKScene {
     }
 
     @objc private func handlePinch(_ g: UIPinchGestureRecognizer) {
-        guard g.scale > 0 else { return }
-        let next = cameraNode.xScale / g.scale
-        cameraNode.setScale(min(max(next, minScale), maxScale))
+        guard g.scale > 0, let view else { return }
+        cameraNode.removeAction(forKey: "follow")
+        cameraNode.removeAction(forKey: "zoom")
+        // Keep the spot between the fingers still while zooming.
+        let anchor = convertPoint(fromView: g.location(in: view))
+        let before = cameraNode.xScale
+        let next = min(max(before / g.scale, minScale), maxScale)
+        cameraNode.setScale(next)
+        let k = next / before
+        cameraNode.position = CGPoint(x: anchor.x + (cameraNode.position.x - anchor.x) * k,
+                                      y: anchor.y + (cameraNode.position.y - anchor.y) * k)
         g.scale = 1
         clampCamera()
+    }
+
+    @objc private func handleDoubleTap(_ g: UITapGestureRecognizer) {
+        guard !paintMode, let view else { return }
+        let point = convertPoint(fromView: g.location(in: view))
+        // Zoomed out: go in close on the spot tapped. Zoomed in: back to full width.
+        if cameraNode.xScale > fitScale * 0.75 {
+            zoom(to: fitScale / 2.5, around: point)
+        } else {
+            zoom(to: fitScale, around: point)
+        }
+    }
+
+    /// Zoom buttons: above 1 zooms in, below 1 zooms out, about the middle of the screen.
+    func zoom(by factor: CGFloat) {
+        zoom(to: cameraNode.xScale / factor, around: cameraNode.position)
+    }
+
+    /// Back to the full width of the hole.
+    func zoomToFit() {
+        zoom(to: fitScale, around: cameraNode.position)
+    }
+
+    private func zoom(to scale: CGFloat, around point: CGPoint) {
+        let target = min(max(scale, minScale), maxScale)
+        let k = target / cameraNode.xScale
+        var centre = CGPoint(x: point.x + (cameraNode.position.x - point.x) * k, y: point.y + (cameraNode.position.y - point.y) * k)
+        // Keep the view inside the hole at the new scale.
+        let halfW = size.width * target / 2, halfH = size.height * target / 2
+        let maxX = max(0, worldSize.width / 2 - halfW + tile), maxY = max(0, worldSize.height / 2 - halfH + tile)
+        centre.x = min(max(centre.x, -maxX), maxX)
+        centre.y = min(max(centre.y, -maxY), maxY)
+        let scaleAction = SKAction.scale(to: target, duration: 0.25)
+        let move = SKAction.move(to: centre, duration: 0.25)
+        scaleAction.timingMode = .easeInEaseOut
+        move.timingMode = .easeInEaseOut
+        cameraNode.removeAction(forKey: "follow")
+        cameraNode.run(.group([scaleAction, move]), withKey: "zoom")
     }
 
     // MARK: Watch a round

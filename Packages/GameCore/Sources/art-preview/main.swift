@@ -27,6 +27,18 @@ for (name, land, par, seed) in examples {
     try svg.write(to: out.appendingPathComponent(file), atomically: true, encoding: .utf8)
     cards.append("<figure><img src=\"\(file)\"><figcaption>\(name) · rated \(String(format: "%.1f", score))</figcaption></figure>")
 }
+// An island green with a footbridge, built with the same tool players use.
+do {
+    var game = GameEngine.newSandbox(plotID: "tatton", seed: 12, startDate: "2027-05-01")
+    var hole = game.course("tatton")!.holes[2]
+    if hole.pin == nil { hole = game.course("tatton")!.holes[0] }
+    game.ringGreen(courseID: "tatton", hole: 2, with: .water, style: .all, bridge: true)
+    let built = game.course("tatton")!.holes[2]
+    let svg = SVGRenderer.svg(artist.paint(built, land: .parkland, seed: 77), width: 16, height: 32, scale: scale)
+    try svg.write(to: out.appendingPathComponent("island_bridge.svg"), atomically: true, encoding: .utf8)
+    cards.append("<figure><img src=\"island_bridge.svg\"><figcaption>Island green with a bridge</figcaption></figure>")
+}
+
 // The first hole with its club area, at each clubhouse level, and a tired course.
 let clubArtist = ClubhouseArtist()
 for (level, north) in [(0, true), (1, true), (2, false), (3, false)] {

@@ -21,6 +21,9 @@ struct CourseScreen: View {
                 .overlay(alignment: .bottom) {
                     if let watching = store.watching { PercyBox(watching: watching) }
                 }
+                .overlay(alignment: .topTrailing) {
+                    if store.watching == nil { zoomButtons }
+                }
             holeStrip
             Picker("Tab", selection: $store.tab) {
                 ForEach(GameStore.CourseTab.allCases) { Text($0.rawValue).tag($0) }
@@ -134,6 +137,23 @@ struct CourseScreen: View {
                 withAnimation { proxy.scrollTo(store.selectedHole, anchor: .center) }
             }
         }
+    }
+
+    /// Zoom controls, for one handed play and for Macs without a trackpad.
+    private var zoomButtons: some View {
+        VStack(spacing: 0) {
+            Button { scene.zoom(by: 1.5) } label: { Image(systemName: "plus").frame(width: 36, height: 34) }
+                .accessibilityLabel("Zoom in")
+            Divider().frame(width: 24)
+            Button { scene.zoom(by: 1 / 1.5) } label: { Image(systemName: "minus").frame(width: 36, height: 34) }
+                .accessibilityLabel("Zoom out")
+            Divider().frame(width: 24)
+            Button { scene.zoomToFit() } label: { Image(systemName: "arrow.up.left.and.arrow.down.right").font(.caption).frame(width: 36, height: 34) }
+                .accessibilityLabel("Fit the hole to the screen")
+        }
+        .foregroundStyle(.primary)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+        .padding(10)
     }
 
     @ViewBuilder

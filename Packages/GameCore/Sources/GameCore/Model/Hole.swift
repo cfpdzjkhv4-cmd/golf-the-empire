@@ -1,9 +1,11 @@
 /// One square of a hole. Raw values match the prototype so saved grids read the same.
 public enum Tile: UInt8, Codable, CaseIterable, Sendable {
     case rough = 0, fairway, green, bunker, water, trees, tee, sea
+    /// A footbridge over water. Golfers walk on it, but for the ball (and the hole analysis) it is still water.
+    case bridge
 
-    /// Water or sea: a penalty stroke.
-    public var isWet: Bool { self == .water || self == .sea }
+    /// Water, sea or a bridge over water: a penalty stroke.
+    public var isWet: Bool { self == .water || self == .sea || self == .bridge }
 }
 
 public struct GridPoint: Codable, Hashable, Sendable {

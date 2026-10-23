@@ -24,6 +24,7 @@ public struct Balance: Decodable, Sendable {
         public let water: Int
         public let trees: Int
         public let tee: Int
+        public let bridge: Int
     }
 
     public struct Clock: Decodable, Sendable {
@@ -351,6 +352,7 @@ extension Balance.TileCost {
         case .water: water
         case .trees: trees
         case .tee: tee
+        case .bridge: bridge
         case .sea: 0
         }
     }

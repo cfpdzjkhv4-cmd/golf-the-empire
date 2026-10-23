@@ -185,9 +185,10 @@ final class GameStore {
         save()
     }
 
-    func ringGreen(with tile: Tile, style: RingStyle) {
+    func ringGreen(with tile: Tile, style: RingStyle, bridge: Bool = false) {
         guard var engine, let course else { return }
-        let result = engine.ringGreen(courseID: course.plotID, hole: selectedHole, with: tile, style: style, width: tile == .water ? 2 : 1)
+        let result = engine.ringGreen(courseID: course.plotID, hole: selectedHole, with: tile, style: style,
+                                      width: tile == .water ? 2 : 1, bridge: bridge)
         self.engine = engine
         report(result)
         if case .built(let cost) = result {
@@ -203,6 +204,7 @@ final class GameStore {
         case .notEnoughCash(let needed): message = "Not enough cash. That costs \(Money.text(needed))."
         case .isSea: message = "That's the sea now."
         case .pinMustBeOnGreen: message = "Put the pin on a green."
+        case .bridgeNeedsWater: message = "Bridges go over water."
         default: break
         }
     }
