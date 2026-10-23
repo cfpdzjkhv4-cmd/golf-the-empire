@@ -72,6 +72,8 @@ public struct Course: Codable, Equatable, Sendable, Identifiable {
     public var lastTeeMinute: Int?
     /// Event ids hosted here, with the day they were held.
     public var eventsHosted: [String: Int] = [:]
+    public var booking: EventBooking?
+    public var boughtDay = 1
 
     public init(plotID: String, holes: [Hole], reputation: Double, condition: Double) {
         self.plotID = plotID

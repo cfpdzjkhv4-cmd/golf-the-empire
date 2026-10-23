@@ -6,7 +6,7 @@ import Foundation
 /// old version to `migrations`. Migrations work on the raw JSON, so old saves never
 /// need the old Swift types to still exist.
 public enum SaveFile {
-    public static let currentVersion = 1
+    public static let currentVersion = 2
 
     public enum SaveError: Error, Equatable, CustomStringConvertible {
         case notASave
@@ -25,7 +25,31 @@ public enum SaveFile {
     /// Upgrades a raw save from `version` to `version + 1`. Add a case for each new version.
     static func migrate(_ object: [String: Any], from version: Int) throws -> [String: Any] {
         switch version {
-        default: throw SaveError.missingMigration(from: version)
+        case 1:
+            // Version 2 added the land market, rivals, news, letters and milestones, and event bookings on courses.
+            var o = object
+            guard var state = o["state"] as? [String: Any] else { throw SaveError.notASave }
+            state["market"] = state["market"] ?? ["listings": [String: Any](), "priceMultiplier": [String: Any](), "coolOff": [String: Any](),
+                                                  "nextListingDay": 3, "nextAdministrationDay": 12, "everListed": [String]()]
+            state["rivals"] = state["rivals"] ?? [String: Any]()
+            state["rivalCourses"] = state["rivalCourses"] ?? [String: Any]()
+            state["news"] = state["news"] ?? [Any]()
+            state["letters"] = state["letters"] ?? [Any]()
+            state["milestones"] = state["milestones"] ?? [String]()
+            state["favourites"] = state["favourites"] ?? [String]()
+            state["championshipOpensDay"] = state["championshipOpensDay"] ?? 1
+            if var courses = state["courses"] as? [String: Any] {
+                for (id, value) in courses {
+                    guard var course = value as? [String: Any] else { continue }
+                    course["boughtDay"] = course["boughtDay"] ?? 1
+                    courses[id] = course
+                }
+                state["courses"] = courses
+            }
+            o["state"] = state
+            return o
+        default:
+            throw SaveError.missingMigration(from: version)
         }
     }
 

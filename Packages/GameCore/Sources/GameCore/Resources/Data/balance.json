@@ -493,5 +493,80 @@
         "..###.."
       ]
     }
+  },
+  "market": {
+    "_note": "Land market, from prototype 5 (live auctions and generated sites are post launch).",
+    "initialListings": 14,
+    "starterQuietSales": 2,
+    "quietMaxGuide": 90000,
+    "quietMaxPrestige": 1.3,
+    "sealedCloseDays": [
+      5,
+      9
+    ],
+    "newListingEveryDays": [
+      2,
+      4
+    ],
+    "secondListingChance": 0.35,
+    "quietExpiresDays": [
+      6,
+      12
+    ],
+    "coolOffDays": [
+      8,
+      20
+    ],
+    "privateDealChance": 0.015,
+    "administrationEveryDays": [
+      12,
+      20
+    ],
+    "administrationCloseDays": 6,
+    "administrationPriceFactor": 1.1,
+    "administrationPerHole": 2400,
+    "priceDrift": 0.015,
+    "priceMultiplierMin": 0.8,
+    "priceMultiplierMax": 1.35,
+    "newListingMultiplier": [
+      0.85,
+      1.25
+    ],
+    "reserveShare": 0.9,
+    "failedSaleDiscount": 0.88,
+    "minimumOfferShare": 0.6,
+    "offerStep": 5000,
+    "roundTo": 1000
+  },
+  "rivals": {
+    "interestChance": 0.38,
+    "rumourNoise": 0.15,
+    "minimumBidShareOfGuide": 0.85,
+    "dailyIncome18": 2600,
+    "dailyIncome9": 1200,
+    "reputationDrift": 0.04,
+    "reputationNoise": 0.04,
+    "competitionKm": 100,
+    "competitionMax": 0.2,
+    "budgetBustReputation": 3.3,
+    "budgetBustChance": 0.0111,
+    "anyBustChance": 0.00222,
+    "snapUpChance": 0.025,
+    "snapUpMaxPrice": 150000,
+    "sellChance": 0.00455,
+    "newCourseReputation": 2.4,
+    "administrationCourseReputation": 2.7
+  },
+  "championship": {
+    "rotaDays": 45,
+    "rivalTakeChance": 0.05,
+    "rivalMinReputation": 4.3,
+    "minPrestige": 1.4
+  },
+  "administration": {
+    "_note": "A built course bought out of administration: laid out, a basic clubhouse, a bit tired.",
+    "clubhouse": 1,
+    "reputation": 2.4,
+    "condition": 55
   }
 }

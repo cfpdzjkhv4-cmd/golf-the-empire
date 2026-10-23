@@ -29,6 +29,19 @@ public struct GameState: Codable, Equatable, Sendable {
     /// Course ids in the order they were acquired.
     public var courseOrder: [String] = []
 
+    // The empire (version 2 saves onwards).
+    public var market = MarketState()
+    public var rivals: [String: RivalState] = [:]
+    public var rivalCourses: [String: RivalCourse] = [:]
+    /// Newest first.
+    public var news: [NewsItem] = []
+    /// Newest first.
+    public var letters: [Letter] = []
+    public var milestones: Set<String> = []
+    public var favourites: Set<String> = []
+    /// The Championship can't be held anywhere before this day.
+    public var championshipOpensDay = 1
+
     public init(mode: GameMode, seed: UInt64, startDate: String, cash: Int, dayStartMinute: Int) {
         self.mode = mode
         self.seed = seed

@@ -32,6 +32,7 @@ public struct Plot: Decodable, Sendable, Identifiable {
     public let reserve: Bool?
 
     public var isLegendary: Bool { legendaryGuide != nil }
+    public var location: LatLon { LatLon(lat: lat, lon: lon) }
     public var isReserve: Bool { reserve ?? false }
 }
 
@@ -193,6 +194,41 @@ public struct PercyText: Decodable, Sendable {
     public let lines: [String: [String]]
     /// Quips for the weekly Gazette.
     public let column: [String]
+}
+
+public struct LatLon: Codable, Equatable, Sendable {
+    public let lat: Double
+    public let lon: Double
+
+    public init(lat: Double, lon: Double) {
+        self.lat = lat
+        self.lon = lon
+    }
+
+    /// Great circle distance in kilometres.
+    public func km(to other: LatLon) -> Double {
+        let r = 6371.0, rad = Double.pi / 180
+        let dLat = (other.lat - lat) * rad, dLon = (other.lon - lon) * rad
+        let a = sin(dLat / 2) * sin(dLat / 2) + cos(lat * rad) * cos(other.lat * rad) * sin(dLon / 2) * sin(dLon / 2)
+        return 2 * r * atan2(a.squareRoot(), (1 - a).squareRoot())
+    }
+}
+
+/// Our own illustrated map: the mainland outline, islands and city labels.
+public struct MapData: Decodable, Sendable {
+    public struct City: Decodable, Sendable {
+        public let name: String
+        public let lat: Double
+        public let lon: Double
+    }
+    public let mainland: [LatLon]
+    public let islands: [[LatLon]]
+    public let cities: [City]
+}
+
+public struct Milestone: Decodable, Sendable, Identifiable {
+    public let id: String
+    public let text: String
 }
 
 public struct ReviewText: Decodable, Sendable {

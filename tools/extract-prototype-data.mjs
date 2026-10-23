@@ -56,4 +56,12 @@ write('site_names.json', names);
 write('golfer_names.json', { first: value('FIRST'), last: value('LAST') });
 write('percy.json', { lines: value('L'), column: value('PERCY_COL') });
 
+// Map of Britain: our own outline (lat, lon), islands and city labels.
+const ll = a => a.map(([lon, lat]) => ({ lat, lon }));
+write('map.json', {
+  mainland: ll(value('GB')),
+  islands: value('ISLES').map(ll),
+  cities: value('CITIES').map(([name, lat, lon]) => ({ name, lat, lon })),
+});
+
 console.log('plots', plots.length);

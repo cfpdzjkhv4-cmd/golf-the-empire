@@ -300,6 +300,65 @@ public struct Balance: Decodable, Sendable {
         public let ceilings: [Ceiling]
     }
 
+    public struct Market: Decodable, Sendable {
+        public let initialListings: Int
+        public let starterQuietSales: Int
+        public let quietMaxGuide: Int
+        public let quietMaxPrestige: Double
+        public let sealedCloseDays: [Int]
+        public let newListingEveryDays: [Int]
+        public let secondListingChance: Double
+        public let quietExpiresDays: [Int]
+        public let coolOffDays: [Int]
+        public let privateDealChance: Double
+        public let administrationEveryDays: [Int]
+        public let administrationCloseDays: Int
+        public let administrationPriceFactor: Double
+        public let administrationPerHole: Double
+        public let priceDrift: Double
+        public let priceMultiplierMin: Double
+        public let priceMultiplierMax: Double
+        public let newListingMultiplier: [Double]
+        public let reserveShare: Double
+        public let failedSaleDiscount: Double
+        public let minimumOfferShare: Double
+        public let offerStep: Int
+        public let roundTo: Double
+    }
+
+    public struct Rivals: Decodable, Sendable {
+        public let interestChance: Double
+        public let rumourNoise: Double
+        public let minimumBidShareOfGuide: Double
+        public let dailyIncome18: Double
+        public let dailyIncome9: Double
+        public let reputationDrift: Double
+        public let reputationNoise: Double
+        public let competitionKm: Double
+        public let competitionMax: Double
+        public let budgetBustReputation: Double
+        public let budgetBustChance: Double
+        public let anyBustChance: Double
+        public let snapUpChance: Double
+        public let snapUpMaxPrice: Int
+        public let sellChance: Double
+        public let newCourseReputation: Double
+        public let administrationCourseReputation: Double
+    }
+
+    public struct Championship: Decodable, Sendable {
+        public let rotaDays: Int
+        public let rivalTakeChance: Double
+        public let rivalMinReputation: Double
+        public let minPrestige: Double
+    }
+
+    public struct Administration: Decodable, Sendable {
+        public let clubhouse: Int
+        public let reputation: Double
+        public let condition: Double
+    }
+
     public let grid: Grid
     public let par: Par
     public let tileCost: TileCost
@@ -329,6 +388,10 @@ public struct Balance: Decodable, Sendable {
         public let shapes: [String: [String]]
     }
     public let stamps: Stamps
+    public let market: Market
+    public let rivals: Rivals
+    public let championship: Championship
+    public let administration: Administration
 }
 
 extension Balance.Analysis {

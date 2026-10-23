@@ -1,0 +1,34 @@
+[
+  {
+    "id": "bought",
+    "text": "Buy your first plot of land"
+  },
+  {
+    "id": "opened",
+    "text": "Open a course for play"
+  },
+  {
+    "id": "profit",
+    "text": "Make £2,000 profit in a day"
+  },
+  {
+    "id": "stars4",
+    "text": "Reach 8 out of 10 reputation anywhere"
+  },
+  {
+    "id": "three",
+    "text": "Own three courses"
+  },
+  {
+    "id": "county",
+    "text": "Host a County Amateur"
+  },
+  {
+    "id": "regional",
+    "text": "Host a Regional Pro Am"
+  },
+  {
+    "id": "champ",
+    "text": "Host The Championship"
+  }
+]

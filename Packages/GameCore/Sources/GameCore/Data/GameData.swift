@@ -16,6 +16,8 @@ public struct GameData: Sendable {
     public let golferNames: GolferNames
     public let percy: PercyText
     public let reviewText: ReviewText
+    public let map: MapData
+    public let milestones: [Milestone]
 
     public enum LoadError: Error, CustomStringConvertible {
         case missingFile(String)
@@ -68,7 +70,9 @@ public struct GameData: Sendable {
             }),
             golferNames: try read("golfer_names", as: GolferNames.self),
             percy: try read("percy", as: PercyText.self),
-            reviewText: try read("reviews", as: ReviewText.self)
+            reviewText: try read("reviews", as: ReviewText.self),
+            map: try read("map", as: MapData.self),
+            milestones: try read("milestones", as: [Milestone].self)
         )
     }
 

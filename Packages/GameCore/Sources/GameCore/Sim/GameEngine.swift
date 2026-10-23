@@ -139,9 +139,10 @@ public struct GameEngine: Sendable {
                 preparedCourses[id] = prepared[id]
             }
         }
+        let competition = Dictionary(uniqueKeysWithValues: prepared.keys.map { ($0, self.competition(for: $0)) })
         while state.minute < end {
             for id in state.courseOrder {
-                if let course = prepared[id] { teeTimes(courseID: id, prepared: course) }
+                if let course = prepared[id] { teeTimes(courseID: id, prepared: course, competition: competition[id] ?? 1) }
             }
             state.minute += 1
         }
@@ -180,6 +181,7 @@ public struct GameEngine: Sendable {
             course.weather = rollWeather(for: plot, day: state.day + 1)
             state.courses[id] = course
         }
+        for id in state.courseOrder where state.courses[id]?.booking?.day == state.day { runEvent(courseID: id) }
         state.minute = balance.clock.dayEndMinute
         state.isDayOver = true
     }
@@ -200,6 +202,11 @@ public struct GameEngine: Sendable {
         state.minute = balance.clock.dayStartMinute
         state.isDayOver = false
         state.today = DayBooks(day: state.day, openingCash: state.cash)
+        if state.mode != .sandbox {
+            marketDay()
+            rivalsDay()
+            checkMilestones()
+        }
     }
 
     /// Plays whole days with nobody touching anything. For tests and balance reports.

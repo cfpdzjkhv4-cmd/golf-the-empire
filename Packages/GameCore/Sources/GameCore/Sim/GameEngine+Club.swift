@@ -56,10 +56,12 @@ extension GameEngine {
     // MARK: Golfers arriving
 
     /// One game minute at one open course: maybe a group turns up and tees off.
-    mutating func teeTimes(courseID: String, prepared: PreparedCourse) {
+    mutating func teeTimes(courseID: String, prepared: PreparedCourse, competition: Double = 1) {
         let quality = prepared.quality
         guard let course = state.courses[courseID], let plot = data.plot(courseID) else { return }
-        let rate = economy.groupsPerHour(course, plot: plot, quality: quality, calendar: calendar, day: state.day)
+        // Closed to the public for an event today.
+        if course.booking?.day == state.day { return }
+        let rate = economy.groupsPerHour(course, plot: plot, quality: quality, calendar: calendar, day: state.day) * competition
         guard state.rng.chance(rate / 60) else { return }
         if let last = course.lastTeeMinute, state.minute - last < data.balance.golfers.teeIntervalMinutes {
             state.courses[courseID]?.today.walkedAway += 1
