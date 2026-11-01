@@ -104,5 +104,15 @@
       "#3F8F4A",
       "#C9971A"
     ]
+  },
+  "map": {
+    "sea": "#9FC1CF",
+    "seaDeep": "#7FA6B9",
+    "shallows": "#C2DAE0",
+    "land": "#ECE6CC",
+    "hills": "#9C8E6A",
+    "coast": "#5E6E58",
+    "ink": "#2F3A33",
+    "label": "#3E4A3E"
   }
 }

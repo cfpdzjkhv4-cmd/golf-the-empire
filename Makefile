@@ -1,6 +1,6 @@
 # Golf: The Empire. Run these from the project folder in Terminal.
 
-.PHONY: assets project test data preview
+.PHONY: assets art project test data preview
 
 # Regenerate every asset by manifest id (placeholders until the real generators land).
 assets:
@@ -22,3 +22,7 @@ data:
 # Render hero holes and the golfer rig to art-preview-output/index.html (open it in Safari).
 preview:
 	cd Packages/GameCore && swift run -c release art-preview ../../art-preview-output
+
+# Render the hand drawn SVG art (title, app icon, Percy) to PNGs by manifest id. Needs Google Chrome.
+art:
+	python3 art/render_svg.py

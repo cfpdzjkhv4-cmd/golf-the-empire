@@ -212,6 +212,11 @@ struct PercyBox: View {
     let watching: GameStore.Watching
 
     var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+        Image(uiImage: AssetLibrary.shared.image(watching.face))
+            .resizable()
+            .frame(width: 56, height: 56)
+            .accessibilityHidden(true)
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text("Percy Hollis").font(.caption.bold())
@@ -234,6 +239,7 @@ struct PercyBox: View {
                 Button(watching.finished ? "Done" : "Stop watching") { store.stopWatching() }
                     .font(.caption.bold())
             }
+        }
         }
         .padding(12)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))

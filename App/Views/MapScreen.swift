@@ -214,10 +214,10 @@ struct MapHeader: View {
 // MARK: Drawing the map
 
 enum MapStyle {
-    static let sea = RGBA(hex: "#BFD5DE")
+    static let sea = RGBA(hex: ArtStyle.shared.mapColour("sea"))
     static let land = RGBA(hex: "#E3E3C6")
     static let coast = RGBA(hex: "#7E8E6E")
-    static let city = RGBA(hex: "#4A4A3E")
+    static let city = RGBA(hex: ArtStyle.shared.mapColour("label"))
 }
 
 /// Turns latitude and longitude into points on screen, fitting Britain to the view and applying zoom and pan.
@@ -225,32 +225,47 @@ struct MapProjection {
     let size: CGSize
     let zoom: CGFloat
     let pan: CGSize
-    private let minX: Double, minY: Double, scale: Double, offsetX: Double, offsetY: Double
+    /// The map's area in map units (see MapArtist), and how it is fitted to the view.
+    let bounds: (minX: Double, minY: Double, width: Double, height: Double)
+    let scale: Double
+    private let offsetX: Double, offsetY: Double
 
     init(map: MapData, size: CGSize, zoom: CGFloat, pan: CGSize) {
         self.size = size
         self.zoom = zoom
         self.pan = pan
-        // Equirectangular, squashed east to west for Britain's latitude.
-        let pts = map.mainland + map.islands.flatMap { $0 }
-        let xs = pts.map { Self.rawX($0.lon) }, ys = pts.map { Self.rawY($0.lat) }
-        minX = xs.min() ?? 0
-        minY = ys.min() ?? 0
-        let w = (xs.max() ?? 1) - minX, h = (ys.max() ?? 1) - minY
-        scale = min(Double(size.width) / w, Double(size.height) / h) * 0.94
-        offsetX = (Double(size.width) - w * scale) / 2
-        offsetY = (Double(size.height) - h * scale) / 2
+        bounds = MapArtist.bounds(map)
+        // Fill the view, cropping a little sea rather than leaving bands.
+        scale = max(Double(size.width) / bounds.width, Double(size.height) / bounds.height)
+        offsetX = (Double(size.width) - bounds.width * scale) / 2
+        offsetY = (Double(size.height) - bounds.height * scale) / 2
     }
 
-    static func rawX(_ lon: Double) -> Double { (lon + 6.4) * 57.4 }
-    static func rawY(_ lat: Double) -> Double { (58.85 - lat) * 100 }
+    /// A point in map units to a point on screen, after zoom (about the centre of the view) and pan.
+    func point(x: Double, y: Double) -> CGPoint {
+        let sx = offsetX + (x - bounds.minX) * scale
+        let sy = offsetY + (y - bounds.minY) * scale
+        let cx = Double(size.width) / 2, cy = Double(size.height) / 2
+        return CGPoint(x: cx + (sx - cx) * Double(zoom) + Double(pan.width), y: cy + (sy - cy) * Double(zoom) + Double(pan.height))
+    }
 
     func point(lat: Double, lon: Double) -> CGPoint {
-        let x = offsetX + (Self.rawX(lon) - minX) * scale
-        let y = offsetY + (Self.rawY(lat) - minY) * scale
-        // Zoom about the centre of the view, then pan.
-        let cx = Double(size.width) / 2, cy = Double(size.height) / 2
-        return CGPoint(x: cx + (x - cx) * Double(zoom) + Double(pan.width), y: cy + (y - cy) * Double(zoom) + Double(pan.height))
+        point(x: MapArtist.x(lon), y: MapArtist.y(lat))
+    }
+}
+
+/// The illustrated map, drawn once by CourseArt's MapArtist and then scaled; city names stay crisp on top.
+@MainActor
+enum MapImage {
+    private static var image: UIImage?
+
+    static func get(_ map: MapData) -> UIImage {
+        if let image { return image }
+        let b = MapArtist.bounds(map)
+        let ops = MapArtist().paint(map).map { $0.translated(-b.minX, -b.minY) }
+        let made = HoleImageRenderer.render(ops, size: CGSize(width: b.width * 1.5, height: b.height * 1.5), unit: 1.5, opaque: true)
+        image = made
+        return made
     }
 }
 
@@ -261,29 +276,23 @@ struct BritainMap: View {
     let size: CGSize
 
     var body: some View {
-        Canvas { ctx, size in
-            let map = store.data.map
-            let projection = MapProjection(map: map, size: size, zoom: zoom, pan: pan)
-            func shape(_ pts: [LatLon]) -> Path {
-                var path = Path()
-                for (i, p) in pts.enumerated() {
-                    let pt = projection.point(lat: p.lat, lon: p.lon)
-                    if i == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
+        let map = store.data.map
+        let projection = MapProjection(map: map, size: size, zoom: zoom, pan: pan)
+        let b = projection.bounds
+        ZStack {
+            Image(uiImage: MapImage.get(map))
+                .resizable()
+                .interpolation(.high)
+                .frame(width: b.width * projection.scale * zoom, height: b.height * projection.scale * zoom)
+                .position(projection.point(x: b.minX + b.width / 2, y: b.minY + b.height / 2))
+            Canvas { ctx, _ in
+                for city in map.cities {
+                    let pt = projection.point(lat: city.lat, lon: city.lon)
+                    ctx.fill(Path(ellipseIn: CGRect(x: pt.x - 2.5, y: pt.y - 2.5, width: 5, height: 5)), with: .color(Color(MapStyle.city)))
+                    ctx.draw(Text(city.name).font(.system(size: 10 + min(4, zoom), weight: .medium, design: .serif)).italic()
+                                .foregroundColor(Color(MapStyle.city)),
+                             at: CGPoint(x: pt.x + 5, y: pt.y), anchor: .leading)
                 }
-                path.closeSubpath()
-                return path
-            }
-            for outline in [map.mainland] + map.islands {
-                let path = shape(outline)
-                ctx.fill(path.offsetBy(dx: 2, dy: 3), with: .color(Color(MapStyle.coast).opacity(0.25)))
-                ctx.fill(path, with: .color(Color(MapStyle.land)))
-                ctx.stroke(path, with: .color(Color(MapStyle.coast)), style: StrokeStyle(lineWidth: 1.2, lineJoin: .round))
-            }
-            for city in map.cities {
-                let pt = projection.point(lat: city.lat, lon: city.lon)
-                ctx.fill(Path(ellipseIn: CGRect(x: pt.x - 2.5, y: pt.y - 2.5, width: 5, height: 5)), with: .color(Color(MapStyle.city)))
-                ctx.draw(Text(city.name).font(.system(size: 10, design: .serif)).foregroundColor(Color(MapStyle.city)),
-                         at: CGPoint(x: pt.x + 5, y: pt.y), anchor: .leading)
             }
         }
         .frame(width: size.width, height: size.height)

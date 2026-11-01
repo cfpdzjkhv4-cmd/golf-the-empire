@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 256 256">
+  <defs>
+    <clipPath id="frame"><circle cx="128" cy="128" r="124"/></clipPath>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="11"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 0.08"/></feComponentTransfer>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+  <g clip-path="url(#frame)">
+    <!-- Commentary box backdrop: the course through the window -->
+    <rect width="256" height="256" fill="#E9D9B8"/>
+    <rect y="150" width="256" height="106" fill="#9CCB64"/>
+    <path d="M0 150 C 60 140, 120 156, 180 146 C 220 140, 240 146, 256 144 L256 160 L0 160 Z" fill="#A4A866"/>
+    <rect x="150" y="40" width="4" height="70" fill="#F4F0E6"/><path d="M154 40 L176 46 L154 52 Z" fill="#C9971A"/>
+    <g transform="translate(128 150) scale(1.3) translate(-128 -138)">
+    <!-- Waxed jacket -->
+    <path d="M30 256 C 34 206, 66 188, 100 182 L156 182 C 190 188, 222 206, 226 256 Z" fill="#4F5A36"/>
+    <path d="M100 182 L128 232 L156 182 Z" fill="#6E5140"/>
+    <!-- Fair Isle jumper at the neck -->
+    <path d="M104 182 L128 226 L152 182 Z" fill="#C9B48A"/>
+    <path d="M110 190 L146 190" stroke="#B5523B" stroke-width="4"/>
+    <path d="M114 198 L142 198" stroke="#2E6B45" stroke-width="3" stroke-dasharray="4 3"/>
+    <path d="M118 206 L138 206" stroke="#2F4B6E" stroke-width="3"/>
+    <!-- Cord collar -->
+    <path d="M100 182 C 92 192, 88 204, 92 214 L110 196 Z M156 182 C 164 192, 168 204, 164 214 L146 196 Z" fill="#7A5A3C"/>
+    <!-- Neck and head -->
+    <rect x="114" y="160" width="28" height="26" rx="8" fill="#E2B08E"/>
+    <ellipse cx="128" cy="122" rx="42" ry="48" fill="#EDC09C"/>
+    <ellipse cx="86" cy="126" rx="8" ry="12" fill="#E2B08E"/>
+    <ellipse cx="170" cy="126" rx="8" ry="12" fill="#E2B08E"/>
+    <!-- White hair at the sides, a little moustache -->
+    <path d="M86 112 C 84 100, 90 92, 96 94 L96 126 C 90 124, 86 120, 86 112 Z" fill="#E8E4DC"/>
+    <path d="M170 112 C 172 100, 166 92, 160 94 L160 126 C 166 124, 170 120, 170 112 Z" fill="#E8E4DC"/>
+    <path d="M110 146 C 118 140, 138 140, 146 146 C 138 150, 118 150, 110 146 Z" fill="#E8E4DC"/>
+    <!-- Ruddy cheeks -->
+    <ellipse cx="104" cy="134" rx="9" ry="6" fill="#E59A85" opacity="0.6"/>
+    <ellipse cx="152" cy="134" rx="9" ry="6" fill="#E59A85" opacity="0.6"/>
+    <!-- Nose -->
+    <path d="M128 112 C 124 124, 120 132, 126 136 L132 136 C 136 132, 132 124, 128 112 Z" fill="#DFA27F"/>
+    <path d="M98 108 C 104 100, 114 100, 120 106" fill="none" stroke="#8A7A6A" stroke-width="3" stroke-linecap="round"/>
+    <path d="M136 106 C 142 100, 152 100, 158 108" fill="none" stroke="#8A7A6A" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="109" cy="124" r="5" fill="#FFFFFF"/><circle cx="109" cy="124" r="3" fill="#2F3A33"/>
+    <circle cx="147" cy="124" r="5" fill="#FFFFFF"/><circle cx="147" cy="124" r="3" fill="#2F3A33"/>
+    <ellipse cx="128" cy="156" rx="6" ry="7" fill="#7A3B2A"/>
+    <!-- Half moon spectacles on the end of his nose -->
+    <path d="M100 124 L118 124 C 118 132, 102 132, 100 124 Z M138 124 L156 124 C 154 132, 138 132, 138 124 Z" fill="#FFFFFF" fill-opacity="0.35" stroke="#7A5A3C" stroke-width="2"/>
+    <path d="M118 125 L138 125" stroke="#7A5A3C" stroke-width="2"/>
+    <!-- Tweed flat cap -->
+    <path d="M82 96 C 84 66, 112 56, 136 58 C 162 60, 178 76, 176 94 C 150 88, 110 88, 82 96 Z" fill="#8A7458"/>
+    <path d="M78 98 C 104 84, 156 82, 182 96 C 170 104, 96 106, 78 98 Z" fill="#76624A"/>
+    <path d="M92 74 L170 80 M88 86 L174 90" stroke="#6A5640" stroke-width="1.5" opacity="0.7"/>
+    <path d="M100 66 L106 92 M120 60 L122 90 M140 60 L140 88 M158 66 L156 90" stroke="#A08A6A" stroke-width="1.2" opacity="0.6"/>
+    <!-- Headset over the cap -->
+    <path d="M80 118 C 72 70, 184 70, 176 118" fill="none" stroke="#2F3A33" stroke-width="6"/>
+    <rect x="70" y="108" width="16" height="26" rx="6" fill="#2F3A33"/>
+    <rect x="170" y="108" width="16" height="26" rx="6" fill="#2F3A33"/>
+    <path d="M80 132 C 84 150, 98 158, 112 156" fill="none" stroke="#2F3A33" stroke-width="3"/>
+    <ellipse cx="114" cy="156" rx="5" ry="4" fill="#2F3A33"/>
+    </g>
+  </g>
+  <circle cx="128" cy="128" r="124" fill="none" stroke="#2F3A33" stroke-width="4"/>
+  <circle cx="128" cy="128" r="124" filter="url(#grain)"/>
+</svg>

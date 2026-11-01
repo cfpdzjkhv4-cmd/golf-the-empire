@@ -33,6 +33,8 @@ final class GameStore {
         var holeIndex: Int
         var strokesThisHole: Int
         var finished = false
+        /// Percy's face: portrait_percy, portrait_percy_amused or portrait_percy_appalled.
+        var face = "portrait_percy"
     }
 
     private(set) var engine: GameEngine?
@@ -478,11 +480,21 @@ final class GameStore {
         courseScene.clearRound()
     }
 
-    private func say(_ line: String?) {
+    private func say(_ line: String?, face: String = "portrait_percy") {
         guard let line, !line.isEmpty, var w = watching else { return }
         w.previousLine = w.line
         w.line = line
+        w.face = face
         watching = w
+    }
+
+    /// How Percy looks at a shot.
+    private func face(for shot: Shot) -> String {
+        switch shot.outcome {
+        case .water, .outOfBounds, .trees: "portrait_percy_appalled"
+        case .holedLong, .holedPutt: "portrait_percy_amused"
+        default: "portrait_percy"
+        }
     }
 
     private func pause(_ seconds: Double) async -> Bool {
@@ -508,10 +520,10 @@ final class GameStore {
                 await courseScene.play(shot.shot)
                 guard !Task.isCancelled else { return }
                 watching?.strokesThisHole += 1 + shot.shot.penalty
-                say(shot.line)
+                say(shot.line, face: face(for: shot.shot))
                 guard await pause(1.5) else { return }
             }
-            say(hole.verdict)
+            say(hole.verdict, face: hole.strokes < hole.par ? "portrait_percy_amused" : hole.strokes >= hole.par + 2 ? "portrait_percy_appalled" : "portrait_percy")
             if !hole.shots.isEmpty, hole.strokes < hole.par, hole.verdict != nil {
                 SoundBoard.shared.play("sfx_applause_polite", volume: 0.6)
             }

@@ -28,7 +28,8 @@ With a free Apple ID the app stops opening after 7 days; just press Play in Xcod
 | `make project` | Rebuilds the Xcode project after files are added or `project.yml` changes |
 | `make test` | Runs the rules and art tests headless (55 tests, a few seconds) |
 | `make preview` | Draws sample holes and the golfer rig to `art-preview-output/index.html`, to review the look without a phone |
-| `make assets` | Regenerates every asset by manifest id |
+| `make assets` | Regenerates sounds and placeholder images by manifest id |
+| `make art` | Renders the hand drawn SVG art in `art/svg` (title, app icon, Percy) to PNGs; needs Google Chrome |
 | `make data` | Re-extracts plots, towns and Percy's lines from the prototype |
 
 ## How the code is laid out

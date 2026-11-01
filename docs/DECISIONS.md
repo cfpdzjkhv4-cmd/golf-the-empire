@@ -2,6 +2,12 @@
 
 Decisions made after DESIGN.md version 2, newest first. Where these and DESIGN.md disagree, these win until DESIGN.md is updated.
 
+## November 2026: the look, first hero pass
+
+1. **Hero art is in**: the title illustration (a links at dawn, mid century railway poster style), the app icon (a flag against the setting sun), Percy's portrait in three expressions (neutral, amused, appalled) and an illustrated map of Britain (smoothed coastline, shaded hills, Ordnance Survey style double coastline, compass rose). SVG sources are in `art/svg`; `make art` renders them.
+2. **Percy reacts** in the commentary box: amused at a holed putt or a birdie, appalled at water, trees or out of bounds.
+3. **Work split while Harry runs Claude Code on his Mac**: the cloud session does art it can render and check (CourseArt, `art/`); the Mac session, which can build and screenshot the Simulator, polishes the screens.
+
 ## October 2026: Milestone 3, the empire (version 1)
 
 1. **Britain only for version 1.** Harry is weighing a worldwide game; the plan is Britain at launch and new regions later as a big update (Ireland first). The market is built on data (map outline, plots, towns, land types, real latitude and longitude) so a new region is mostly new data and art.

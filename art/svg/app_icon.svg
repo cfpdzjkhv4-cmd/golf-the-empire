@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- App icon: a flag on a links green against the setting sun. iOS rounds the corners itself. -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2C4767"/>
+      <stop offset="0.5" stop-color="#C98E7A"/>
+      <stop offset="0.78" stop-color="#F2C98F"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EBC796"/>
+      <stop offset="0.35" stop-color="#7FA2B0"/>
+      <stop offset="1" stop-color="#3E6A82"/>
+    </linearGradient>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 0.08"/></feComponentTransfer>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#sky)"/>
+  <circle cx="512" cy="600" r="250" fill="#FBE3A8" opacity="0.35"/>
+  <circle cx="512" cy="600" r="170" fill="#FFF1CF"/>
+  <rect y="600" width="1024" height="170" fill="url(#sea)"/>
+  <g fill="#FFF1CF" opacity="0.8">
+    <rect x="392" y="630" width="240" height="8" rx="4"/>
+    <rect x="432" y="660" width="160" height="7" rx="3.5"/>
+    <rect x="462" y="688" width="100" height="6" rx="3"/>
+  </g>
+  <path d="M0 760 C 200 730, 380 770, 560 752 C 740 734, 880 760, 1024 746 L1024 1024 L0 1024 Z" fill="#A4A866"/>
+  <ellipse cx="512" cy="900" rx="430" ry="120" fill="#6E7A3F" opacity="0.55"/>
+  <ellipse cx="500" cy="884" rx="420" ry="112" fill="#9CCB64"/>
+  <ellipse cx="430" cy="866" rx="250" ry="56" fill="#B4DC7E" opacity="0.7"/>
+  <!-- Flag -->
+  <ellipse cx="560" cy="880" rx="26" ry="9" fill="#3E4A3A"/>
+  <rect x="551" y="250" width="18" height="632" rx="4" fill="#F4F0E6"/>
+  <path d="M569 250 C 650 262, 720 284, 800 300 C 724 330, 650 352, 569 366 Z" fill="#C9971A"/>
+  <path d="M569 250 C 650 262, 720 284, 800 300 L 569 308 Z" fill="#DDAE2C"/>
+  <rect width="1024" height="1024" filter="url(#grain)"/>
+</svg>

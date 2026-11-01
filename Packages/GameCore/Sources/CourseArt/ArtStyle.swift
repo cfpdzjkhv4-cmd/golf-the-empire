@@ -45,6 +45,7 @@ public struct ArtStyle: Sendable {
         let shadow: Shadow
         let grain: Grain
         let terrain: [String: String]
+        let map: [String: String]
         let lands: [String: Land]
         let ui: UI
     }
@@ -54,6 +55,7 @@ public struct ArtStyle: Sendable {
     public let shadowOffset: (x: Double, y: Double)
     public let grainOpacity: Double
     private let terrain: [String: String]
+    private let map: [String: String]
     private let lands: [String: Land]
     public let ratingColours: [RGBA]
     public let ink: RGBA
@@ -75,6 +77,7 @@ public struct ArtStyle: Sendable {
         shadowOffset = (file.shadow.offsetX, file.shadow.offsetY)
         grainOpacity = file.grain.opacity
         terrain = file.terrain
+        map = file.map
         lands = file.lands
         ratingColours = file.ui.rating.map { RGBA(hex: $0) }
         ink = RGBA(hex: file.ui.ink)
@@ -86,6 +89,11 @@ public struct ArtStyle: Sendable {
     /// A terrain colour token, e.g. "fairway", "sandShade".
     public func terrain(_ token: String, opacity: Double = 1) -> RGBA {
         RGBA(hex: terrain[token] ?? "#FF00FF", opacity: opacity)
+    }
+
+    /// A map colour as hex, e.g. "sea", "hills".
+    public func mapColour(_ token: String) -> String {
+        map[token] ?? "#FF00FF"
     }
 
     public func land(_ kind: LandKind) -> Land {

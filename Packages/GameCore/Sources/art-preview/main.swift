@@ -72,6 +72,22 @@ try SVGRenderer.svg([.fill(.rect(0, 0, rigWidth, rigHeight), RGBA(hex: "#86BA55"
     .write(to: out.appendingPathComponent("golfers.svg"), atomically: true, encoding: .utf8)
 cards.append("<figure><img src=\"golfers.svg\"><figcaption>Golfer rig: \(poses.map(\.0).joined(separator: ", "))</figcaption></figure>")
 
+// The illustrated map of Britain, with the plots on it.
+do {
+    let map = data.map
+    let b = MapArtist.bounds(map)
+    var ops = MapArtist().paint(map)
+    for id in data.plotOrder {
+        guard let p = data.plot(id) else { continue }
+        let c = ArtPoint(MapArtist.x(p.lon), MapArtist.y(p.lat))
+        ops.append(.ellipse(centre: c, rx: p.isLegendary ? 3 : 4.5, ry: p.isLegendary ? 3 : 4.5, p.isLegendary ? RGBA(hex: "#1E2B4A") : RGBA(hex: "#FFFFFF")))
+        if !p.isLegendary { ops.append(.stroke(ArtPath(loops: [(0..<12).map { k in ArtPoint(c.x + cos(Double(k) / 12 * 2 * .pi) * 4.5, c.y + sin(Double(k) / 12 * 2 * .pi) * 4.5) }]), RGBA(hex: "#2E6B45"), width: 1.6)) }
+    }
+    let shifted = ops.map { $0.translated(-b.minX, -b.minY) }
+    try SVGRenderer.svg(shifted, width: b.width, height: b.height, scale: 1.5).write(to: out.appendingPathComponent("map.svg"), atomically: true, encoding: .utf8)
+    cards.append("<figure><img src=\"map.svg\"><figcaption>The map of Britain</figcaption></figure>")
+}
+
 let page = """
 <!doctype html><meta charset="utf-8"><title>Hole art preview</title>
 <style>body{margin:0;padding:16px;background:#F4F0E6;font:14px Georgia,serif;color:#1F2A1C;display:flex;gap:16px;flex-wrap:wrap}

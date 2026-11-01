@@ -1,1 +1,6 @@
 # Manifest ids whose art is final. The placeholder generator leaves these alone.
+app_icon
+portrait_percy
+portrait_percy_amused
+portrait_percy_appalled
+title_hero

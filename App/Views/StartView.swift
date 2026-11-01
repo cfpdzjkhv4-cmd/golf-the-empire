@@ -6,70 +6,103 @@ struct StartView: View {
     @State private var confirmNew = false
 
     var body: some View {
-        VStack(spacing: 18) {
-            Spacer()
-            Text("Golf: The Empire")
-                .font(.system(size: 38, weight: .semibold, design: .serif))
-                .multilineTextAlignment(.center)
-            Text("Build Britain's finest links")
-                .font(.title3.italic())
-                .foregroundStyle(.secondary)
-            Spacer()
-
-            if let engine = store.engine {
-                Button {
-                    store.screen = store.isCareer ? .map : .course
-                } label: {
-                    VStack(spacing: 2) {
-                        Text("Continue").font(.headline)
-                        Text("\(store.isCareer ? "Career" : "Sandbox") · \(engine.calendar.shortLabel(day: engine.state.day)) · \(Money.text(engine.state.cash))")
-                            .font(.caption)
-                            .opacity(0.85)
-                        Text(engine.state.courses.count == 1 ? "1 club" : "\(engine.state.courses.count) clubs")
-                            .font(.caption2).opacity(0.7)
+        GeometryReader { geo in
+            VStack(spacing: 0) {
+                // The poster: a links at dawn, with the title in the sky.
+                ZStack(alignment: .top) {
+                    Image(uiImage: AssetLibrary.shared.image("title_hero"))
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geo.size.width, height: geo.size.height * 0.58)
+                        .clipped()
+                        .overlay(alignment: .bottom) {
+                            LinearGradient(colors: [.clear, Self.paper], startPoint: .top, endPoint: .bottom)
+                                .frame(height: 60)
+                        }
+                        .accessibilityHidden(true)
+                    VStack(spacing: 6) {
+                        Text("GOLF")
+                            .font(.system(size: 22, weight: .semibold, design: .serif))
+                            .tracking(10)
+                        Text("The Empire")
+                            .font(.system(size: 46, weight: .bold, design: .serif))
+                        Text("Build Britain's finest links")
+                            .font(.system(.subheadline, design: .serif).italic())
+                            .opacity(0.9)
                     }
-                    .frame(maxWidth: .infinity)
+                    .foregroundStyle(Color(red: 0.98, green: 0.95, blue: 0.88))
+                    .shadow(color: .black.opacity(0.35), radius: 6, y: 2)
+                    .padding(.top, geo.safeAreaInsets.top + 36)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Golf: The Empire. Build Britain's finest links.")
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-            }
+                .frame(height: geo.size.height * 0.58)
 
-            Button {
-                if store.hasGame && !confirmNew {
-                    confirmNew = true
-                } else {
-                    confirmNew = false
-                    store.newCareer()
+                VStack(spacing: 14) {
+                    if let engine = store.engine {
+                        Button {
+                            store.screen = store.isCareer ? .map : .course
+                        } label: {
+                            VStack(spacing: 2) {
+                                Text("Continue").font(.headline)
+                                Text("\(engine.calendar.shortLabel(day: engine.state.day)) · \(Money.text(engine.state.cash)) · \(engine.state.courses.count == 1 ? "1 club" : "\(engine.state.courses.count) clubs")")
+                                    .font(.caption)
+                                    .opacity(0.85)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 4)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(Palette.accent)
+                        .controlSize(.large)
+                    }
+
+                    Button {
+                        if store.hasGame && !confirmNew {
+                            confirmNew = true
+                        } else {
+                            confirmNew = false
+                            store.newCareer()
+                        }
+                    } label: {
+                        Text(confirmNew ? "Tap again to replace your saved game" : "New career")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 4)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(confirmNew ? Color.red : Palette.accent)
+                    .controlSize(.large)
+
+                    Text("£200,000, no land, three rivals, and the whole of Britain for sale.")
+                        .font(.system(.footnote, design: .serif).italic())
+                        .foregroundStyle(Palette.ink.opacity(0.7))
+                        .multilineTextAlignment(.center)
+
+                    #if DEBUG
+                    HStack {
+                        Button("Sandbox course") {
+                            confirmNew = false
+                            store.screen = .pickPlot
+                        }
+                        Button("Asset gallery") { store.screen = .gallery }
+                    }
+                    .buttonStyle(.bordered)
+                    .font(.footnote)
+                    #endif
+                    Spacer(minLength: 0)
                 }
-            } label: {
-                Text(confirmNew ? "Tap again to replace your saved game" : "New career")
-                    .frame(maxWidth: .infinity)
+                .padding(.horizontal, 24)
+                .padding(.top, 8)
+                .frame(maxWidth: 520)
             }
-            .buttonStyle(.bordered)
-            .controlSize(.large)
-            .tint(confirmNew ? Color.red : Color.accentColor)
-
-            Text("£200,000, no land, three rivals, and the whole of Britain for sale.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-
-            #if DEBUG
-            HStack {
-                Button("Sandbox course") {
-                    confirmNew = false
-                    store.screen = .pickPlot
-                }
-                Button("Asset gallery") { store.screen = .gallery }
-            }
-            .buttonStyle(.bordered)
-            .font(.footnote)
-            .padding(.top, 8)
-            #endif
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Self.paper)
         }
-        .padding(24)
-        .frame(maxWidth: 520)
+        .ignoresSafeArea(edges: .top)
     }
+
+    static let paper = Color(red: 0.957, green: 0.941, blue: 0.902)
 }
 
 struct PlotPickerView: View {

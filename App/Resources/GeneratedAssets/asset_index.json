@@ -1665,7 +1665,7 @@
    "source": "Code drawn vector (SVG/PDF)",
    "notes": "No transparency. Xcode generates sizes. Also a dark and tinted variant for iOS 18+",
    "kind": "image",
-   "status": "placeholder"
+   "status": "final"
   },
   {
    "id": "logo_wordmark",
@@ -1707,7 +1707,7 @@
    "source": "Code drawn vector (SVG/PDF)",
    "notes": "",
    "kind": "image",
-   "status": "placeholder"
+   "status": "final"
   },
   {
    "id": "icon_cash",
@@ -2953,7 +2953,7 @@
    "source": "Code drawn vector (SVG), rendered to PNG",
    "notes": "Percy: neutral, amused, appalled. Flat illustrated style, not photoreal",
    "kind": "image",
-   "status": "placeholder"
+   "status": "final"
   },
   {
    "id": "portrait_fenella",
