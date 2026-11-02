@@ -61,13 +61,21 @@ let poses: [(String, GolferRig.Pose, Bool)] = [
     ("putt", GolferRig.puttBack, true), ("celebrate", GolferRig.celebrate, false), ("despair", GolferRig.despair, false),
 ]
 var rigOps: [DrawOp] = []
-for row in 0..<3 {
-    let outfit = GolferRig.outfit(seed: UInt64(row * 7 + 3))
+// One golfer of each kind, plus a second of each to show the variety.
+var rigOutfits: [GolferRig.Outfit] = []
+for round in 0..<2 {
+    for kind in GolferRig.Kind.allCases {
+        var seed = UInt64(3 + round * 1000)
+        while GolferRig.outfit(seed: seed).kind != kind || rigOutfits.contains(GolferRig.outfit(seed: seed)) { seed += 1 }
+        rigOutfits.append(GolferRig.outfit(seed: seed))
+    }
+}
+for (row, outfit) in rigOutfits.enumerated() {
     for (col, pose) in poses.enumerated() {
         rigOps += GolferRig.draw(pose.1, outfit: outfit, at: ArtPoint(Double(col) * 34 + 20, Double(row) * 44 + 38), putter: pose.2)
     }
 }
-let rigWidth = Double(poses.count) * 34 + 6, rigHeight = 3 * 44 + 6.0
+let rigWidth = Double(poses.count) * 34 + 6, rigHeight = Double(rigOutfits.count) * 44 + 6
 try SVGRenderer.svg([.fill(.rect(0, 0, rigWidth, rigHeight), RGBA(hex: "#86BA55"))] + rigOps, width: rigWidth, height: rigHeight, scale: 3)
     .write(to: out.appendingPathComponent("golfers.svg"), atomically: true, encoding: .utf8)
 cards.append("<figure><img src=\"golfers.svg\"><figcaption>Golfer rig: \(poses.map(\.0).joined(separator: ", "))</figcaption></figure>")

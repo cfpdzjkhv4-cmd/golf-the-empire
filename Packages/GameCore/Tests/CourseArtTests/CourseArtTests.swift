@@ -65,4 +65,25 @@ final class CourseArtTests: XCTestCase {
         let half = GolferRig.Pose.blend(GolferRig.address, GolferRig.top, 0.5)
         XCTAssertEqual(half.arms, GolferRig.top.arms / 2, accuracy: 0.001)
     }
+
+    func testGolfersComeInEveryKindAndPutTheBagDownToPlay() {
+        let kinds = Set((0..<200).map { GolferRig.outfit(seed: UInt64($0)).kind })
+        XCTAssertEqual(kinds, Set(GolferRig.Kind.allCases))
+        XCTAssertEqual(GolferRig.outfit(seed: 42), GolferRig.outfit(seed: 42))
+        XCTAssertTrue(GolferRig.walkA.carriesBag)
+        XCTAssertFalse(GolferRig.address.carriesBag)
+        XCTAssertFalse(GolferRig.Pose.blend(GolferRig.idle, GolferRig.address, 0.8).carriesBag)
+        for seed in 0..<40 {
+            let outfit = GolferRig.outfit(seed: UInt64(seed))
+            XCTAssert((0.8...1.25).contains(outfit.build))
+            // Everything stays inside the sprite canvas (44 by 48, feet at 22, 42).
+            for pose in [GolferRig.idle, GolferRig.walkA, GolferRig.top, GolferRig.finish, GolferRig.celebrate] {
+                for op in GolferRig.draw(pose, outfit: outfit, at: ArtPoint(22, 42)) {
+                    if case let .fill(path, _) = op {
+                        for p in path.loops.joined() { XCTAssert((0...44).contains(p.x) && (0...48).contains(p.y), "\(p) outside the canvas") }
+                    }
+                }
+            }
+        }
+    }
 }
