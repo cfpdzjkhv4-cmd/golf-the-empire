@@ -1,0 +1,154 @@
+{
+  "_note": "The first career's tutorial. Percy talks the player through one course, start to first close of play. Each step is done when its doneWhen holds; steps already done are skipped. doneWhen is a condition the engine checks (ownsCourse, firstHoleHasTee, firstHoleHasGreen, firstHolePlayable, courseReady, courseOpen, dayPassed, facilityBought) or event:<name> for something only the screen knows (the app calls TutorialState.record). screen and anchor tell the app where to point.",
+  "steps": [
+    {
+      "id": "welcome",
+      "screen": "map",
+      "anchor": null,
+      "title": "Percy Hollis, at your service",
+      "lines": [
+        "Good morning. Percy Hollis. I've been secretary at more golf clubs than I care to remember, and I've been asked to keep an eye on you.",
+        "You have two hundred thousand pounds and no golf course. Let's see about fixing the second part before you spend the first."
+      ],
+      "button": "Carry on",
+      "doneWhen": "event:next"
+    },
+    {
+      "id": "map",
+      "screen": "map",
+      "anchor": "listings",
+      "title": "Land for sale",
+      "lines": [
+        "This is Britain, or the golfing parts of it. The pins are land for sale.",
+        "Cheap up north, eye watering down south. A quiet sale you can simply buy. Sealed bids mean one offer, opened on the closing day, and may the best chequebook win."
+      ],
+      "button": "Show me",
+      "doneWhen": "event:next"
+    },
+    {
+      "id": "buy",
+      "screen": "map",
+      "anchor": "buyNow",
+      "title": "Buy your first plot",
+      "lines": [
+        "Start small. A cheap nine holer in the north is no disgrace; half the great clubs began as a farmer's field and a man with a mower.",
+        "Tap a quiet sale and buy it outright."
+      ],
+      "doneWhen": "ownsCourse"
+    },
+    {
+      "id": "tee",
+      "screen": "course.build",
+      "anchor": "tool.tee",
+      "title": "Every hole starts with a tee",
+      "lines": [
+        "Bare land. Lovely. Now, golfers are simple creatures: they need somewhere to start and somewhere to finish.",
+        "Pick the tee tool and tap near the bottom of the hole."
+      ],
+      "doneWhen": "firstHoleHasTee"
+    },
+    {
+      "id": "green",
+      "screen": "course.build",
+      "anchor": "tool.green",
+      "title": "And a green to finish",
+      "lines": [
+        "Now a green, up towards the top. Paint a decent sized one; nobody enjoys putting on a postage stamp.",
+        "Then drop the pin on it with the pin tool."
+      ],
+      "doneWhen": "firstHolePlayable"
+    },
+    {
+      "id": "fairway",
+      "screen": "course.build",
+      "anchor": "tool.fairway",
+      "title": "Fairway, bunkers, the fun bit",
+      "lines": [
+        "Technically that's a golf hole. Practically, it's a field. Paint a fairway from tee to green, and a bunker or two where a careless drive might land.",
+        "The card below the hole marks it out of ten. Golfers like variety, a bit of danger and a fair chance. They don't like the same hole three times running."
+      ],
+      "button": "I'll have a go",
+      "doneWhen": "event:next"
+    },
+    {
+      "id": "allHoles",
+      "screen": "course.build",
+      "anchor": "autoLayout",
+      "title": "The other holes",
+      "lines": [
+        "Every hole needs a tee and a green before we can open. Swipe across to move between them.",
+        "If you're in a hurry, Auto layout will rough one out for you. It costs the same as building it by hand, and it shows."
+      ],
+      "doneWhen": "courseReady"
+    },
+    {
+      "id": "open",
+      "screen": "course.run",
+      "anchor": "openSwitch",
+      "title": "Open for business",
+      "lines": [
+        "There. A golf course. I've seen worse. I've played worse, mostly in Kent.",
+        "Set a green fee on the Run tab and open the gates. Too dear and they'll walk away; too cheap and you'll go bust being popular."
+      ],
+      "doneWhen": "courseOpen"
+    },
+    {
+      "id": "watch",
+      "screen": "course.run",
+      "anchor": "watchRound",
+      "title": "Watch a round",
+      "lines": [
+        "Golfers will turn up through the day. Do watch one; it's the best way to see what your holes are really like.",
+        "I shall be commentating, whether you like it or not."
+      ],
+      "button": "Maybe later",
+      "doneWhen": "event:watchedRound"
+    },
+    {
+      "id": "closeOfPlay",
+      "screen": "course.run",
+      "anchor": "clock",
+      "title": "Close of play",
+      "lines": [
+        "The day runs from seven till seven. Speed the clock up if you're impatient; I'm told it's a modern affliction.",
+        "At close of play you'll get the books: who came, what they paid, and what it cost to keep the grass alive."
+      ],
+      "doneWhen": "dayPassed"
+    },
+    {
+      "id": "reviews",
+      "screen": "course.reviews",
+      "anchor": "tab.reviews",
+      "title": "What they said",
+      "lines": [
+        "Every golfer leaves a review. Read them. They are rude, unfair and occasionally right.",
+        "Good reviews build your reputation a little each day. Reputation brings bigger crowds, higher fees and, in time, proper tournaments."
+      ],
+      "button": "Carry on",
+      "doneWhen": "event:next"
+    },
+    {
+      "id": "club",
+      "screen": "course.club",
+      "anchor": "tab.club",
+      "title": "A roof over their heads",
+      "lines": [
+        "Your reputation can only climb so high without a clubhouse. Golfers will forgive a lot, but not the lack of a bar.",
+        "Build one on the Club tab when the money allows."
+      ],
+      "doneWhen": "facilityBought"
+    },
+    {
+      "id": "done",
+      "screen": "course.run",
+      "anchor": null,
+      "title": "Over to you",
+      "lines": [
+        "That's the lot. From here it's land, holes, golfers and money, in roughly that order of difficulty.",
+        "The ultimate prize is The Championship. You'll need a great links course and a reputation to match. No pressure. I'll be in the bar."
+      ],
+      "button": "Thank you, Percy",
+      "doneWhen": "event:next"
+    }
+  ]
+}

@@ -43,6 +43,8 @@ public struct GameState: Codable, Equatable, Sendable {
     public var championshipOpensDay = 1
     /// Progress in a challenge; nil in a career. Optional so older saves load unchanged.
     public var challenge: ChallengeProgress?
+    /// The first career's tutorial; nil when it isn't running. Optional so older saves load unchanged.
+    public var tutorial: TutorialState?
 
     public init(mode: GameMode, seed: UInt64, startDate: String, cash: Int, dayStartMinute: Int) {
         self.mode = mode

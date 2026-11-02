@@ -208,6 +208,7 @@ public struct GameEngine: Sendable {
             checkMilestones()
             checkChallenge()
         }
+        updateTutorial()
     }
 
     /// Plays whole days with nobody touching anything. For tests and balance reports.
