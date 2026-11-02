@@ -34,11 +34,10 @@ extension GameEngine {
         for rival in data.rivals where rival.targetReputation <= 3.0 {
             for id in state.market.listings.keys.sorted() {
                 guard let l = state.market.listings[id], l.kind == .quiet, l.askingPrice <= r.snapUpMaxPrice,
-                      rivalCount(rival.id) < rival.maxCourses, (state.rivals[rival.id]?.cash ?? 0) >= l.askingPrice,
+                      rivalCanBuy(rival), (state.rivals[rival.id]?.cash ?? 0) >= l.askingPrice,
                       state.rng.chance(r.snapUpChance) else { continue }
                 state.market.listings[id] = nil
-                state.rivals[rival.id]?.cash -= l.askingPrice
-                state.rivalCourses[id] = RivalCourse(plotID: id, owner: rival.id, reputation: 2.5, sinceDay: state.day)
+                rivalBought(rival.id, plotID: id, for: l.askingPrice, reputation: 2.5)
                 post("\(rival.name) snaps up \(name(id)) for \(Self.money(l.askingPrice)). Expect a burger van by the weekend.")
             }
         }

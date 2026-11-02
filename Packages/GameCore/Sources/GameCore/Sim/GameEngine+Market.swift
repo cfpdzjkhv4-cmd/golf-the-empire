@@ -77,6 +77,18 @@ extension GameEngine {
         state.rivalCourses.values.filter { $0.owner == rivalID }.count
     }
 
+    /// A rival can buy if it has room for another course and has waited since its last purchase.
+    func rivalCanBuy(_ rival: Rival) -> Bool {
+        rivalCount(rival.id) < rival.maxCourses && (state.rivals[rival.id]?.nextPurchaseDay ?? 0) <= state.day
+    }
+
+    /// Records a rival purchase and starts its wait before the next one.
+    mutating func rivalBought(_ rivalID: String, plotID: String, for amount: Int, reputation: Double) {
+        state.rivals[rivalID]?.cash -= amount
+        state.rivals[rivalID]?.nextPurchaseDay = state.day + state.rng.int(data.balance.rivals.purchaseCooldownDays)
+        state.rivalCourses[plotID] = RivalCourse(plotID: plotID, owner: rivalID, reputation: reputation, sinceDay: state.day)
+    }
+
     // MARK: Listing
 
     @discardableResult
@@ -175,7 +187,7 @@ extension GameEngine {
         let r = data.balance.rivals, m = data.balance.market
         var bids: [(who: String, amount: Int)] = []
         for rivalID in l.interested {
-            guard let rival = data.rivals.first(where: { $0.id == rivalID }), rivalCount(rivalID) < rival.maxCourses else { continue }
+            guard let rival = data.rivals.first(where: { $0.id == rivalID }), rivalCanBuy(rival) else { continue }
             let range = rival.bidMultiplier
             var bid = Int((Double(l.guide) * state.rng.double(range) / 1000).rounded()) * 1000
             bid = min(bid, (state.rivals[rivalID]?.cash ?? 0) / 1000 * 1000)
@@ -214,9 +226,8 @@ extension GameEngine {
                     + (Double(margin) > Double(l.guide) * 0.15 ? "You left \(Self.money(margin)) on the table over the next best offer. Ouch. " : "Nicely judged. ")
                     + table)
         } else {
-            state.rivals[top.who]?.cash -= top.amount
             let rep = l.builtCourse ? r.administrationCourseReputation : r.newCourseReputation
-            state.rivalCourses[id] = RivalCourse(plotID: id, owner: top.who, reputation: rep, sinceDay: state.day)
+            rivalBought(top.who, plotID: id, for: top.amount, reputation: rep)
             post("\(name(id)) goes to \(displayName(top.who)) for \(Self.money(top.amount)).")
             if l.myOffer != nil {
                 write(from: "Auction house", title: "Outbid on \(name(id))", body: "\(displayName(top.who)) won \(name(id)) with \(Self.money(top.amount)). \(note)\(table)")

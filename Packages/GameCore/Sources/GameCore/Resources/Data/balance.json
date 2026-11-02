@@ -555,7 +555,8 @@
     "snapUpMaxPrice": 150000,
     "sellChance": 0.00455,
     "newCourseReputation": 2.4,
-    "administrationCourseReputation": 2.7
+    "administrationCourseReputation": 2.7,
+    "purchaseCooldownDays": [50, 75]
   },
   "championship": {
     "rotaDays": 45,

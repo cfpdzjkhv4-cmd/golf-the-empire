@@ -344,6 +344,8 @@ public struct Balance: Decodable, Sendable {
         public let sellChance: Double
         public let newCourseReputation: Double
         public let administrationCourseReputation: Double
+        /// Days a rival waits after buying a course before it buys another, as a range.
+        public let purchaseCooldownDays: [Int]
     }
 
     public struct Championship: Decodable, Sendable {

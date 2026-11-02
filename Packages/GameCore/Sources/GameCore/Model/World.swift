@@ -54,6 +54,8 @@ public struct RivalState: Codable, Equatable, Sendable {
     public var cash: Int
     /// Overrides the rival's usual target reputation (challenges).
     public var targetReputation: Double?
+    /// The rival won't buy again before this day. Optional so older saves load unchanged.
+    public var nextPurchaseDay: Int?
 }
 
 /// A course owned by a rival company.
