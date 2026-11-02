@@ -18,6 +18,7 @@
   },
   {
     "id": "members",
+    "comingLater": true,
     "name": "The waiting list",
     "difficulty": "Moderate",
     "days": 60,
@@ -60,6 +61,7 @@
   },
   {
     "id": "tide",
+    "comingLater": true,
     "name": "Rising tide",
     "difficulty": "Hard",
     "days": 70,

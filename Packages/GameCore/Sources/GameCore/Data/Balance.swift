@@ -392,6 +392,13 @@ public struct Balance: Decodable, Sendable {
     public let rivals: Rivals
     public let championship: Championship
     public let administration: Administration
+
+    public struct ChallengeRules: Decodable, Sendable {
+        public let year: Int
+        public let bankruptcyCash: Int
+        public let affordableShare: Double
+    }
+    public let challenge: ChallengeRules
 }
 
 extension Balance.Analysis {

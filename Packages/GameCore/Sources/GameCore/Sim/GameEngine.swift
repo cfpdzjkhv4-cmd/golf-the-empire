@@ -206,6 +206,7 @@ public struct GameEngine: Sendable {
             marketDay()
             rivalsDay()
             checkMilestones()
+            checkChallenge()
         }
     }
 

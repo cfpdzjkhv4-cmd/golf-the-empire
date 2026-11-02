@@ -41,6 +41,8 @@ public struct GameState: Codable, Equatable, Sendable {
     public var favourites: Set<String> = []
     /// The Championship can't be held anywhere before this day.
     public var championshipOpensDay = 1
+    /// Progress in a challenge; nil in a career. Optional so older saves load unchanged.
+    public var challenge: ChallengeProgress?
 
     public init(mode: GameMode, seed: UInt64, startDate: String, cash: Int, dayStartMinute: Int) {
         self.mode = mode

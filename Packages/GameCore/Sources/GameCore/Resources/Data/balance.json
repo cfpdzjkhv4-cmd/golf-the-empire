@@ -568,5 +568,11 @@
     "clubhouse": 1,
     "reputation": 2.4,
     "condition": 55
+  },
+  "challenge": {
+    "_note": "Challenges start on a fixed date in this year so every player gets the same season. Going below bankruptcyCash at the start of a day loses the challenge. A shoestring start is offered at least one quiet sale costing no more than affordableShare of the starting cash.",
+    "year": 2026,
+    "bankruptcyCash": -75000,
+    "affordableShare": 0.8
   }
 }

@@ -167,6 +167,8 @@ public struct Challenge: Decodable, Sendable, Identifiable {
     public let goalText: String
     public let start: Start
     public let goal: Goal
+    /// Needs a feature from a later update (members, storms), so it is hidden for now.
+    public let comingLater: Bool?
 }
 
 public struct Town: Decodable, Sendable {
