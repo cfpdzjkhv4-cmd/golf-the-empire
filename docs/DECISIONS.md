@@ -2,6 +2,15 @@
 
 Decisions made after DESIGN.md version 2, newest first. Where these and DESIGN.md disagree, these win until DESIGN.md is updated.
 
+## November 2026: overnight work (Claude's calls, flagged to Harry)
+
+1. **Richer course art.** Rough has texture, tufts and detail for each kind of land (marram and gorse on links, heather and pines on heathland, daisies and oaks in parkland, bracken and rocks on moorland). Greens are striped with a cup, bunkers raked, tees marked, water has ripples and reeds. About 5,000 to 6,000 shapes per hole. If painting stutters on older iPhones, move hole drawing off the main thread or cache the rough layer.
+2. **Five kinds of golfer.** Club member, young gun, weekend hacker, lady golfer and pensioner, each with their own clothes, hats, hair and build. The bag is slung on the back while walking and stood on the ground to play.
+3. **Clubhouse levels look different at a glance.** Portacabin, cottage, larger house with a conservatory restaurant, grand clubhouse with a clock gable and pillared porch.
+4. **Challenge rules.** Fixed start dates in 2026 (`balance.json` challenge.year). Lost when time runs out or cash falls below minus £75,000 (the bank calls in the loan); this settles debt for challenges only. The outcome is decided once and play can carry on. The waiting list and Rising tide are marked `comingLater`. Balance watch: Back from the brink needs design 6.5 and a restaurant clubhouse to reach 8 out of 10; Stockbroker belt's nine holers top out at 8.0 against Meridian at 7.7.
+5. **Rivals buy at a measured pace.** Each waits 50 to 75 days after a purchase. Rivals now buy 5 to 7 courses in 120 days between them, down from about 20.
+6. **Tutorial as data.** Thirteen steps in `tutorial.json`, each finished by a game condition or a screen event. Offered on a first career only.
+
 ## November 2026: the look, first hero pass
 
 1. **Hero art is in**: the title illustration (a links at dawn, mid century railway poster style), the app icon (a flag against the setting sun), Percy's portrait in three expressions (neutral, amused, appalled) and an illustrated map of Britain (smoothed coastline, shaded hills, Ordnance Survey style double coastline, compass rose). SVG sources are in `art/svg`; `make art` renders them.
@@ -60,6 +69,6 @@ Moved to free updates: members and committee, storms and erosion, inbox, Gazette
 
 ## Still open
 
-* **Debt.** Cash can go negative in the prototype and nothing happens. Needs designing: overdraft limit and interest, a bank letter, forced sale of a course, bankruptcy as a loss state in challenges.
+* **Debt.** Cash can go negative in a career and nothing happens. Challenges now end below minus £75,000. Careers still need designing: overdraft limit and interest, a bank letter, forced sale of a course.
 * **Redesigning an open hole.** Proposal: construction takes days in proportion to the tiles changed, and the hole is closed meanwhile.
 * **Hand made plots near legendary venues.** Several sit in the same town as a famous club with a similar sounding name (Ganton has both "Vale Heath" and "Potter Brompton Heath"). Review for passing off before launch.
