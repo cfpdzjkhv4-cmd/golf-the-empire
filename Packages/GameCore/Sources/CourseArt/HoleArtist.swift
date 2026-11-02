@@ -33,13 +33,10 @@ public struct HoleArtist: Sendable {
         var rng = SeededRandom(seed: seed)
         ops.append(.clip(bounds))
 
-        // Rough, with soft mottling so it reads as grass rather than a flat fill.
+        // Rough: grass tufts, deeper rough at the edges, and the land's own plants.
         ops.append(.fill(bounds, RGBA(hex: landStyle.rough)))
-        for _ in 0..<(hole.columns * hole.rows / 2) {
-            let c = ArtPoint(rng.unit() * Double(hole.columns), rng.unit() * Double(hole.rows))
-            let rx = 0.18 + rng.unit() * 0.4
-            ops.append(.ellipse(centre: c, rx: rx, ry: rx * (0.45 + rng.unit() * 0.3), RGBA(hex: landStyle.roughMottle, opacity: 0.45)))
-        }
+        ops += roughDetail(hole, land: land, seed: seed)
+        _ = rng.unit()
 
         // Sea, with a line of surf.
         let sea = tracer.outline(hole) { $0 == .sea }
@@ -60,6 +57,7 @@ public struct HoleArtist: Sendable {
                 ops.append(.ellipse(centre: ArtPoint(c.x + 0.4, c.y + 0.35), rx: 0.7, ry: 0.12, style.terrain("waterHighlight", opacity: 0.55)))
                 ops.append(.ellipse(centre: ArtPoint(c.x - 0.3, c.y + 0.75), rx: 0.4, ry: 0.08, style.terrain("waterHighlight", opacity: 0.4)))
             }
+            ops += waterDetail(hole, land: land, seed: seed)
             ops.append(.endClip)
             ops.append(.stroke(water, style.terrain("waterShade", opacity: 0.8), width: 0.08))
         }
@@ -81,6 +79,7 @@ public struct HoleArtist: Sendable {
             let x = Double(tee.x), y = Double(tee.y)
             ops.append(.fill(.rect(x - 0.15, y + 0.05, 1.3, 0.95), style.terrain("teeEdge")))
             ops.append(.fill(.rect(x - 0.1, y + 0.05, 1.2, 0.85), style.terrain("tee")))
+            ops += teeMarkers(hole)
         }
 
         // Green: a fringe, the putting surface, and a soft sheen.
@@ -96,7 +95,9 @@ public struct HoleArtist: Sendable {
                 let c = centroid(loop)
                 ops.append(.ellipse(centre: ArtPoint(c.x - 0.4, c.y - 0.35), rx: 1.3, ry: 0.9, style.terrain("greenHighlight", opacity: 0.6)))
             }
+            ops += greenStripes(hole)
             ops.append(.endClip)
+            ops += cup(hole)
         }
 
         // A tired course: browner fairways and greens, with worn patches.
@@ -121,6 +122,9 @@ public struct HoleArtist: Sendable {
             ops.append(.fill(sand, style.terrain("sandShade")))
             ops.append(.clip(sand))
             ops.append(.fill(sand.offset(0.2, 0.26), style.terrain("sand")))
+            ops.append(.clip(sand.offset(0.2, 0.26)))
+            ops += rakeLines(hole)
+            ops.append(.endClip)
             ops.append(.endClip)
         }
 
@@ -134,6 +138,7 @@ public struct HoleArtist: Sendable {
             ops.append(contentsOf: canopy(t, land: land))
         }
 
+        ops += grain(hole, seed: seed)
         ops.append(.endClip)
         return ops
     }
@@ -172,27 +177,62 @@ public struct HoleArtist: Sendable {
         let dark = RGBA(hex: l.tree), light = RGBA(hex: l.treeLight)
         let c = t.centre, r = t.radius
         var ops: [DrawOp] = []
-        switch land {
-        case .heathland:
-            // Scots pine: a dark, lumpy crown of several clumps.
+        // A crown of lobes: darker underneath, lit lobes on the top left, a few bright leaves.
+        func crown(_ base: RGBA, _ lit: RGBA, lobes: Int, size: Double) {
+            let deeper = RGBA(r: base.r * 0.78, g: base.g * 0.78, b: base.b * 0.78)
+            ops.append(.ellipse(centre: ArtPoint(c.x + r * 0.08, c.y + r * 0.1), rx: r * size, ry: r * size * 0.95, deeper))
+            for k in 0..<lobes {
+                let a = Double(k) / Double(lobes) * 2 * .pi + Double(t.variant)
+                ops.append(.ellipse(centre: ArtPoint(c.x + cos(a) * r * 0.42, c.y + sin(a) * r * 0.4), rx: r * 0.5, ry: r * 0.47, base))
+            }
+            for k in 0..<3 {
+                let a = Double.pi * 1.25 + (Double(k) - 1) * 0.6
+                ops.append(.ellipse(centre: ArtPoint(c.x + cos(a) * r * 0.32, c.y + sin(a) * r * 0.3), rx: r * 0.34, ry: r * 0.3, lit))
+            }
+            ops.append(.ellipse(centre: ArtPoint(c.x - r * 0.38, c.y - r * 0.42), rx: r * 0.14, ry: r * 0.12, lit.opacity(0.9)))
+        }
+        switch (land, t.variant) {
+        case (.heathland, 2):
+            // Silver birch: small, airy and pale, with a white trunk peeping out.
+            ops.append(.fill(.rect(c.x - 0.03, c.y, 0.06, r * 0.7), RGBA(hex: "#EDE8DC")))
+            crown(RGBA(hex: "#7E9A4E"), RGBA(hex: "#A9C26E"), lobes: 4, size: 0.62)
+        case (.heathland, _):
+            // Scots pine: dark lumpy clumps with warm light on top.
             for k in 0..<5 {
                 let a = Double(k) / 5 * 2 * .pi + Double(t.variant)
-                ops.append(.ellipse(centre: ArtPoint(c.x + cos(a) * r * 0.45, c.y + sin(a) * r * 0.45), rx: r * 0.55, ry: r * 0.55, dark))
+                ops.append(.ellipse(centre: ArtPoint(c.x + cos(a) * r * 0.45, c.y + sin(a) * r * 0.45), rx: r * 0.52, ry: r * 0.5, dark))
             }
-            ops.append(.ellipse(centre: ArtPoint(c.x - r * 0.25, c.y - r * 0.3), rx: r * 0.35, ry: r * 0.3, light))
-        case .links:
-            // Gorse: low, round bushes with yellow flowers.
-            ops.append(.ellipse(centre: c, rx: r, ry: r * 0.9, dark))
-            ops.append(.ellipse(centre: ArtPoint(c.x - r * 0.3, c.y - r * 0.3), rx: r * 0.55, ry: r * 0.45, light))
-            for k in 0..<4 {
+            for k in 0..<3 {
+                let a = Double.pi * 1.25 + (Double(k) - 1) * 0.8
+                ops.append(.ellipse(centre: ArtPoint(c.x + cos(a) * r * 0.45, c.y + sin(a) * r * 0.42), rx: r * 0.26, ry: r * 0.22, light))
+            }
+        case (.links, 2):
+            // Sea buckthorn: grey green with orange berries.
+            crown(RGBA(hex: "#7F8C6A"), RGBA(hex: "#A6B08E"), lobes: 4, size: 0.7)
+            for k in 0..<5 {
+                let a = Double(k) * 1.3
+                ops.append(.ellipse(centre: ArtPoint(c.x + cos(a) * r * 0.5, c.y + sin(a) * r * 0.45), rx: 0.05, ry: 0.05, RGBA(hex: "#E58A2E")))
+            }
+        case (.links, _):
+            // Gorse: low, round bushes thick with yellow flowers.
+            crown(dark, light, lobes: 4, size: 0.75)
+            for k in 0..<7 {
                 let a = Double(k) * 1.7 + Double(t.variant)
                 ops.append(.ellipse(centre: ArtPoint(c.x + cos(a) * r * 0.55, c.y + sin(a) * r * 0.5), rx: 0.07, ry: 0.07, RGBA(hex: l.flower)))
             }
+        case (.moorland, 2):
+            // Rowan with red berries.
+            crown(dark, light, lobes: 5, size: 0.7)
+            for k in 0..<4 {
+                let a = Double(k) * 1.6 + 0.3
+                ops.append(.ellipse(centre: ArtPoint(c.x + cos(a) * r * 0.45, c.y + sin(a) * r * 0.4), rx: 0.06, ry: 0.06, RGBA(hex: "#C23B2A")))
+            }
+        case (.parkland, 2):
+            // Beech: a lighter, fresher green.
+            crown(light, RGBA(hex: "#7FB05A"), lobes: 6, size: 0.8)
         default:
-            // Broadleaf (oak) and moorland scrub: a round crown lit from the top left.
-            ops.append(.ellipse(centre: c, rx: r, ry: r, dark))
-            ops.append(.ellipse(centre: ArtPoint(c.x - r * 0.28, c.y - r * 0.3), rx: r * 0.62, ry: r * 0.58, light))
-            ops.append(.ellipse(centre: ArtPoint(c.x - r * 0.42, c.y - r * 0.45), rx: r * 0.25, ry: r * 0.22, light.opacity(0.8)))
+            // Oak, horse chestnut and moorland scrub: a big rounded crown.
+            crown(dark, light, lobes: t.variant == 1 ? 7 : 6, size: 0.82)
         }
         return ops
     }
